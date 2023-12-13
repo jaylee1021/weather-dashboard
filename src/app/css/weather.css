@@ -1,0 +1,38 @@
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    /* border-bottom: 1px solid #000000; */
+}
+
+.table_border {
+    border: 1px solid #000000;
+    border-radius: 10px;
+}
+
+.table {
+    table-layout: fixed;
+    max-width: 900px;
+    vertical-align: middle;
+}
+
+.board_tr {
+    display: flex;
+    padding: 8px 8px 0 8px;
+}
+
+.board_col {
+    padding: 10px;
+    width: 100%;
+}
+
+.border_bottom {
+    border-bottom: 1px solid black;
+}
+
+.board_col3 {
+    width: 33%;
+    padding:10px;
+}
