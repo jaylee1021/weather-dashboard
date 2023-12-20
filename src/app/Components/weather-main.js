@@ -1,6 +1,6 @@
 'use client';
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import '../css/weather.css';
 
 export default function WeatherMain() {
@@ -8,12 +8,16 @@ export default function WeatherMain() {
     const [weather, setWeather] = useState([]);
     const [wind, setWind] = useState('');
     const [windOpWindow, setWindOpWindow] = useState('');
-    const [windUnit, setWindUnit] = useState(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
+    const [windUnit, setWindUnit] = useState('');
     const [windGust, setWindGust] = useState('');
-    const [windGustOpWindow, setWindGustOpWindow] = useState('');
-    const [currentDateTime, setCurrentDateTime] = useState('');
+    const [windGustOpWindow, setWindGustOpWindow] = useState(0);
+    const [currentDateTime, setCurrentDateTime] = useState(new Date().toLocaleString());
     const [minCountdown, setMinCountdown] = useState(60);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
+    }, []);
 
     // fetch weather data on page load and every minute
     useEffect(() => {
@@ -148,7 +152,7 @@ export default function WeatherMain() {
                         </tr>
                         <tr>
                             <td className="board_col">Visibility (SM)</td>
-                            {weather.vis_miles > 3.0 ? <td className="board_col" style={{ color: 'green' }}>{weather.vis_miles}</td> : <td className="board_col" style={{ color: 'red' }}>{weather.vis_miles}</td>}
+                            {weather.vis_miles >= 3.0 ? <td className="board_col" style={{ color: 'green' }}>{weather.vis_miles}</td> : <td className="board_col" style={{ color: 'red' }}>{weather.vis_miles}</td>}
                             <td className="board_col">&gt; 3.0</td>
                         </tr>
                         <tr>
