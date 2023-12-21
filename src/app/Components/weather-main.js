@@ -43,12 +43,12 @@ export default function WeatherMain() {
             axios.get(`http://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=47.53294,-121.80539`)
                 .then((res) => {
                     console.log(res.data.current);
+                    setWeather(res.data.current);
                     if (windUnit === 'knots') {
                         setKnots();
                     } else if (windUnit === 'm/s') {
                         setMetersPerSec();
                     }
-                    setWeather(res.data.current);
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -68,6 +68,14 @@ export default function WeatherMain() {
             clearInterval(countdownInterval);
         };
     }, [setKnots, setMetersPerSec, windUnit]);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/6583d4f91454be9a83f37f00`);
+            console.log('user', res.data.user);
+        };
+        fetchUser();
+    }, []);
 
     // convert wind speed to knots or m/s
     const handleConversion = (e) => {
