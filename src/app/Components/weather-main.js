@@ -18,7 +18,7 @@ export default function WeatherMain() {
     const [newWinOpWindow, setNewWinOpWindow] = useState('');
     const [newWindGustOpWindow, setNewWindGustOpWindow] = useState('');
 
-
+    // conversion constants
     const mphToKnots = 0.868976;
     const mphToMetersPerSec = 0.44704;
     const knotsToMeterPerSec = 0.514444;
@@ -87,6 +87,14 @@ export default function WeatherMain() {
         };
     }, [setKnots, setMetersPerSec, windUnit]);
 
+    // updating current date/time every second
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setCurrentDateTime(new Date().toLocaleString());
+        }, 1000);
+        return () => clearInterval(intervalId); // This is the cleanup function
+    }, []);
+
     // update user wind unit
     const setUserWindUnit = (unit) => {
         axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/65847373bafeaa9f5baa3e3d`, { unit })
@@ -113,17 +121,9 @@ export default function WeatherMain() {
     };
 
     // refresh page on button click
-    const handleRefresh = () => {
+    const handleManualRefresh = () => {
         window.location.reload();
     };
-
-    // updating current date/time every second
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            setCurrentDateTime(new Date().toLocaleString());
-        }, 1000);
-        return () => clearInterval(intervalId); // This is the cleanup function
-    }, []);
 
     // update wind operating window
     const handleNewWindOp = (e) => {
@@ -138,7 +138,7 @@ export default function WeatherMain() {
     // submit new wind operating window
     const handleSubmit = (e) => {
         e.preventDefault();
-        // update wind operating window
+        // update wind and wind gust op operating window if both are entered
         if (newWinOpWindow && newWindGustOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/65847373bafeaa9f5baa3e3d`, { wind: newWinOpWindow, windGust: newWindGustOpWindow })
                 .then((res) => {
@@ -148,6 +148,7 @@ export default function WeatherMain() {
                     console.log(err);
                 });
         }
+        // update wind op operating window if only wind is entered
         if (newWinOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/65847373bafeaa9f5baa3e3d`, { wind: newWinOpWindow, windGust: windGustOpWindow })
                 .then((res) => {
@@ -157,6 +158,7 @@ export default function WeatherMain() {
                     console.log(err);
                 });
         }
+        // update wind gust op operating window if only wind gust is entered
         if (newWindGustOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/65847373bafeaa9f5baa3e3d`, { windGust: newWindGustOpWindow, wind: windOpWindow })
                 .then((res) => {
@@ -182,8 +184,8 @@ export default function WeatherMain() {
         }
     };
 
-    // display which limits are breaching in text format
-    const checkLimitsText = () => {
+    // display which limits are breaching
+    const checkBreachingLimit = () => {
         let limits = [];
         if (wind > windOpWindow) {
             limits.push('Steady Wind');
@@ -218,7 +220,7 @@ export default function WeatherMain() {
         return limits;
     };
 
-    // return limits to default 
+    // return operating window to default values
     const handleReturnToDefault = () => {
         axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/65847373bafeaa9f5baa3e3d`, {
             wind: 14, windGust: 25, tempLow: 32, tempHigh: 91, precipitation: 0.0, visibility: 3,
@@ -246,7 +248,7 @@ export default function WeatherMain() {
                     </select>
                 </div>
                 <div className="board_col3">
-                    <button onClick={handleRefresh}>Refresh</button>
+                    <button onClick={handleManualRefresh}>Refresh</button>
                 </div>
                 <div className="board_col3">
                     <p>Current date/time: {currentDateTime}</p>
@@ -333,7 +335,7 @@ export default function WeatherMain() {
                         <h4>Status</h4>
                         {checkGoNoGo()}
                         <h4>Breaching Limit(s)</h4>
-                        {checkLimitsText().map((limits, index) => {
+                        {checkBreachingLimit().map((limits, index) => {
                             return (<p key={index}>{limits}</p>);
                         })}
                     </div>
