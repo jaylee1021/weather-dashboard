@@ -15,19 +15,23 @@ export default function WeatherMain() {
     const [minCountdown, setMinCountdown] = useState(60);
     const [loading, setLoading] = useState(true);
 
+    const mphToKnots = mphToKnots;
+    const mphToMetersPerSec = mphToMetersPerSec;
+    const knotsToMeterPerSec = 0.514444;
+
     const setKnots = useCallback(() => {
-        setWind((weather.wind_mph * 0.868976).toFixed(2));
+        setWind((weather.wind_mph * mphToKnots).toFixed(2));
         setWindOpWindow(14);
-        setWindGust((weather.gust_mph * 0.868976).toFixed(2));
+        setWindGust((weather.gust_mph * mphToKnots).toFixed(2));
         setWindGustOpWindow(25);
-    }, [weather.wind_mph, weather.gust_mph]);
+    }, [weather.wind_mph, weather.gust_mph, mphToKnots]);
 
     const setMetersPerSec = useCallback(() => {
-        setWind((weather.wind_mph * 0.44704).toFixed(2));
-        setWindOpWindow((14 * 0.514444).toFixed(2));
-        setWindGust((weather.gust_mph * 0.44704).toFixed(2));
-        setWindGustOpWindow((25 * 0.514444));
-    }, [weather.wind_mph, weather.gust_mph]);
+        setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
+        setWindOpWindow((14 * knotsToMeterPerSec).toFixed(2));
+        setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(2));
+        setWindGustOpWindow((25 * knotsToMeterPerSec));
+    }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec]);
 
     useEffect(() => {
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
