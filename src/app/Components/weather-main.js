@@ -1,6 +1,6 @@
 'use client';
 import axios from "axios";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import '../css/weather.css';
 
 export default function WeatherMain() {
@@ -15,6 +15,20 @@ export default function WeatherMain() {
     const [minCountdown, setMinCountdown] = useState(60);
     const [loading, setLoading] = useState(true);
 
+    const setKnots = useCallback(() => {
+        setWind((weather.wind_mph * 0.868976).toFixed(2));
+        setWindOpWindow(14);
+        setWindGust((weather.gust_mph * 0.868976).toFixed(2));
+        setWindGustOpWindow(25);
+    }, [weather.wind_mph, weather.gust_mph]);
+
+    const setMetersPerSec = useCallback(() => {
+        setWind((weather.wind_mph * 0.44704).toFixed(2));
+        setWindOpWindow((14 * 0.514444).toFixed(2));
+        setWindGust((weather.gust_mph * 0.44704).toFixed(2));
+        setWindGustOpWindow((25 * 0.514444));
+    }, [weather.wind_mph, weather.gust_mph]);
+
     useEffect(() => {
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
     }, []);
@@ -26,15 +40,9 @@ export default function WeatherMain() {
                 .then((res) => {
                     console.log(res.data.current);
                     if (windUnit === 'knots') {
-                        setWind((res.data.current.wind_mph * 0.868976).toFixed(2));
-                        setWindOpWindow(14);
-                        setWindGustOpWindow(25);
-                        setWindGust((res.data.current.gust_mph * 0.868976).toFixed(2));
+                        setKnots();
                     } else if (windUnit === 'm/s') {
-                        setWind((res.data.current.wind_mph * 0.44704).toFixed(2));
-                        setWindOpWindow((14 * 0.514444).toFixed(2));
-                        setWindGustOpWindow((25 * 0.514444));
-                        setWindGust((res.data.current.gust_mph * 0.44704).toFixed(2));
+                        setMetersPerSec();
                     }
                     setWeather(res.data.current);
                     setLoading(false);
@@ -55,22 +63,16 @@ export default function WeatherMain() {
             clearInterval(intervalId); // This is the cleanup function
             clearInterval(countdownInterval);
         };
-    }, [windUnit]);
+    }, [setKnots, setMetersPerSec, windUnit]);
 
     // convert wind speed to knots or m/s
     const handleConversion = (e) => {
         localStorage.setItem('windUnit', e.target.value);
         if (e.target.value === 'knots') {
-            setWind((weather.wind_mph * 0.868976).toFixed(2));
-            setWindOpWindow(14);
-            setWindGust((weather.gust_mph * 0.868976).toFixed(2));
-            setWindGustOpWindow(25);
+            setKnots();
             setWindUnit('knots');
         } else if (e.target.value === 'm/s') {
-            setWind((weather.wind_mph * 0.44704).toFixed(2));
-            setWindOpWindow((14 * 0.514444).toFixed(2));
-            setWindGust((weather.gust_mph * 0.44704).toFixed(2));
-            setWindGustOpWindow((25 * 0.514444));
+            setMetersPerSec();
             setWindUnit('m/s');
         }
     };
@@ -85,13 +87,11 @@ export default function WeatherMain() {
         const intervalId = setInterval(() => {
             setCurrentDateTime(new Date().toLocaleString());
         }, 1000);
-
         return () => clearInterval(intervalId); // This is the cleanup function
     }, []);
 
     // updating wind operating window
     const handleNewWindOp = (e) => {
-
         setWindOpWindow(e.target.value);
     };
 
@@ -180,4 +180,4 @@ export default function WeatherMain() {
             </div>
         </div>
     );
-}
+};
