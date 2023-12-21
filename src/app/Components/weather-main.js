@@ -150,7 +150,7 @@ export default function WeatherMain() {
                             <td className="board_col">&gt; 32.0, &lt; 91.0</td>
                         </tr>
                         <tr>
-                            <td className="board_col">Precipation (mm/hr)</td>
+                            <td className="board_col">Precipitation (mm/hr)</td>
                             {weather.precip_mm > 0.0 ? <td className="board_col" style={{ color: 'red' }}>0.0</td> : <td className="board_col" style={{ color: 'green' }}>0.0</td>}
                             <td className="board_col">0.0</td>
                         </tr>
