@@ -15,8 +15,8 @@ export default function WeatherMain() {
     const [minCountdown, setMinCountdown] = useState(60);
     const [loading, setLoading] = useState(true);
 
-    const mphToKnots = mphToKnots;
-    const mphToMetersPerSec = mphToMetersPerSec;
+    const mphToKnots = 0.868976;
+    const mphToMetersPerSec = 0.44704;
     const knotsToMeterPerSec = 0.514444;
 
     const setKnots = useCallback(() => {
