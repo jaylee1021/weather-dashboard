@@ -12,79 +12,32 @@ const Signup = () => {
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [jobTitle, setJobTitle] = useState('');
-	const [number, setNumber] = useState('');
-	const [streetAddress, setStreetAddress] = useState('');
-	const [city, setCity] = useState('');
-	const [state, setState] = useState('');
-	const [zipCode, setZipCode] = useState('');
 	const [error, setError] = useState(false);
 
-	// create the 
 	const handleFirstName = (e) => {
-		// fill in code
 		setFirstName(e.target.value);
 	};
 
 	const handleLastName = (e) => {
-		// fill in code
 		setLastName(e.target.value);
 	};
 
 	const handleEmail = (e) => {
-		// fill in code
 		setEmail(e.target.value);
 	};
 
 	const handlePassword = (e) => {
-		// fill in code
 		setPassword(e.target.value);
 	};
 
-	const handleJobTitle = (e) => {
-		// fill in code
-		setJobTitle(e.target.value);
-	};
-
-	const handleNumber = (e) => {
-		// fill in code
-		setNumber(e.target.value);
-	};
-
-	const handleStreetAddress = (e) => {
-		// fill in code
-		setStreetAddress(e.target.value);
-	};
-
-	const handleCity = (e) => {
-		// fill in code
-		setCity(e.target.value);
-	};
-
-	const handleState = (e) => {
-		// fill in code
-		setState(e.target.value);
-	};
-
-	const handleZipCode = (e) => {
-		// fill in code
-		setZipCode(e.target.value);
-	};
-
 	const handleSubmit = (e) => {
-		e.preventDefault(); // at the beginning of a submit function
+		e.preventDefault();
 
 		const newUser = {
 			firstName,
 			lastName,
 			email,
-			jobTitle,
-			number,
-			password,
-			streetAddress,
-			city,
-			state,
-			zipCode
+			password
 		};
 		axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/signup`, newUser)
 			.then(response => {
@@ -96,7 +49,6 @@ const Signup = () => {
 					setError(true);
 				}
 			});
-
 	};
 
 	if (redirect) { router.push('/users/login'); }
@@ -119,7 +71,6 @@ const Signup = () => {
 			</div>
 		);
 	}
-	// You can have them redirected to profile (your choice)
 
 	return (
 		<div className="container">
@@ -150,30 +101,6 @@ const Signup = () => {
 									<div className="input-group mb-3">
 										<span className="input-group-addon"><i className="fa fa-lock"></i></span>
 										<input type="password" className="form-control" placeholder="Password" value={password} onChange={handlePassword} required />
-									</div>
-									<div className="input-group mb-3">
-										<span className="input-group-addon"><i className="fa fa-address-book"></i></span>
-										<input type="text" className="form-control" placeholder="Job Title" value={jobTitle} onChange={handleJobTitle} />
-									</div>
-									<div className="input-group mb-3">
-										<span className="input-group-addon"><i className="fa fa-address-book"></i></span>
-										<input type="text" className="form-control" placeholder="Phone Number" value={number} onChange={handleNumber} />
-									</div>
-									<div className="input-group mb-3">
-										<span className="input-group-addon"><i className="fa fa-address-book"></i></span>
-										<input type="text" className="form-control" placeholder="Street Address" value={streetAddress} onChange={handleStreetAddress} />
-									</div>
-									<div className="input-group mb-3">
-										<span className="input-group-addon"><i className="fa fa-address-book"></i></span>
-										<input type="text" className="form-control" placeholder="City" value={city} onChange={handleCity} />
-									</div>
-									<div className="input-group mb-3">
-										<span className="input-group-addon"><i className="fa fa-address-book"></i></span>
-										<input type="text" className="form-control" placeholder="State" value={state} onChange={handleState} />
-									</div>
-									<div className="input-group mb-3">
-										<span className="input-group-addon"><i className="fa fa-address-book"></i></span>
-										<input type="text" className="form-control" placeholder="Zip Code" value={zipCode} onChange={handleZipCode} />
 									</div>
 									<div className="row">
 										<div className="col-6">
