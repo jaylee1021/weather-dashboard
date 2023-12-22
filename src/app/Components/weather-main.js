@@ -38,13 +38,23 @@ export default function WeatherMain() {
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
     }, []);
 
-    // fetch user data on page load
     useEffect(() => {
         const fetchUser = async () => {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
-            setWindOpWindow(res.data.user.wind);
-            setWindGustOpWindow(res.data.user.windGust);
-            setUserData(res.data.user);
+            const fetchedUserData = res.data.user;
+
+            setUserData(fetchedUserData);
+            // setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
+
+            // Convert windOpWindow and windGustOpWindow based on the stored windUnit preference
+            if (localStorage.getItem('windUnit') === 'm/s') {
+                setWindOpWindow(fetchedUserData.wind * knotsToMeterPerSec);
+                setWindGustOpWindow(fetchedUserData.windGust * knotsToMeterPerSec);
+            } else {
+                setWindOpWindow(fetchedUserData.wind);
+                setWindGustOpWindow(fetchedUserData.windGust);
+            }
+
             setLoading(false);
         };
         fetchUser();
@@ -53,18 +63,18 @@ export default function WeatherMain() {
     // convert wind speed to knots
     const setKnots = useCallback(() => {
         setWind((weather.wind_mph * mphToKnots).toFixed(2));
-        setWindOpWindow(userData.unit === 'knots' ? userData.wind : userData.wind * meterPerSecToKnots);
+        setWindOpWindow(userData.wind);
         setWindGust((weather.gust_mph * mphToKnots).toFixed(2));
-        setWindGustOpWindow(userData.unit === 'knots' ? userData.windGust : userData.windGust * meterPerSecToKnots);
-    }, [weather.wind_mph, weather.gust_mph, mphToKnots, userData.wind, userData.windGust, userData.unit]);
+        setWindGustOpWindow(userData.windGust);
+    }, [weather.wind_mph, weather.gust_mph, mphToKnots, userData.wind, userData.windGust]);
 
     // convert wind speed to m/s
     const setMetersPerSec = useCallback(() => {
         setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
-        setWindOpWindow(userData.unit === 'm/s' ? userData.wind : userData.wind * knotsToMeterPerSec);
+        setWindOpWindow(userData.wind * knotsToMeterPerSec);
         setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(2));
-        setWindGustOpWindow(userData.unit === 'm/s' ? userData.windGust : userData.windGust * knotsToMeterPerSec);
-    }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust, userData.unit]);
+        setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
+    }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust]);
 
     // fetch weather data on page load and every minute
     useEffect(() => {
@@ -117,17 +127,19 @@ export default function WeatherMain() {
 
     // convert wind speed to knots or m/s
     const handleConversion = (e) => {
-        localStorage.setItem('windUnit', e.target.value);
-        if (e.target.value === 'knots') {
+        const newUnit = e.target.value;
+        localStorage.setItem('windUnit', newUnit);
+        console.log('local', localStorage.getItem('windUnit'));
+        if (newUnit === 'knots') {
             setKnots();
-            setUserWindUnit(e.target.value);
-            setWindUnit('knots');
-        } else if (e.target.value === 'm/s') {
+        } else if (newUnit === 'm/s') {
             setMetersPerSec();
-            setUserWindUnit(e.target.value);
-            setWindUnit('m/s');
         }
+
+        setWindUnit(newUnit);
+        setUserWindUnit(newUnit);
     };
+
 
     // refresh page on button click
     const handleManualRefresh = () => {
@@ -156,9 +168,7 @@ export default function WeatherMain() {
                 .catch((err) => {
                     console.log(err);
                 });
-        }
-        // update wind op operating window if only wind is entered
-        if (newWinOpWindow) {
+        } else if (newWinOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, { wind: newWinOpWindow, windGust: windGustOpWindow })
                 .then((res) => {
                     console.log('2', res.data.user);
@@ -166,9 +176,7 @@ export default function WeatherMain() {
                 .catch((err) => {
                     console.log(err);
                 });
-        }
-        // update wind gust op operating window if only wind gust is entered
-        if (newWindGustOpWindow) {
+        } else if (newWindGustOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, { windGust: newWindGustOpWindow, wind: windOpWindow })
                 .then((res) => {
                     console.log(res);
