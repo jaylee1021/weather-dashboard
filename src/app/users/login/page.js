@@ -7,11 +7,11 @@ import jwtDecode from 'jwt-decode';
 
 export default function Login() {
     const router = useRouter();
-    const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleUserName = (e) => {
-        setUserName(e.target.value);
+    const handleEmail = (e) => {
+        setEmail(e.target.value);
     };
 
     const handlePassword = (e) => {
@@ -21,20 +21,20 @@ export default function Login() {
     const handleSubmit = (e) => {
         e.preventDefault(); // prevents page from refreshing
 
-        axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/login`, { userName, password })
+        axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/login`, { email, password })
             .then(response => {
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('jwtToken', response.data.token);
+                    localStorage.setItem('userId', response.data.userData.id);
                     localStorage.setItem('email', response.data.userData.email);
-                    localStorage.setItem('userName', response.data.userData.userName);
                     localStorage.setItem('expiration', response.data.userData.exp);
                 }
                 setAuthToken(response.data.token);
                 // let decoded = jwtDecode(response.data.token);
-                router.push('/admin');
+                router.push('/');
             })
             .catch(error => {
-                alert('Either your username or password is incorrect');
+                alert('Either your email or password is incorrect');
             });
     };
 
@@ -53,7 +53,7 @@ export default function Login() {
                                 <p className="text-muted">Sign In to admin account</p>
                                 <div className="input-group mb-3">
                                     <span className="input-group-addon"><i className="fa fa-user"></i></span>
-                                    <input type="text" name='username' className="form-control" placeholder="Username" value={userName} onChange={handleUserName} autoComplete='on' required />
+                                    <input type="text" name='email' className="form-control" placeholder="Email" value={email} onChange={handleEmail} autoComplete='on' required />
                                 </div>
                                 <div className="input-group mb-4">
                                     <span className="input-group-addon"><i className="fa fa-lock"></i></span>
