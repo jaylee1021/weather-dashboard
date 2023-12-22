@@ -48,7 +48,7 @@ export default function WeatherMain() {
             setLoading(false);
         };
         fetchUser();
-    }, []);
+    }, [userId]);
 
     // convert wind speed to knots
     const setKnots = useCallback(() => {
