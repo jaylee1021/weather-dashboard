@@ -25,6 +25,8 @@ export default function WeatherMain() {
     const [loading, setLoading] = useState(true);
     const [newWinOpWindow, setNewWinOpWindow] = useState('');
     const [newWindGustOpWindow, setNewWindGustOpWindow] = useState('');
+    const [windUnitChange, setWindUnitChange] = useState(false); // [windUnit, setWindUnit
+    const [windGustUnitChange, setWindGustUnitChange] = useState(false); // [windGustUnit, setWindGustUnit
     const [userId, setUserId] = useState(typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('userId') : null);
 
     // conversion constants
@@ -47,13 +49,15 @@ export default function WeatherMain() {
             // setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
 
             // Convert windOpWindow and windGustOpWindow based on the stored windUnit preference
-            if (localStorage.getItem('windUnit') === 'm/s') {
-                setWindOpWindow(fetchedUserData.wind * knotsToMeterPerSec);
-                setWindGustOpWindow(fetchedUserData.windGust * knotsToMeterPerSec);
-            } else {
-                setWindOpWindow(fetchedUserData.wind);
-                setWindGustOpWindow(fetchedUserData.windGust);
-            }
+            // if (localStorage.getItem('windUnit') === 'm/s' && fetchedUserData.userWindUnit === 'm/s') {
+
+            //     setWindOpWindow(fetchedUserData.wind);
+            //     setWindGustOpWindow(fetchedUserData.windGust);
+            //     console.log('1');
+            // } else {
+            //     setWindOpWindow(fetchedUserData.wind);
+            //     setWindGustOpWindow(fetchedUserData.windGust);
+            // }
 
             setLoading(false);
         };
@@ -63,18 +67,38 @@ export default function WeatherMain() {
     // convert wind speed to knots
     const setKnots = useCallback(() => {
         setWind((weather.wind_mph * mphToKnots).toFixed(2));
-        setWindOpWindow(userData.wind);
+        if (userData.userWindUnit === 'knots') {
+            setWindOpWindow(userData.wind);
+        } else {
+            setWindOpWindow(userData.wind * meterPerSecToKnots);
+        }
         setWindGust((weather.gust_mph * mphToKnots).toFixed(2));
-        setWindGustOpWindow(userData.windGust);
-    }, [weather.wind_mph, weather.gust_mph, mphToKnots, userData.wind, userData.windGust]);
+        if (userData.userWindGustUnit === 'knots') {
+            setWindGustOpWindow(userData.windGust);
+        } else {
+            setWindGustOpWindow(userData.windGust * meterPerSecToKnots);
+        }
+    }, [weather.wind_mph, weather.gust_mph, mphToKnots, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
     // convert wind speed to m/s
     const setMetersPerSec = useCallback(() => {
         setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
-        setWindOpWindow(userData.wind * knotsToMeterPerSec);
+        if (userData.userWindUnit === 'm/s') {
+            setWindOpWindow(userData.wind);
+        } else {
+            setWindOpWindow(userData.wind * knotsToMeterPerSec);
+        }
         setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(2));
-        setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
-    }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust]);
+        if (userData.userWindGustUnit === 'm/s' && userData.userWindGustUnitChange) {
+            setWindGustOpWindow(userData.windGust);
+        } else if (userData.userWindUnitChange && !userData.userWindGustUnitchange) {
+            setWindGustOpWindow(userData.windGust);
+        } else {
+            setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
+        }
+
+    }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit, userData.userWindUnitChange, userData.userWindGustUnitChange
+        , userData.userWindGustUnitchange]);
 
     // fetch weather data on page load and every minute
     useEffect(() => {
@@ -129,7 +153,6 @@ export default function WeatherMain() {
     const handleConversion = (e) => {
         const newUnit = e.target.value;
         localStorage.setItem('windUnit', newUnit);
-        console.log('local', localStorage.getItem('windUnit'));
         if (newUnit === 'knots') {
             setKnots();
         } else if (newUnit === 'm/s') {
@@ -161,7 +184,11 @@ export default function WeatherMain() {
         e.preventDefault();
         // update wind and wind gust op operating window if both are entered
         if (newWinOpWindow && newWindGustOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, { wind: newWinOpWindow, windGust: newWindGustOpWindow })
+            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
+                wind: newWinOpWindow, windGust: newWindGustOpWindow,
+                userWindUnit: windUnit, userWindGustUnit: windUnit,
+                userWindUnitChange: true, userWindGustUnitChange: true
+            })
                 .then((res) => {
                     console.log(res);
                 })
@@ -169,17 +196,24 @@ export default function WeatherMain() {
                     console.log(err);
                 });
         } else if (newWinOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, { wind: newWinOpWindow, windGust: windGustOpWindow })
+            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
+                wind: newWinOpWindow, windGust: windGustOpWindow,
+                userWindUnit: windUnit, userWindUnitChange: true
+            })
                 .then((res) => {
-                    console.log('2', res.data.user);
+                    setWindUnitChange(true);
                 })
                 .catch((err) => {
                     console.log(err);
                 });
         } else if (newWindGustOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, { windGust: newWindGustOpWindow, wind: windOpWindow })
+            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
+                windGust: newWindGustOpWindow, wind: windOpWindow,
+                userWindGustUnit: windUnit, userWindGustUnitChange: true
+            })
                 .then((res) => {
                     console.log(res);
+                    setWindGustUnitChange(true);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -238,10 +272,12 @@ export default function WeatherMain() {
     };
 
     // return operating window to default values
-    const handleReturnToDefault = () => {
-        axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
+    const handleReturnToDefault = async () => {
+        await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
             wind: 14, windGust: 25, tempLow: 32, tempHigh: 91, precipitation: 0.0, visibility: 3,
-            cloudBaseHeight: 1000, densityAltitudeLow: -2000, densityAltitudeHigh: 4600, lighteningStrike: 30, unit: 'knots'
+            cloudBaseHeight: 1000, densityAltitudeLow: -2000, densityAltitudeHigh: 4600, lighteningStrike: 30,
+            unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots',
+            userWindUnitChange: false, userWindGustUnitChange: false
         })
             .then((res) => {
                 // setWindUnit('knots');
@@ -250,6 +286,7 @@ export default function WeatherMain() {
             .catch((err) => {
                 console.log(err);
             });
+        localStorage.setItem('windUnit', 'knots');
         window.location.reload();
     };
     // loading screen
