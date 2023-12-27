@@ -67,38 +67,22 @@ export default function WeatherMain() {
     // convert wind speed to knots
     const setKnots = useCallback(() => {
         setWind((weather.wind_mph * mphToKnots).toFixed(2));
-        if (userData.userWindUnit === 'knots') {
-            setWindOpWindow(userData.wind);
-        } else {
-            setWindOpWindow(userData.wind * meterPerSecToKnots);
-        }
+        userData.userWindUnit === 'knots' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * meterPerSecToKnots);
+
         setWindGust((weather.gust_mph * mphToKnots).toFixed(2));
-        if (userData.userWindGustUnit === 'knots') {
-            setWindGustOpWindow(userData.windGust);
-        } else {
-            setWindGustOpWindow(userData.windGust * meterPerSecToKnots);
-        }
+        userData.userWindGustUnit === 'knots' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * meterPerSecToKnots);
+
     }, [weather.wind_mph, weather.gust_mph, mphToKnots, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
     // convert wind speed to m/s
     const setMetersPerSec = useCallback(() => {
         setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
-        if (userData.userWindUnit === 'm/s') {
-            setWindOpWindow(userData.wind);
-        } else {
-            setWindOpWindow(userData.wind * knotsToMeterPerSec);
-        }
-        setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(2));
-        if (userData.userWindGustUnit === 'm/s' && userData.userWindGustUnitChange) {
-            setWindGustOpWindow(userData.windGust);
-        } else if (userData.userWindUnitChange && !userData.userWindGustUnitchange) {
-            setWindGustOpWindow(userData.windGust);
-        } else {
-            setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
-        }
+        userData.userWindUnit === 'm/s' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * knotsToMeterPerSec);
 
-    }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit, userData.userWindUnitChange, userData.userWindGustUnitChange
-        , userData.userWindGustUnitchange]);
+        setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(2));
+        userData.userWindGustUnit === 'm/s' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
+
+    }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
     // fetch weather data on page load and every minute
     useEffect(() => {
@@ -182,12 +166,23 @@ export default function WeatherMain() {
     // submit new wind operating window
     const handleSubmit = (e) => {
         e.preventDefault();
+        let prevWindUnit;
+        let prevWindGustUnit;
+        if (userData.userWindUnit === 'm/s') {
+            prevWindUnit = 'm/s';
+        } else {
+            prevWindUnit = 'knots';
+        }
+        if (userData.userWindGustUnit === 'm/s') {
+            prevWindGustUnit = 'm/s';
+        } else {
+            prevWindGustUnit = 'knots';
+        }
         // update wind and wind gust op operating window if both are entered
         if (newWinOpWindow && newWindGustOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
                 wind: newWinOpWindow, windGust: newWindGustOpWindow,
-                userWindUnit: windUnit, userWindGustUnit: windUnit,
-                userWindUnitChange: true, userWindGustUnitChange: true
+                userWindUnit: windUnit, userWindGustUnit: windUnit
             })
                 .then((res) => {
                     console.log(res);
@@ -197,11 +192,11 @@ export default function WeatherMain() {
                 });
         } else if (newWinOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-                wind: newWinOpWindow, windGust: windGustOpWindow,
-                userWindUnit: windUnit, userWindUnitChange: true
+                wind: newWinOpWindow, windGust: windGustOpWindow, userWindUnit: windUnit
             })
                 .then((res) => {
-                    setWindUnitChange(true);
+                    console.log(res);
+                    // setWindUnitChange(true);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -209,11 +204,11 @@ export default function WeatherMain() {
         } else if (newWindGustOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
                 windGust: newWindGustOpWindow, wind: windOpWindow,
-                userWindGustUnit: windUnit, userWindGustUnitChange: true
+                userWindGustUnit: windUnit
             })
                 .then((res) => {
                     console.log(res);
-                    setWindGustUnitChange(true);
+                    // setWindGustUnitChange(true);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -276,8 +271,7 @@ export default function WeatherMain() {
         await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
             wind: 14, windGust: 25, tempLow: 32, tempHigh: 91, precipitation: 0.0, visibility: 3,
             cloudBaseHeight: 1000, densityAltitudeLow: -2000, densityAltitudeHigh: 4600, lighteningStrike: 30,
-            unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots',
-            userWindUnitChange: false, userWindGustUnitChange: false
+            unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots'
         })
             .then((res) => {
                 // setWindUnit('knots');
@@ -381,8 +375,8 @@ export default function WeatherMain() {
                     <div style={{ padding: '10px' }}>
                         <h3 >Update Operating Window</h3>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-                            <input name="wind" value={newWinOpWindow} onChange={handleNewWindOp} />Steady Wind
-                            <input name="windGust" value={newWindGustOpWindow} onChange={handleNewWindGustOp} /> Wind Gust
+                            <input name="wind" value={newWinOpWindow} onChange={handleNewWindOp} required />Steady Wind
+                            <input name="windGust" value={newWindGustOpWindow} onChange={handleNewWindGustOp} required /> Wind Gust
                             <button type="submit">submit</button>
                             <button onClick={() => handleReturnToDefault()}>Return to default</button>
                         </form>
