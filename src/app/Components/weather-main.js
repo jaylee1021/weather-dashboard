@@ -44,21 +44,7 @@ export default function WeatherMain() {
         const fetchUser = async () => {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
             const fetchedUserData = res.data.user;
-
             setUserData(fetchedUserData);
-            // setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
-
-            // Convert windOpWindow and windGustOpWindow based on the stored windUnit preference
-            // if (localStorage.getItem('windUnit') === 'm/s' && fetchedUserData.userWindUnit === 'm/s') {
-
-            //     setWindOpWindow(fetchedUserData.wind);
-            //     setWindGustOpWindow(fetchedUserData.windGust);
-            //     console.log('1');
-            // } else {
-            //     setWindOpWindow(fetchedUserData.wind);
-            //     setWindGustOpWindow(fetchedUserData.windGust);
-            // }
-
             setLoading(false);
         };
         fetchUser();
@@ -66,6 +52,7 @@ export default function WeatherMain() {
 
     // convert wind speed to knots
     const setKnots = useCallback(() => {
+        // set wind speed and wind gust to knots
         setWind((weather.wind_mph * mphToKnots).toFixed(2));
         userData.userWindUnit === 'knots' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * meterPerSecToKnots);
 
@@ -76,6 +63,7 @@ export default function WeatherMain() {
 
     // convert wind speed to m/s
     const setMetersPerSec = useCallback(() => {
+        // set wind speed and wind gust to m/s
         setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
         userData.userWindUnit === 'm/s' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * knotsToMeterPerSec);
 
@@ -166,18 +154,7 @@ export default function WeatherMain() {
     // submit new wind operating window
     const handleSubmit = (e) => {
         e.preventDefault();
-        let prevWindUnit;
-        let prevWindGustUnit;
-        if (userData.userWindUnit === 'm/s') {
-            prevWindUnit = 'm/s';
-        } else {
-            prevWindUnit = 'knots';
-        }
-        if (userData.userWindGustUnit === 'm/s') {
-            prevWindGustUnit = 'm/s';
-        } else {
-            prevWindGustUnit = 'knots';
-        }
+
         // update wind and wind gust op operating window if both are entered
         if (newWinOpWindow && newWindGustOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
@@ -196,7 +173,6 @@ export default function WeatherMain() {
             })
                 .then((res) => {
                     console.log(res);
-                    // setWindUnitChange(true);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -208,7 +184,6 @@ export default function WeatherMain() {
             })
                 .then((res) => {
                     console.log(res);
-                    // setWindGustUnitChange(true);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -253,6 +228,7 @@ export default function WeatherMain() {
         }
         if (weather.cloud < userData.cloudBaseHeight) {
             limits.push('Cloud Base Height');
+            limits.push('Cloud Base Height');
         }
         if (weather.wind_mph < userData.densityAltitudeLow) {
             limits.push('Density Altitude Low');
@@ -274,7 +250,6 @@ export default function WeatherMain() {
             unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots'
         })
             .then((res) => {
-                // setWindUnit('knots');
                 console.log(res);
             })
             .catch((err) => {
@@ -283,6 +258,7 @@ export default function WeatherMain() {
         localStorage.setItem('windUnit', 'knots');
         window.location.reload();
     };
+
     // loading screen
     if (loading) return (<div> Loading... </div>);
 
@@ -371,14 +347,18 @@ export default function WeatherMain() {
                         </Table>
                     </TableContainer>
                 </div>
-                <div className="table_border" >
+                <div className="table_border">
                     <div style={{ padding: '10px' }}>
-                        <h3 >Update Operating Window</h3>
+                        <h3>Update Operating Window</h3>
                         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-                            <input name="wind" value={newWinOpWindow} onChange={handleNewWindOp} required />Steady Wind
-                            <input name="windGust" value={newWindGustOpWindow} onChange={handleNewWindGustOp} required /> Wind Gust
-                            <button type="submit">submit</button>
-                            <button onClick={() => handleReturnToDefault()}>Return to default</button>
+                            <div className="input_box_style">
+                                <input name="wind" value={newWinOpWindow} onChange={handleNewWindOp} required />Steady Wind
+                            </div>
+                            <div className="input_box_style">
+                                <input name="windGust" value={newWindGustOpWindow} onChange={handleNewWindGustOp} required /> Wind Gust
+                            </div>
+                            <button type="submit" className="button_style">submit</button>
+                            <button className="button_style" onClick={() => handleReturnToDefault()}>Return to default</button>
                         </form>
 
                     </div>
@@ -389,12 +369,14 @@ export default function WeatherMain() {
                         <h4>Status</h4>
                         {checkGoNoGo()}
                         <h4>Breaching Limit(s)</h4>
-                        {checkBreachingLimit().map((limits, index) => {
-                            return (<p key={index}>{limits}</p>);
-                        })}
+                        <div style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>
+                            {checkBreachingLimit().map((limits, index) => {
+                                return (<p key={index} >{limits}</p>);
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
