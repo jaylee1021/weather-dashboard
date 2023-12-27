@@ -116,7 +116,7 @@ export default function CustomCharts() {
             </div>
             <Chart
                 width={'100vw'}
-                chartType='LineChart'
+                chartType='AreaChart'
                 data={data}
             />
         </div>
