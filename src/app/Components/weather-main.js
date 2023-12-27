@@ -25,8 +25,6 @@ export default function WeatherMain() {
     const [loading, setLoading] = useState(true);
     const [newWinOpWindow, setNewWinOpWindow] = useState('');
     const [newWindGustOpWindow, setNewWindGustOpWindow] = useState('');
-    const [windUnitChange, setWindUnitChange] = useState(false); // [windUnit, setWindUnit
-    const [windGustUnitChange, setWindGustUnitChange] = useState(false); // [windGustUnit, setWindGustUnit
     const [userId, setUserId] = useState(typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('userId') : null);
 
     // conversion constants
@@ -51,7 +49,7 @@ export default function WeatherMain() {
     }, [userId]);
 
     // convert wind speed to knots
-    const setKnots = useCallback(() => {
+    const toKnots = useCallback(() => {
         // set wind speed and wind gust to knots
         setWind((weather.wind_mph * mphToKnots).toFixed(2));
         userData.userWindUnit === 'knots' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * meterPerSecToKnots);
@@ -62,7 +60,7 @@ export default function WeatherMain() {
     }, [weather.wind_mph, weather.gust_mph, mphToKnots, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
     // convert wind speed to m/s
-    const setMetersPerSec = useCallback(() => {
+    const toMetersPerSec = useCallback(() => {
         // set wind speed and wind gust to m/s
         setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
         userData.userWindUnit === 'm/s' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * knotsToMeterPerSec);
@@ -79,9 +77,9 @@ export default function WeatherMain() {
                 .then((res) => {
                     setWeather(res.data.current);
                     if (windUnit === 'knots') {
-                        setKnots();
+                        toKnots();
                     } else if (windUnit === 'm/s') {
-                        setMetersPerSec();
+                        toMetersPerSec();
                     }
                 })
                 .catch((err) => {
@@ -100,7 +98,7 @@ export default function WeatherMain() {
             clearInterval(intervalId); // This is the cleanup function
             clearInterval(countdownInterval);
         };
-    }, [setKnots, setMetersPerSec, windUnit]);
+    }, [toKnots, toMetersPerSec, windUnit]);
 
     // updating current date/time every second
     useEffect(() => {
@@ -126,9 +124,9 @@ export default function WeatherMain() {
         const newUnit = e.target.value;
         localStorage.setItem('windUnit', newUnit);
         if (newUnit === 'knots') {
-            setKnots();
+            toKnots();
         } else if (newUnit === 'm/s') {
-            setMetersPerSec();
+            toMetersPerSec();
         }
 
         setWindUnit(newUnit);
@@ -265,19 +263,19 @@ export default function WeatherMain() {
     return (
         <div>
             <div className="top">
-                <div className="board_col3">
+                <div>
                     <select name='convert' value={windUnit} onChange={handleConversion}>
                         <option value="knots">knots</option>
                         <option value="m/s">m/s</option>
                     </select>
                 </div>
-                <div className="board_col3">
-                    <button onClick={handleManualRefresh}>Refresh</button>
+                <div>
+                    <button onClick={handleManualRefresh}>Manual Refresh</button>
                 </div>
-                <div className="board_col3">
+                <div>
                     <p>Current date/time: {currentDateTime}</p>
                 </div>
-                <div className="board_col3">
+                <div>
                     <p>Last updated: {weather.last_updated}</p>
                     <p>refresh in: {minCountdown}</p>
                 </div>
