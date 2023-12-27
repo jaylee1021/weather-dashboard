@@ -11,6 +11,8 @@
 .table_border {
     border: 1px solid #000000;
     border-radius: 10px;
+    height: 100%;
+    margin: 0 10px;
 }
 
 .table {
@@ -29,6 +31,15 @@
     width: 100%;
 }
 
+.input_box_style {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0 0 0;
+}
+
+.button_style {
+    margin: 10px 0 0 0;
+}
 .border_bottom {
     border-bottom: 1px solid black;
 }
@@ -36,4 +47,8 @@
 .board_col3 {
     width: 33%;
     padding:10px;
+}
+
+.bottom_padding {
+    padding-bottom: 10px;
 }
