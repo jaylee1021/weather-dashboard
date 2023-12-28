@@ -6,6 +6,7 @@
     padding: 10px;
     max-width: 100%;
     /* border-bottom: 1px solid #000000; */
+
 }
 
 .table_border {
@@ -37,8 +38,19 @@
     padding: 10px 0 0 0;
 }
 
+.top_button_style {
+    padding: 0 10px;
+    font-size: 20px;
+}
+
+.wind_unit_margin {
+    margin-left: 5px;
+}
+
 .button_style {
     margin: 10px 0 0 0;
+    padding: 0 10px;
+    font-size: 20px;
 }
 
 .border_bottom {

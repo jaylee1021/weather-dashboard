@@ -263,14 +263,15 @@ export default function WeatherMain() {
     return (
         <div>
             <div className="top">
-                <div>
-                    <select name='convert' value={windUnit} onChange={handleConversion}>
+                <div style={{ display: 'flex' }}>
+                    <h4 style={{ display: 'flex', flexWrap: 'wrap', alignContent: 'center' }}>Wind Speed Unit: </h4>
+                    <select className="top_button_style wind_unit_margin" name='convert' value={windUnit} onChange={handleConversion}>
                         <option value="knots">knots</option>
                         <option value="m/s">m/s</option>
                     </select>
                 </div>
                 <div>
-                    <button onClick={handleManualRefresh}>Manual Refresh</button>
+                    <button className="top_button_style" onClick={handleManualRefresh}>Manual Refresh</button>
                 </div>
                 <div>
                     <p>Current date/time: {currentDateTime}</p>
