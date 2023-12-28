@@ -17,11 +17,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CustomCharts from "./CustomCharts";
+import ShowHide from "./ShowHide";
 
 export default function WeatherMain() {
 
     const [userData, setUserData] = useState([]);
     const [weather, setWeather] = useState([]);
+    const [forecast, setForecast] = useState([]);
     const [wind, setWind] = useState('');
     const [windOpWindow, setWindOpWindow] = useState('');
     const [windUnit, setWindUnit] = useState('');
@@ -43,15 +45,17 @@ export default function WeatherMain() {
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
     }, []);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
-            const fetchedUserData = res.data.user;
-            setUserData(fetchedUserData);
-            setLoading(false);
-        };
-        fetchUser();
+
+    const fetchUser = useCallback(async () => {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
+        const fetchedUserData = res.data.user;
+        setUserData(fetchedUserData);
+        setLoading(false);
     }, [userId]);
+
+    useEffect(() => {
+        fetchUser();
+    }, [fetchUser]);
 
     // convert wind speed to knots
     const toKnots = useCallback(() => {
@@ -76,22 +80,25 @@ export default function WeatherMain() {
     }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
     // fetch weather data on page load and every minute
+
+    const fetchData = useCallback(() => {
+        axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=47.53294,-121.80539`)
+            .then((res) => {
+                setForecast(res.data.forecast.forecastday[0].hour);
+                setWeather(res.data.current);
+                if (windUnit === 'knots') {
+                    toKnots();
+                } else if (windUnit === 'm/s') {
+                    toMetersPerSec();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        setMinCountdown(60);
+    }, [toKnots, toMetersPerSec, windUnit]);
+
     useEffect(() => {
-        const fetchData = () => {
-            axios.get(`http://api.weatherapi.com/v1/current.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=47.53294,-121.80539`)
-                .then((res) => {
-                    setWeather(res.data.current);
-                    if (windUnit === 'knots') {
-                        toKnots();
-                    } else if (windUnit === 'm/s') {
-                        toMetersPerSec();
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-            setMinCountdown(60);
-        };
         fetchData();
 
         const intervalId = setInterval(fetchData, 60000);
@@ -103,7 +110,7 @@ export default function WeatherMain() {
             clearInterval(intervalId); // This is the cleanup function
             clearInterval(countdownInterval);
         };
-    }, [toKnots, toMetersPerSec, windUnit]);
+    }, [fetchData]);
 
     // updating current date/time every second
     useEffect(() => {
@@ -153,7 +160,7 @@ export default function WeatherMain() {
 
     // refresh page on button click
     const handleManualRefresh = () => {
-        window.location.reload();
+        fetchData();
     };
 
     // display go/no-go status
@@ -219,7 +226,7 @@ export default function WeatherMain() {
                 console.log(err);
             });
         localStorage.setItem('windUnit', 'knots');
-        window.location.reload();
+        fetchUser();
     };
 
     // loading screen
@@ -249,7 +256,7 @@ export default function WeatherMain() {
                     </div>
                     <div>
                         <UpdateParams windOpWindow={windOpWindow} windGustOpWindow={windGustOpWindow} windUnit={windUnit}
-                            userId={userId} />
+                            userId={userId} fetchUser={fetchUser()} />
                     </div>
                     <div>
                         <Button variant='outlined' onClick={() => handleReturnToDefault()}>Return to default</Button>
@@ -277,74 +284,95 @@ export default function WeatherMain() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
-                                        Steady Wind ({windUnit})
-                                    </TableCell>
-                                    {wind > windOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{wind}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{wind}</TableCell>}
-                                    <TableCell align="right">&lt; {parseFloat(windOpWindow).toFixed(1)}</TableCell>
-                                </TableRow>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
-                                        Wind gusts ({windUnit})
-                                    </TableCell>
-                                    {windGust > windGustOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{windGust}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{windGust}</TableCell>}
-                                    <TableCell align="right">&lt; {parseFloat(windGustOpWindow).toFixed(1)}</TableCell>
-                                </TableRow>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature (F)</TableCell>
-                                    {weather.temp_f > userData.tempLow && weather.temp_f < userData.tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{weather.temp_f}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.temp_f}</TableCell>}
-                                    <TableCell align="right">&gt; {userData.tempLow}, &lt; {userData.tempHigh}</TableCell>
-                                </TableRow>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Precipitation (mm/hr)</TableCell>
-                                    {weather.precip_mm > userData.precipitation ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.precip_mm}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{weather.precip_mm}</TableCell>}
-                                    <TableCell align="right">{userData.precipitation}</TableCell>
-                                </TableRow>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Visibility (SM)</TableCell>
-                                    {weather.vis_miles >= userData.visibility ? <TableCell align="right" style={{ color: 'green' }}>{weather.vis_miles}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.vis_miles}</TableCell>}
-                                    <TableCell align="right">&gt; {userData.visibility}</TableCell>
-                                </TableRow>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Cloud base height (ft)</TableCell>
-                                    <TableCell align="right">{weather.cloud}</TableCell>
-                                    <TableCell align="right">&gt; {userData.cloudBaseHeight}</TableCell>
-                                </TableRow>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Density altitude (ft)</TableCell>
-                                    <TableCell align="right">{weather.wind_mph}</TableCell>
-                                    <TableCell align="right">&gt; {userData.densityAltitudeLow}, &lt; {userData.densityAltitudeHigh}</TableCell>
-                                </TableRow>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Last lightning strike(min)</TableCell>
-                                    <TableCell align="right">{weather.wind_mph}</TableCell>
-                                    <TableCell align="right">&gt; {userData.lighteningStrike}</TableCell>
-                                </TableRow>
-                                <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Wind direction (deg)</TableCell>
-                                    <TableCell align="right">{weather.wind_degree}</TableCell>
-                                    <TableCell align="right">N/A</TableCell>
-                                </TableRow>
+                                {userData.showWind ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
+                                            Steady Wind ({windUnit})
+                                        </TableCell>
+                                        {wind > windOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{wind}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{wind}</TableCell>}
+                                        <TableCell align="right">&lt; {parseFloat(windOpWindow).toFixed(1)}</TableCell>
+                                    </TableRow>
+                                    : null}
+                                {userData.showWindGust ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
+                                            Wind gusts ({windUnit})
+                                        </TableCell>
+                                        {windGust > windGustOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{windGust}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{windGust}</TableCell>}
+                                        <TableCell align="right">&lt; {parseFloat(windGustOpWindow).toFixed(1)}</TableCell>
+                                    </TableRow>
+                                    : null}
+                                {userData.showTemp ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature (F)</TableCell>
+                                        {weather.temp_f > userData.tempLow && weather.temp_f < userData.tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{weather.temp_f}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.temp_f}</TableCell>}
+                                        <TableCell align="right">&gt; {userData.tempLow}, &lt; {userData.tempHigh}</TableCell>
+                                    </TableRow>
+                                    : null}
+                                {userData.showPrecipitation ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Precipitation (mm/hr)</TableCell>
+                                        {weather.precip_mm > userData.precipitation ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.precip_mm}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{weather.precip_mm}</TableCell>}
+                                        <TableCell align="right">{userData.precipitation}</TableCell>
+                                    </TableRow>
+                                    : null}
+                                {userData.showVisibility ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Visibility (SM)</TableCell>
+                                        {weather.vis_miles >= userData.visibility ? <TableCell align="right" style={{ color: 'green' }}>{weather.vis_miles}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.vis_miles}</TableCell>}
+                                        <TableCell align="right">&gt; {userData.visibility}</TableCell>
+                                    </TableRow>
+                                    : null}
+                                {userData.showCloudBaseHeight ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Cloud base height (ft)</TableCell>
+                                        <TableCell align="right">{weather.cloud}</TableCell>
+                                        <TableCell align="right">&gt; {userData.cloudBaseHeight}</TableCell>
+                                    </TableRow>
+                                    : null}
+                                {userData.showDensityAltitude ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Density altitude (ft)</TableCell>
+                                        <TableCell align="right">{weather.wind_mph}</TableCell>
+                                        <TableCell align="right">&gt; {userData.densityAltitudeLow}, &lt; {userData.densityAltitudeHigh}</TableCell>
+                                    </TableRow>
+                                    : null}
+                                {userData.showLighteningStrike ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Last lightning strike(min)</TableCell>
+                                        <TableCell align="right">{weather.wind_mph}</TableCell>
+                                        <TableCell align="right">&gt; {userData.lighteningStrike}</TableCell>
+                                    </TableRow>
+                                    : null}
+                                {userData.showWindDirection ?
+                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Wind direction (deg)</TableCell>
+                                        <TableCell align="right">{weather.wind_degree}</TableCell>
+                                        <TableCell align="right">N/A</TableCell>
+                                    </TableRow>
+                                    : null}
                             </TableBody>
                         </Table>
                     </TableContainer>
                 </div>
-                <div className="table_border" >
-                    <div style={{ padding: '10px' }}>
-                        <h3>Summary</h3>
-                        <h4>Status</h4>
-                        {checkGoNoGo()}
-                        <h4>Breaching Limit(s)</h4>
-                        <div style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>
-                            {checkBreachingLimit().map((limits, index) => {
-                                return (<p key={index} >{limits}</p>);
-                            })}
+                <div className="side_bar">
+                    <div className="table_border">
+                        <div style={{ padding: '10px' }}>
+                            <h3>Summary</h3>
+                            <h4>Status</h4>
+                            {checkGoNoGo()}
+                            <h4>Breaching Limit(s)</h4>
+                            <div style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>
+                                {checkBreachingLimit().map((limits, index) => {
+                                    return (<p key={index} >{limits}</p>);
+                                })}
+                            </div>
                         </div>
                     </div>
+                    <ShowHide userData={userData} userId={userId} fetchUser={fetchUser()} />
                 </div>
             </div>
-            <CustomCharts />
+            <CustomCharts weatherData={forecast} />
         </div >
     );
 };
