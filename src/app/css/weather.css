@@ -75,3 +75,9 @@
 .bottom_padding {
     padding-bottom: 10px;
 }
+
+.side_bar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
