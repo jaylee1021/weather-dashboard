@@ -10,20 +10,19 @@ export default function Profile() {
     const [data, setData] = useState(null);
     const [isLoading, setLoading] = useState(true);
 
-    let currentTime;
-    let expirationTime;
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
-            currentTime = Date.now();
-        }
-    }, []);
+        if (typeof window !== undefined) {
+            const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
+            let currentTime = Date.now();
 
-    // make a condition that compares exp and current time
-    if (currentTime >= expirationTime) {
-        handleLogout();
-        router.push('/users/login');
-    }
+            setAuthToken(localStorage.getItem('jwtToken'));
+            // make a condition that compares exp and current time
+            if (currentTime >= expirationTime) {
+                handleLogout();
+                router.push('/users/login');
+            }
+        }
+    }, [router]);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -51,7 +50,7 @@ export default function Profile() {
         }
 
 
-    }, []);
+    }, [router]);
 
     if (isLoading) return <p>Loading...</p>;
     if (!data) return <p>No data shown...</p>;
