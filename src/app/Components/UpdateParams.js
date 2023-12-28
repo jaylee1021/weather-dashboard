@@ -94,7 +94,7 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         <div className="table_border">
                             <div style={{ padding: '10px' }}>
-                                <h3>Update Operating Window</h3>
+                                <h3 style={{ color: 'black' }}>Update Operating Window</h3>
                                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
                                     <Box
                                         component="form"
