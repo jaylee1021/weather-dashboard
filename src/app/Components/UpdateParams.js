@@ -20,7 +20,7 @@ const style = {
     p: 4,
 };
 
-export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, windUnit }) {
+export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, windUnit, fetchUser }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -68,7 +68,10 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
                     console.log(err);
                 });
         }
-        window.location.reload();
+        fetchUser;
+        handleClose();
+        setNewWinOpWindow('');
+        setNewWindGustOpWindow('');
     };
 
     // update wind operating window
@@ -108,9 +111,7 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
                                         <TextField id="standard-basic" label="Wind Gust" variant="standard" value={newWindGustOpWindow} onChange={handleNewWindGustOp} required />
                                     </Box>
                                     <Button variant='outlined' type="submit" className="button_style">submit</Button>
-                                    {/* <button className="button_style" onClick={() => handleReturnToDefault()}>Return to default</button> */}
                                 </form>
-
                             </div>
                         </div>
                     </Typography>
