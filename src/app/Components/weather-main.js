@@ -12,7 +12,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import UpdateParams from "./UpdateParams";
 import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -192,7 +191,6 @@ export default function WeatherMain() {
             limits.push('Visibility');
         }
         if (weather.cloud < userData.cloudBaseHeight) {
-            limits.push('Cloud Base Height');
             limits.push('Cloud Base Height');
         }
         if (weather.wind_mph < userData.densityAltitudeLow) {
