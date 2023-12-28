@@ -10,6 +10,14 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import UpdateParams from "./UpdateParams";
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import CustomCharts from "./CustomCharts";
 
 export default function WeatherMain() {
 
@@ -23,8 +31,6 @@ export default function WeatherMain() {
     const [currentDateTime, setCurrentDateTime] = useState(new Date().toLocaleString());
     const [minCountdown, setMinCountdown] = useState(60);
     const [loading, setLoading] = useState(true);
-    const [newWinOpWindow, setNewWinOpWindow] = useState('');
-    const [newWindGustOpWindow, setNewWindGustOpWindow] = useState('');
     const [userId, setUserId] = useState(typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('userId') : null);
 
     // conversion constants
@@ -102,10 +108,22 @@ export default function WeatherMain() {
 
     // updating current date/time every second
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            setCurrentDateTime(new Date().toLocaleString());
-        }, 1000);
-        return () => clearInterval(intervalId); // This is the cleanup function
+        // Function to update time
+        const updateTime = () => {
+            const currentTime = new Date();
+            const formattedDate = currentTime.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            setCurrentDateTime(`${formattedDate}, ${formattedTime}`);
+        };
+
+        // Update time immediately on mount
+        updateTime();
+
+        // Set interval to update time
+        const intervalId = setInterval(updateTime, 1000);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(intervalId);
     }, []);
 
     // update user wind unit
@@ -136,57 +154,6 @@ export default function WeatherMain() {
 
     // refresh page on button click
     const handleManualRefresh = () => {
-        window.location.reload();
-    };
-
-    // update wind operating window
-    const handleNewWindOp = (e) => {
-        setNewWinOpWindow(e.target.value);
-    };
-
-    // update wind gust operating window
-    const handleNewWindGustOp = (e) => {
-        setNewWindGustOpWindow(e.target.value);
-    };
-
-    // submit new wind operating window
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        // update wind and wind gust op operating window if both are entered
-        if (newWinOpWindow && newWindGustOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-                wind: newWinOpWindow, windGust: newWindGustOpWindow,
-                userWindUnit: windUnit, userWindGustUnit: windUnit
-            })
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        } else if (newWinOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-                wind: newWinOpWindow, windGust: windGustOpWindow, userWindUnit: windUnit
-            })
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        } else if (newWindGustOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-                windGust: newWindGustOpWindow, wind: windOpWindow,
-                userWindGustUnit: windUnit
-            })
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
         window.location.reload();
     };
 
@@ -263,22 +230,41 @@ export default function WeatherMain() {
     return (
         <div>
             <div className="top">
-                <div style={{ display: 'flex' }}>
-                    <h4 style={{ display: 'flex', flexWrap: 'wrap', alignContent: 'center' }}>Wind Speed Unit: </h4>
-                    <select className="top_button_style wind_unit_margin" name='convert' value={windUnit} onChange={handleConversion}>
-                        <option value="knots">knots</option>
-                        <option value="m/s">m/s</option>
-                    </select>
+                <div className="buttons_wrapper">
+                    <div>
+                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                            <InputLabel id="demo-simple-select-standard-label">Wind Unit</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-standard-label"
+                                id="demo-simple-select-standard"
+                                value={windUnit}
+                                onChange={handleConversion}
+                                label="Age"
+                            >
+                                <MenuItem value={'knots'}>knots</MenuItem>
+                                <MenuItem value={'m/s'}>m/s</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div>
+                        <Button variant='outlined' onClick={handleManualRefresh}>Manual Refresh</Button>
+                    </div>
+                    <div>
+                        <UpdateParams windOpWindow={windOpWindow} windGustOpWindow={windGustOpWindow} windUnit={windUnit}
+                            userId={userId} />
+                    </div>
+                    <div>
+                        <Button variant='outlined' onClick={() => handleReturnToDefault()}>Return to default</Button>
+                    </div>
                 </div>
-                <div>
-                    <button className="top_button_style" onClick={handleManualRefresh}>Manual Refresh</button>
-                </div>
-                <div>
-                    <p>Current date/time: {currentDateTime}</p>
-                </div>
-                <div>
-                    <p>Last updated: {weather.last_updated}</p>
-                    <p>refresh in: {minCountdown}</p>
+                <div className="time_style_top">
+                    <div className="time_style">
+                        <p className="board_col">Current date/time: {currentDateTime}</p>
+                    </div>
+                    <div className="time_style">
+                        <p className="board_col">Last updated: {weather.last_updated}</p>
+                        <p className="board_col">Refreshing in: {minCountdown}s</p>
+                    </div>
                 </div>
             </div>
             <div style={{ display: 'flex' }}>
@@ -346,22 +332,6 @@ export default function WeatherMain() {
                         </Table>
                     </TableContainer>
                 </div>
-                <div className="table_border">
-                    <div style={{ padding: '10px' }}>
-                        <h3>Update Operating Window</h3>
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-                            <div className="input_box_style">
-                                <input name="wind" value={newWinOpWindow} onChange={handleNewWindOp} required />Steady Wind
-                            </div>
-                            <div className="input_box_style">
-                                <input name="windGust" value={newWindGustOpWindow} onChange={handleNewWindGustOp} required /> Wind Gust
-                            </div>
-                            <button type="submit" className="button_style">submit</button>
-                            <button className="button_style" onClick={() => handleReturnToDefault()}>Return to default</button>
-                        </form>
-
-                    </div>
-                </div>
                 <div className="table_border" >
                     <div style={{ padding: '10px' }}>
                         <h3>Summary</h3>
@@ -376,6 +346,7 @@ export default function WeatherMain() {
                     </div>
                 </div>
             </div>
+            <CustomCharts />
         </div >
     );
 };

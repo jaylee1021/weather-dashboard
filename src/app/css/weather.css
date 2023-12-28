@@ -1,6 +1,7 @@
 
 .top {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
@@ -9,6 +10,13 @@
 
 }
 
+.buttons_wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+}
 .table_border {
     border: 1px solid #000000;
     border-radius: 10px;
@@ -29,7 +37,7 @@
 
 .board_col {
     padding: 10px;
-    width: 100%;
+    /* width: 100%; */
 }
 
 .input_box_style {
@@ -48,16 +56,21 @@
 }
 
 .button_style {
-    margin: 10px 0 0 0;
-    padding: 0 10px;
-    font-size: 20px;
+    border: 1px solid #000000;
 }
 
 .border_bottom {
     border-bottom: 1px solid black;
 }
 
+.time_style_top {
+    display: flex;
+}
 
+.time_style {
+    display: flex;
+    padding: 10px;
+}
 
 .bottom_padding {
     padding-bottom: 10px;
