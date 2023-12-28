@@ -1,22 +1,9 @@
 'use client';
 import { Chart } from "react-google-charts";
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
 import '../css/weather.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import UpdateParams from "./UpdateParams";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -30,22 +17,49 @@ export default function CustomCharts() {
     const [currentHour, setCurrentHour] = useState('');
     const [data, setData] = useState([
         ['Time', 'Wind Speed'],
-        [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0]
+        [0, 0]
     ]);
+    const options = {
+        title: 'Weather Data',
+        hAxis: { title: 'Time', titleTextStyle: { color: '#333' } },
+        vAxis: { minValue: 0 },
+        height: 300,
+        legend: 'none',
+        chartArea: { width: "90%", height: "70%" }
+    };
     const mphToKnots = 0.868976;
 
     function handleDataUpdate(e) {
         setDataLabel(e.target.value);
+        const weatherDataLength = weatherData.length - currentHour < 7 ? weatherData.length : 7;
         if (e.target.value === 'steadyWinds') {
             const newData = [['Time', 'Wind Speed (knots)']];
-            for (let i = (currentHour - 3); i < (currentHour + 7); i++) {
-                newData.push([weatherData[i].time, weatherData[i].wind_mph * mphToKnots]);
+            for (let i = (currentHour - 3); i < weatherDataLength; i++) {
+                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].wind_mph * mphToKnots]);
                 setData(newData);
             }
         } else if (e.target.value === 'windGust') {
             const newData = [['Time', 'Wind Gust (knots)']];
-            for (let i = (currentHour - 3); i < (currentHour + 7); i++) {
-                newData.push([weatherData[i].time, weatherData[i].gust_mph * mphToKnots]);
+            for (let i = (currentHour - 3); i < weatherDataLength; i++) {
+                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].gust_mph * mphToKnots]);
+                setData(newData);
+            }
+        } else if (e.target.value === 'temp_f') {
+            const newData = [['Time', 'Air Temp (f)']];
+            for (let i = (currentHour - 3); i < weatherDataLength; i++) {
+                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].temp_f]);
+                setData(newData);
+            }
+        } else if (e.target.value === 'precip_mm') {
+            const newData = [['Time', 'Precipitation (mm/hr)']];
+            for (let i = (currentHour - 3); i < weatherDataLength; i++) {
+                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].precip_mm]);
+                setData(newData);
+            }
+        } else if (e.target.value === 'vis_miles') {
+            const newData = [['Time', 'Visibility (SM)']];
+            for (let i = (currentHour - 3); i < weatherDataLength; i++) {
+                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].vis_miles]);
                 setData(newData);
             }
         }
@@ -66,6 +80,7 @@ export default function CustomCharts() {
         const fetchData = () => {
             axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=47.53294,-121.80539&days=2`)
                 .then((res) => {
+                    console.log('weather data', res.data.forecast.forecastday[0].hour);
                     setWeatherData(res.data.forecast.forecastday[0].hour);
                     setLoading(false);
 
@@ -94,30 +109,29 @@ export default function CustomCharts() {
 
     return (
         <div className='py-10 flex flex-col items-center justify-center'>
-            <button
-                className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus: ring-blue-300 font-medium'
-                onClick={handleDataUpdate}>
-                Update Data
-            </button>
             <div>
-                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="demo-simple-select-standard-label">Weather Data</InputLabel>
+                <FormControl variant="standard" sx={{ m: 1, minWidth: 130 }}>
+                    <InputLabel id="select-standard-label">Choose Option</InputLabel>
                     <Select
-                        labelId="demo-simple-select-standard-label"
-                        id="demo-simple-select-standard"
+                        labelId="select-standard-label"
+                        id="select-standard"
                         value={dataLabel}
                         onChange={handleDataUpdate}
                         label="Weather Data"
                     >
-                        <MenuItem value={'steadyWinds'}>Steady Winds</MenuItem>
-                        <MenuItem value={'windGust'}>Wind Gust</MenuItem>
+                        <MenuItem value={'steadyWinds'}>Steady Winds (knots)</MenuItem>
+                        <MenuItem value={'windGust'}>Wind Gust (knots)</MenuItem>
+                        <MenuItem value={'temp_f'}>Air Temp (f)</MenuItem>
+                        <MenuItem value={'precip_mm'}>Previpitation (mm/hr)</MenuItem>
+                        <MenuItem value={'vis_miles'}>Visibility (SM)</MenuItem>
                     </Select>
                 </FormControl>
             </div>
             <Chart
-                width={'100vw'}
+                width={'100%'}
                 chartType='AreaChart'
                 data={data}
+                options={options}
             />
         </div>
     );
