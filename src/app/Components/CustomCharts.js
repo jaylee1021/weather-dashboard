@@ -25,6 +25,7 @@ export default function CustomCharts({ weatherData }) {
         vAxis: { minValue: 0 },
         height: 300,
         pointSize: 5,
+        curveTpye: 'function',
         legend: { position: "top", maxLines: 3 },
         chartArea: { width: "90%", height: "70%" },
         annotations: {
@@ -39,7 +40,7 @@ export default function CustomCharts({ weatherData }) {
 
     function handleDataUpdate(e) {
         setDataLabel(e.target.value);
-        const weatherDataLength = weatherData.length - currentHour < 7 ? weatherData.length : 7;
+        const weatherDataLength = weatherData.length - currentHour < 7 ? weatherData.length - currentHour : 7;
         const currentTime = new Date();
         const hours = currentTime.getHours();
         const minutes = currentTime.getMinutes();

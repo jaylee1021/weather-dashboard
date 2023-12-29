@@ -91,7 +91,7 @@ export default function ShowHide({ userData, userId, fetchUser }) {
                 <Box sx={style}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         <div className="table_border">
-                            <div style={{ padding: '10px' }}>
+                            <div style={{ padding: '10px', color: 'black' }}>
                                 <h3 style={{ color: 'black' }}>Show/Hide Indicators</h3>
                                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
 

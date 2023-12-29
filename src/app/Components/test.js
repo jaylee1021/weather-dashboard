@@ -19,7 +19,7 @@ export const options = {
 export function Testing() {
     return (
         <Chart
-            chartType="AreaChart"
+            chartType="BarChart"
             width="100%"
             height="400px"
             data={data}
