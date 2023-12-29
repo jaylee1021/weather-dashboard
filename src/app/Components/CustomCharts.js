@@ -16,7 +16,7 @@ export default function CustomCharts({ weatherData }) {
     const [dataLabel, setDataLabel] = useState('');
     const [currentHour, setCurrentHour] = useState('');
     const [data, setData] = useState([
-        ['Time', 'Wind Speed'],
+        ['', ''],
         [0, 0]
     ]);
     const options = {
@@ -34,13 +34,13 @@ export default function CustomCharts({ weatherData }) {
         setDataLabel(e.target.value);
         const weatherDataLength = weatherData.length - currentHour < 7 ? weatherData.length : 7;
         if (e.target.value === 'winds_knots') {
-            const newData = [['Time', 'Wind Speed (knots)', 'Wind Gust (knots)']];
+            const newData = [['Time', 'Steady Winds (knots)', 'Wind Gust (knots)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
                 newData.push([weatherData[i].time.split(' ')[1], weatherData[i].wind_mph * mphToKnots, weatherData[i].gust_mph * mphToKnots]);
             }
             setData(newData);
         } else if (e.target.value === 'winds_m/s') {
-            const newData = [['Time', 'Wind Speed (m/s)', 'Wind Gust (m/s)']];
+            const newData = [['Time', 'Steady Winds (m/s)', 'Wind Gust (m/s)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
                 newData.push([weatherData[i].time.split(' ')[1], weatherData[i].wind_mph * mphToMetersPerSec, weatherData[i].gust_mph * mphToMetersPerSec]);
             }
