@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import '../css/weather.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { Checkbox, FormControlLabel, Switch } from '@mui/material';
 import { Form, FormControl } from 'react-bootstrap';
 
 const style = {
@@ -26,15 +26,7 @@ export default function ShowHide({ userData, userId, fetchUser }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    // const [showWind, setShowWind] = useState(userData.showWind);
-    // const [showWindGust, setShowWindGust] = useState(userData.showWindGust);
-    // const [showTemp, setShowTemp] = useState(userData.showTemp);
-    // const [showPrecipitation, setShowPrecipitation] = useState(userData.showPrecipitation);
-    // const [showVisibility, setShowVisibility] = useState(userData.showVisibility);
-    // const [showCloudBaseHeight, setShowCloudBaseHeight] = useState(userData.showCloudBaseHeight);
-    // const [showDensityAltitude, setShowDensityAltitude] = useState(userData.showDensityAltitude);
-    // const [showLighteningStrike, setShowLighteningStrike] = useState(userData.showLighteningStrike);
-    // const [showWindDirection, setShowWindDirection] = useState(userData.showWindDirection);
+    const [selectAll, setSelectAll] = useState(false);
 
     const [state, setState] = useState({
         showWind: userData.showWind,
@@ -47,6 +39,10 @@ export default function ShowHide({ userData, userId, fetchUser }) {
         showLighteningStrike: userData.showLighteningStrike,
         showWindDirection: userData.showWindDirection
     });
+
+    const { showWind, showWindGust, showTemp, showPrecipitation, showVisibility,
+        showCloudBaseHeight, showDensityAltitude, showLighteningStrike, showWindDirection } = state;
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -66,14 +62,22 @@ export default function ShowHide({ userData, userId, fetchUser }) {
         handleClose();
     };
 
+
+    const handleSelectAllOrNone = (e) => {
+
+        setSelectAll(e.target.checked);
+
+        setState({
+            ...state, showWind: e.target.checked, showWindGust: e.target.checked, showTemp: e.target.checked,
+            showPrecipitation: e.target.checked, showVisibility: e.target.checked, showCloudBaseHeight: e.target.checked,
+            showDensityAltitude: e.target.checked, showLighteningStrike: e.target.checked, showWindDirection: e.target.checked
+        });
+    };
+
     const handleChange = (e) => {
         console.log(e.target.checked);
         setState({ ...state, [e.target.name]: e.target.checked });
     };
-
-
-
-    const { showWind, showWindGust, showTemp, showPrecipitation, showVisibility, showCloudBaseHeight, showDensityAltitude, showLighteningStrike, showWindDirection } = state;
 
     return (
         <div>
@@ -90,6 +94,11 @@ export default function ShowHide({ userData, userId, fetchUser }) {
                             <div style={{ padding: '10px' }}>
                                 <h3 style={{ color: 'black' }}>Show/Hide Indicators</h3>
                                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+
+                                    <FormControlLabel
+                                        control={<Switch checked={selectAll} onChange={handleSelectAllOrNone} name='selectAllOrNone' />}
+                                        label="Select All"
+                                    />
                                     <FormControlLabel
                                         control={<Checkbox checked={showWind} onChange={handleChange} name='showWind' />}
                                         label="Steady Wind"
