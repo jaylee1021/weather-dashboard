@@ -24,8 +24,15 @@ export default function CustomCharts({ weatherData }) {
         hAxis: { title: 'Time', titleTextStyle: { color: '#333' } },
         vAxis: { minValue: 0 },
         height: 300,
+        pointSize: 5,
         legend: { position: "top", maxLines: 3 },
-        chartArea: { width: "90%", height: "70%" }
+        chartArea: { width: "90%", height: "70%" },
+        annotations: {
+            stem: {
+                color: 'red',
+            },
+            style: 'line'
+        }
     };
     const mphToKnots = 0.868976;
     const mphToMetersPerSec = 0.44704;
@@ -33,10 +40,18 @@ export default function CustomCharts({ weatherData }) {
     function handleDataUpdate(e) {
         setDataLabel(e.target.value);
         const weatherDataLength = weatherData.length - currentHour < 7 ? weatherData.length : 7;
+        const currentTime = new Date();
+        const hours = currentTime.getHours();
+        const minutes = currentTime.getMinutes();
+        const formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
         if (e.target.value === 'winds_knots') {
-            const newData = [['Time', 'Steady Winds (knots)', 'Wind Gust (knots)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (knots)', 'Wind Gust (knots)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
-                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].wind_mph * mphToKnots, weatherData[i].gust_mph * mphToKnots]);
+                if (currentHour === i) {
+                    newData.push([formattedTime, 'Current Time', weatherData[i].wind_mph * mphToKnots, weatherData[i].gust_mph * mphToKnots]);
+                } else {
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].wind_mph * mphToKnots, weatherData[i].gust_mph * mphToKnots]);
+                }
             }
             setData(newData);
         } else if (e.target.value === 'winds_m/s') {
@@ -79,7 +94,7 @@ export default function CustomCharts({ weatherData }) {
     return (
         <div className='py-10 flex flex-col items-center justify-center'>
             <div>
-                <FormControl variant="standard" sx={{ m: 1, minWidth: 130 }}>
+                <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 130 }}>
                     <InputLabel id="select-standard-label">Choose Option</InputLabel>
                     <Select
                         labelId="select-standard-label"
@@ -98,7 +113,7 @@ export default function CustomCharts({ weatherData }) {
             </div>
             <Chart
                 width={'100%'}
-                chartType='AreaChart'
+                chartType='LineChart'
                 data={data}
                 options={options}
             />
