@@ -18,7 +18,6 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CustomCharts from "./CustomCharts";
 import ShowHide from "./ShowHide";
-import { Testing } from "./test";
 
 export default function WeatherMain() {
 
@@ -374,7 +373,6 @@ export default function WeatherMain() {
                 </div>
             </div>
             <CustomCharts weatherData={forecast} />
-            <Testing />
         </div >
     );
 };

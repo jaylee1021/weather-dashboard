@@ -25,7 +25,6 @@ export default function CustomCharts({ weatherData }) {
         vAxis: { minValue: 0 },
         height: 300,
         pointSize: 5,
-        curveTpye: 'function',
         legend: { position: "top", maxLines: 3 },
         chartArea: { width: "90%", height: "70%" },
         annotations: {
