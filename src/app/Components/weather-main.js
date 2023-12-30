@@ -45,7 +45,6 @@ export default function WeatherMain() {
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
     }, []);
 
-
     const fetchUser = useCallback(async () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
         const fetchedUserData = res.data.user;
@@ -220,12 +219,13 @@ export default function WeatherMain() {
             unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots'
         })
             .then((res) => {
-                console.log(res);
+                // console.log(res);
             })
             .catch((err) => {
                 console.log(err);
             });
         localStorage.setItem('windUnit', 'knots');
+        setWindUnit('knots');
         fetchUser();
     };
 
@@ -245,6 +245,7 @@ export default function WeatherMain() {
                                 value={windUnit}
                                 onChange={handleConversion}
                                 label="Age"
+                                name='windUnit'
                             >
                                 <MenuItem value={'knots'}>knots</MenuItem>
                                 <MenuItem value={'m/s'}>m/s</MenuItem>
@@ -256,7 +257,7 @@ export default function WeatherMain() {
                     </div>
                     <div>
                         <UpdateParams windOpWindow={windOpWindow} windGustOpWindow={windGustOpWindow} windUnit={windUnit}
-                            userId={userId} fetchUser={fetchUser()} />
+                            userId={userId} fetchUser={fetchUser} />
                     </div>
                     <div>
                         <Button variant='outlined' onClick={() => handleReturnToDefault()}>Return to default</Button>
@@ -369,7 +370,7 @@ export default function WeatherMain() {
                             </div>
                         </div>
                     </div>
-                    <ShowHide userData={userData} userId={userId} fetchUser={fetchUser()} />
+                    <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />
                 </div>
             </div>
             <CustomCharts weatherData={forecast} />
