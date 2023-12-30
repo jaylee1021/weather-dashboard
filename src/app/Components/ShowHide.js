@@ -44,22 +44,27 @@ export default function ShowHide({ userData, userId, fetchUser }) {
         showCloudBaseHeight, showDensityAltitude, showLighteningStrike, showWindDirection } = state;
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-            showWind: state.showWind,
-            showWindGust: state.showWindGust,
-            showTemp: state.showTemp,
-            showPrecipitation: state.showPrecipitation,
-            showVisibility: state.showVisibility,
-            showCloudBaseHeight: state.showCloudBaseHeight,
-            showDensityAltitude: state.showDensityAltitude,
-            showLighteningStrike: state.showLighteningStrike,
-            showWindDirection: state.showWindDirection
-        });
-        fetchUser;
-        handleClose();
+        try {
+            await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
+                showWind: state.showWind,
+                showWindGust: state.showWindGust,
+                showTemp: state.showTemp,
+                showPrecipitation: state.showPrecipitation,
+                showVisibility: state.showVisibility,
+                showCloudBaseHeight: state.showCloudBaseHeight,
+                showDensityAltitude: state.showDensityAltitude,
+                showLighteningStrike: state.showLighteningStrike,
+                showWindDirection: state.showWindDirection
+            });
+
+            fetchUser();
+            handleClose();
+        } catch (error) {
+            console.error(error);
+        }
     };
 
 
