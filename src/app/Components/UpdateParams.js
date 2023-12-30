@@ -34,6 +34,14 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
             alert('Please enter a value for both wind and wind gust');
             return;
         }
+
+        const handleSuccess = () => {
+            fetchUser();
+            handleClose();
+            setNewWinOpWindow('');
+            setNewWindGustOpWindow('');
+        };
+
         // update wind and wind gust op operating window if both are entered
         if (newWindOpWindow && newWindGustOpWindow) {
             axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
@@ -42,6 +50,7 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
             })
                 .then((res) => {
                     console.log(res);
+                    handleSuccess();
                 })
                 .catch((err) => {
                     console.log(err);
@@ -52,6 +61,7 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
             })
                 .then((res) => {
                     console.log(res);
+                    handleSuccess();
                 })
                 .catch((err) => {
                     console.log(err);
@@ -63,15 +73,12 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
             })
                 .then((res) => {
                     console.log(res);
+                    handleSuccess();
                 })
                 .catch((err) => {
                     console.log(err);
                 });
         }
-        fetchUser;
-        handleClose();
-        setNewWinOpWindow('');
-        setNewWindGustOpWindow('');
     };
 
     // update wind operating window
@@ -99,17 +106,17 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
                             <div style={{ padding: '10px' }}>
                                 <h3 style={{ color: 'black' }}>Update Operating Window</h3>
                                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Box
+                                    {/* <Box
                                         component="form"
                                         sx={{
                                             '& > :not(style)': { m: 1, width: '25ch' },
                                         }}
                                         noValidate
                                         autoComplete="off"
-                                    >
-                                        <TextField id="standard-basic" label="Steady Wind" variant="standard" value={newWindOpWindow} onChange={handleNewWindOp} required />
-                                        <TextField id="standard-basic" label="Wind Gust" variant="standard" value={newWindGustOpWindow} onChange={handleNewWindGustOp} required />
-                                    </Box>
+                                    > */}
+                                    <TextField id="standard-basic" label="Steady Wind" variant="standard" value={newWindOpWindow} onChange={handleNewWindOp} required />
+                                    <TextField id="standard-basic" label="Wind Gust" variant="standard" value={newWindGustOpWindow} onChange={handleNewWindGustOp} required />
+                                    {/* </Box> */}
                                     <Button variant='outlined' type="submit" className="button_style">submit</Button>
                                 </form>
                             </div>
