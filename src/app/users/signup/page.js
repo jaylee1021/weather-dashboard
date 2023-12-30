@@ -51,7 +51,12 @@ const Signup = () => {
 			});
 	};
 
-	if (redirect) { router.push('/users/login'); }
+	useEffect(() => {
+		if (redirect) {
+			router.push('/users/login');
+		}
+	}, [redirect, router]);
+
 	if (error) {
 		return (
 			<div>
