@@ -15,13 +15,14 @@ export default function CustomCharts({ weatherData }) {
     // const [weatherData, setWeatherData] = useState([]);
     const [dataLabel, setDataLabel] = useState('');
     const [currentHour, setCurrentHour] = useState('');
+    const [currentDate, setCurrentDate] = useState('');
     const [data, setData] = useState([
         ['', ''],
         [0, 0]
     ]);
     const options = {
         title: 'Weather Data',
-        hAxis: { title: 'Time', titleTextStyle: { color: '#333' } },
+        hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
         vAxis: { minValue: 0 },
         height: 300,
         pointSize: 5,
@@ -82,13 +83,16 @@ export default function CustomCharts({ weatherData }) {
     }
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            const currentTime = new Date();
-            const hours = currentTime.getHours(); // Retrieves the hour as an integer
-            setCurrentHour(hours);
-        }, 1000);
-
-        return () => clearInterval(intervalId); // This is the cleanup function
+        // const intervalId = setInterval(() => {
+        const currentTime = new Date();
+        const hours = currentTime.getHours(); // Retrieves the hour as an integer
+        const date = currentTime.getDate();
+        const month = currentTime.getMonth();
+        const year = currentTime.getFullYear();
+        setCurrentDate(`${month + 1}/${date}/${year}`);
+        setCurrentHour(hours);
+        // }, 1000);
+        // return () => clearInterval(intervalId);
     }, []);
 
     return (
@@ -102,6 +106,7 @@ export default function CustomCharts({ weatherData }) {
                         value={dataLabel}
                         onChange={handleDataUpdate}
                         label="Weather Data"
+                        name="weatherDataSelect"
                     >
                         <MenuItem value={'winds_knots'}>Winds (knots)</MenuItem>
                         <MenuItem value={'winds_m/s'}>Winds (m/s)</MenuItem>
