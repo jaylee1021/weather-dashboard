@@ -18,6 +18,11 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CustomCharts from "./CustomCharts";
 import ShowHide from "./ShowHide";
+import { useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
+import setAuthToken from "../utils/setAuthToken";
+import handleLogout from "../utils/handleLogout";
+
 
 export default function WeatherMain() {
 
@@ -33,6 +38,7 @@ export default function WeatherMain() {
     const [minCountdown, setMinCountdown] = useState(60);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('userId') : null);
+    const router = useRouter();
 
     // conversion constants
     const mphToKnots = 0.868976;
@@ -43,7 +49,19 @@ export default function WeatherMain() {
     // set wind unit on page load
     useEffect(() => {
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
-    }, []);
+        if (typeof window !== undefined) {
+            const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
+            let currentTime = Date.now();
+
+            setAuthToken(localStorage.getItem('jwtToken'));
+            // make a condition that compares exp and current time
+            if (currentTime >= expirationTime) {
+                handleLogout();
+                router.push('/users/login');
+            }
+        }
+    }, [router]);
+
 
     const fetchUser = useCallback(async () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
@@ -53,8 +71,26 @@ export default function WeatherMain() {
     }, [userId]);
 
     useEffect(() => {
-        fetchUser();
-    }, [fetchUser]);
+        setAuthToken(localStorage.getItem('jwtToken'));
+        if (localStorage.getItem('jwtToken')) {
+            axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`)
+                .then((res) => {
+                    let userData = jwtDecode(localStorage.getItem('jwtToken'));
+                    if (userData.email === localStorage.getItem('email')) {
+                        fetchUser();
+                    } else {
+                        router.push('/users/login');
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    router.push('/users/login');
+                });
+        } else {
+            router.push('/users/login');
+        }
+    }, [userId, fetchUser, router]);
+
 
     // convert wind speed to knots
     const toKnots = useCallback(() => {
