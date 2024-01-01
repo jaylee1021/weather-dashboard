@@ -10,22 +10,22 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import UpdateParams from "./UpdateParams";
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import CustomCharts from "./CustomCharts";
-import ShowHide from "./ShowHide";
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
-import setAuthToken from "../utils/setAuthToken";
-import handleLogout from "../utils/handleLogout";
-
+import setAuthToken from "../utils/setAuthToken"; // Set token for authorization
+import handleLogout from "../utils/handleLogout"; // Logout function
+import CustomCharts from "./CustomCharts"; // Weather charts component
+import ShowHide from "./ShowHide"; // ShowHide component
+import UpdateParams from "./UpdateParams"; // Updating operating window component
 
 export default function WeatherMain() {
 
+    const [selectSite, setSelectSite] = useState('');
     const [userData, setUserData] = useState([]);
     const [weather, setWeather] = useState([]);
     const [forecast, setForecast] = useState([]);
@@ -48,6 +48,7 @@ export default function WeatherMain() {
 
     // set wind unit on page load
     useEffect(() => {
+        setSelectSite(localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland');
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
         if (typeof window !== undefined) {
             const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
@@ -61,7 +62,6 @@ export default function WeatherMain() {
             }
         }
     }, [router]);
-
 
     const fetchUser = useCallback(async () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
@@ -114,10 +114,23 @@ export default function WeatherMain() {
 
     }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
-    // fetch weather data on page load and every minute
+    const handleSiteSelection = (e) => {
+        setSelectSite(e.target.value);
+        localStorage.setItem('selectSite', e.target.value);
+    };
 
+    // fetch weather data on page load and every minute
     const fetchData = useCallback(() => {
-        axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=47.53294,-121.80539`)
+        let selectedSite;
+        if (selectSite === 'hsiland' || localStorage.getItem('selectSite') === 'hsiland') {
+            selectedSite = process.env.NEXT_PUBLIC_HSILAND_COORDINATES;
+        } else if (selectSite === 'pdt10_hangar' || localStorage.getItem('selectSite') === 'pdt10_hangar') {
+            selectedSite = process.env.NEXT_PUBLIC_PDT10_HANGAR_COORDINATES;
+        } else if (selectSite === 'pdt10_northpad' || localStorage.getItem('selectSite') === 'pdt10_northpad') {
+
+            selectedSite = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_COORDINATES;
+        }
+        axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}`)
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
                 setWeather(res.data.current);
@@ -131,7 +144,7 @@ export default function WeatherMain() {
                 console.log(err);
             });
         setMinCountdown(60);
-    }, [toKnots, toMetersPerSec, windUnit]);
+    }, [toKnots, toMetersPerSec, windUnit, selectSite]);
 
     useEffect(() => {
         fetchData();
@@ -271,6 +284,23 @@ export default function WeatherMain() {
     return (
         <div>
             <div className="top">
+                <div>
+                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                        <InputLabel id="demo-simple-select-standard-label">Site</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-standard-label"
+                            id="demo-simple-select-standard"
+                            value={selectSite}
+                            onChange={handleSiteSelection}
+                            label="Select site"
+                            name='selectSite'
+                        >
+                            <MenuItem value={'hsiland'}>Hsiland</MenuItem>
+                            <MenuItem value={'pdt10_hangar'}>PDT10 Hangar</MenuItem>
+                            <MenuItem value={'pdt10_northpad'}>PDT10 North Pad</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
                 <div className="buttons_wrapper">
                     <div>
                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
@@ -280,7 +310,7 @@ export default function WeatherMain() {
                                 id="demo-simple-select-standard"
                                 value={windUnit}
                                 onChange={handleConversion}
-                                label="Age"
+                                label="Wind Unit"
                                 name='windUnit'
                             >
                                 <MenuItem value={'knots'}>knots</MenuItem>
