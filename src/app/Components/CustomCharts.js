@@ -2,15 +2,15 @@
 import { Chart } from "react-google-charts";
 import * as React from 'react';
 import '../css/weather.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Button from '@mui/material/Button';
 
-
-export default function CustomCharts({ weatherData }) {
+export default function CustomCharts({ weatherData, fetchData }) {
 
     // const [weatherData, setWeatherData] = useState([]);
     const [dataLabel, setDataLabel] = useState('');
@@ -98,7 +98,7 @@ export default function CustomCharts({ weatherData }) {
         }
     }
 
-    useEffect(() => {
+    const updateCurrentHour = useCallback(() => {
         // const intervalId = setInterval(() => {
         const currentTime = new Date();
         const hours = currentTime.getHours(); // Retrieves the hour as an integer
@@ -107,13 +107,18 @@ export default function CustomCharts({ weatherData }) {
         const year = currentTime.getFullYear();
         setCurrentDate(`${month + 1}/${date}/${year}`);
         setCurrentHour(hours);
+        fetchData();
         // }, 1000);
         // return () => clearInterval(intervalId);
-    }, []);
+    }, [fetchData]);
+
+    useEffect(() => {
+        updateCurrentHour();
+    }, [updateCurrentHour]);
 
     return (
         <div className='py-10 flex flex-col items-center justify-center'>
-            <div>
+            <div style={{ display: 'flex' }}>
                 <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 130 }}>
                     <InputLabel id="select-standard-label">Choose Option</InputLabel>
                     <Select
@@ -131,6 +136,9 @@ export default function CustomCharts({ weatherData }) {
                         <MenuItem value={'vis_miles'}>Visibility (SM)</MenuItem>
                     </Select>
                 </FormControl>
+                <div>
+                    <Button variant='outlined' onClick={updateCurrentHour}>Refresh</Button>
+                </div>
             </div>
             <Chart
                 width={'100%'}
@@ -140,4 +148,4 @@ export default function CustomCharts({ weatherData }) {
             />
         </div>
     );
-}
+};
