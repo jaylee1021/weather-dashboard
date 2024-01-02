@@ -67,7 +67,6 @@ export default function ShowHide({ userData, userId, fetchUser }) {
         }
     };
 
-
     const handleSelectAllOrNone = (e) => {
 
         setSelectAll(e.target.checked);

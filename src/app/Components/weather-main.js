@@ -56,7 +56,6 @@ export default function WeatherMain() {
             let currentTime = Date.now();
 
             setAuthToken(localStorage.getItem('jwtToken'));
-            // make a condition that compares exp and current time
             if (currentTime >= expirationTime) {
                 handleLogout();
                 router.push('/users/login');
@@ -437,7 +436,7 @@ export default function WeatherMain() {
                             <h4>Breaching Limit(s)</h4>
                             <div style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>
                                 {checkBreachingLimit().map((limits, index) => {
-                                    return (<p key={index} >{limits}</p>);
+                                    return (<div key={index} >{limits}</div>);
                                 })}
                             </div>
                         </div>
