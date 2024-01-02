@@ -22,6 +22,7 @@ import handleLogout from "../utils/handleLogout"; // Logout function
 import CustomCharts from "./CustomCharts"; // Weather charts component
 import ShowHide from "./ShowHide"; // ShowHide component
 import UpdateParams from "./UpdateParams"; // Updating operating window component
+import { LoadingSpinningBubble } from "./Loading";
 
 export default function WeatherMain() {
 
@@ -213,11 +214,11 @@ export default function WeatherMain() {
 
     // display go/no-go status
     const checkGoNoGo = () => {
-        if (wind > windOpWindow || windGust > windGustOpWindow || weather.temp_f < userData.tempLow ||
-            weather.temp_f > userData.tempHigh || weather.precip_mm > userData.precipitation ||
-            weather.vis_miles < userData.visibility || weather.cloud < userData.cloudBaseHeight ||
-            weather.wind_mph < userData.densityAltitudeLow || weather.wind_mph > userData.densityAltitudeHigh ||
-            weather.wind_mph > userData.lighteningStrike) {
+        if ((wind > windOpWindow && userData.showWind) || (windGust > windGustOpWindow && userData.showWindGust) || (weather.temp_f < userData.tempLow && userData.showTemp) ||
+            (weather.temp_f > userData.tempHigh && userData.showTemp) || (weather.precip_mm > userData.precipitation && userData.showPrecipitation) ||
+            (weather.vis_miles < userData.visibility && userData.showVisibility) || weather.cloud < userData.cloudBaseHeight && userData.showCloudBaseHeight ||
+            (weather.wind_mph < userData.densityAltitudeLow && userData.showDensityAltitude) || (weather.wind_mph > userData.densityAltitudeHigh && userData.showDensityAltitude) ||
+            (weather.wind_mph > userData.lighteningStrike && userData.showLighteningStrike)) {
             return (<p style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>Out of Limits!</p>);
         } else {
             return (<p style={{ color: 'green', fontWeight: 'bold', padding: '10px' }}>Go!</p>);
@@ -227,35 +228,38 @@ export default function WeatherMain() {
     // display which limits are breaching
     const checkBreachingLimit = () => {
         let limits = [];
-        if (wind > windOpWindow) {
+        if (wind > windOpWindow && userData.showWind) {
             limits.push('Steady Wind');
         }
-        if (windGust > windGustOpWindow) {
+        if (windGust > windGustOpWindow && userData.showWindGust) {
             limits.push('Wind Gust');
         }
-        if (weather.temp_f < userData.tempLow) {
+        if (weather.temp_f < userData.tempLow && userData.showTemp) {
             limits.push('Temperature Low');
         }
-        if (weather.temp_f > userData.tempHigh) {
+        if (weather.temp_f > userData.tempHigh && userData.showTemp) {
             limits.push('Temperature High');
         }
-        if (weather.precip_mm > userData.precipitation) {
+        if (weather.precip_mm > userData.precipitation && userData.showPrecipitation) {
             limits.push('Precipitation');
         }
-        if (weather.vis_miles < userData.visibility) {
+        if (weather.vis_miles < userData.visibility && userData.showVisibility) {
             limits.push('Visibility');
         }
-        if (weather.cloud < userData.cloudBaseHeight) {
+        if (weather.cloud < userData.cloudBaseHeight && userData.showCloudBaseHeight) {
             limits.push('Cloud Base Height');
         }
-        if (weather.wind_mph < userData.densityAltitudeLow) {
+        if (weather.wind_mph < userData.densityAltitudeLow && userData.showDensityAltitude) {
             limits.push('Density Altitude Low');
         }
-        if (weather.wind_mph > userData.densityAltitudeHigh) {
+        if (weather.wind_mph > userData.densityAltitudeHigh && userData.showDensityAltitude) {
             limits.push('Density Altitude High');
         }
-        if (weather.wind_mph > userData.lighteningStrike) {
+        if (weather.wind_mph > userData.lighteningStrike && userData.showLighteningStrike) {
             limits.push('Lightening Strike');
+        }
+        if (limits.length === 0) {
+            limits.push(<p style={{ color: 'green' }}>None</p>);
         }
         return limits;
     };
@@ -274,33 +278,35 @@ export default function WeatherMain() {
                 console.log(err);
             });
         localStorage.setItem('windUnit', 'knots');
+        localStorage.setItem('selectSite', 'hsiland');
+        setSelectSite('hsiland');
         setWindUnit('knots');
         fetchUser();
     };
 
     // loading screen
-    if (loading) return (<div> Loading... </div>);
+    if (loading) return (<LoadingSpinningBubble />);
 
     return (
         <div>
+            <div style={{ padding: '10px' }}>
+                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                    <InputLabel id="demo-simple-select-standard-label">Site</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-standard-label"
+                        id="demo-simple-select-standard"
+                        value={selectSite}
+                        onChange={handleSiteSelection}
+                        label="Select site"
+                        name='selectSite'
+                    >
+                        <MenuItem value={'hsiland'}>Hsiland</MenuItem>
+                        <MenuItem value={'pdt10_hangar'}>PDT10 Hangar</MenuItem>
+                        <MenuItem value={'pdt10_northpad'}>PDT10 North Pad</MenuItem>
+                    </Select>
+                </FormControl>
+            </div>
             <div className="top">
-                <div>
-                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                        <InputLabel id="demo-simple-select-standard-label">Site</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-standard-label"
-                            id="demo-simple-select-standard"
-                            value={selectSite}
-                            onChange={handleSiteSelection}
-                            label="Select site"
-                            name='selectSite'
-                        >
-                            <MenuItem value={'hsiland'}>Hsiland</MenuItem>
-                            <MenuItem value={'pdt10_hangar'}>PDT10 Hangar</MenuItem>
-                            <MenuItem value={'pdt10_northpad'}>PDT10 North Pad</MenuItem>
-                        </Select>
-                    </FormControl>
-                </div>
                 <div className="buttons_wrapper">
                     <div>
                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
