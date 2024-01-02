@@ -23,7 +23,7 @@ export default function CustomCharts({ weatherData }) {
     const options = {
         title: 'Weather Data',
         hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
-        vAxis: { minValue: 0 },
+        // vAxis: { minValue: 0 },
         height: 300,
         pointSize: 5,
         legend: { position: "top", maxLines: 3 },
@@ -56,27 +56,43 @@ export default function CustomCharts({ weatherData }) {
             }
             setData(newData);
         } else if (e.target.value === 'winds_m/s') {
-            const newData = [['Time', 'Steady Winds (m/s)', 'Wind Gust (m/s)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (m/s)', 'Wind Gust (m/s)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
-                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].wind_mph * mphToMetersPerSec, weatherData[i].gust_mph * mphToMetersPerSec]);
+                if (currentHour === i) {
+                    newData.push([formattedTime, 'Current Time', weatherData[i].wind_mph * mphToMetersPerSec, weatherData[i].gust_mph * mphToMetersPerSec]);
+                } else {
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].wind_mph * mphToMetersPerSec, weatherData[i].gust_mph * mphToMetersPerSec]);
+                }
             }
             setData(newData);
         } else if (e.target.value === 'temp_f') {
-            const newData = [['Time', 'Air Temp (f)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (f)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
-                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].temp_f]);
+                if (currentHour === i) {
+                    newData.push([formattedTime, 'Current Time', weatherData[i].temp_f]);
+                } else {
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_f]);
+                }
             }
             setData(newData);
         } else if (e.target.value === 'precip_mm') {
-            const newData = [['Time', 'Precipitation (mm/hr)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Precipitation (mm/hr)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
-                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].precip_mm]);
+                if (currentHour === i) {
+                    newData.push([formattedTime, 'Current Time', weatherData[i].precip_mm]);
+                } else {
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].precip_mm]);
+                }
             }
             setData(newData);
         } else if (e.target.value === 'vis_miles') {
-            const newData = [['Time', 'Visibility (SM)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Visibility (SM)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
-                newData.push([weatherData[i].time.split(' ')[1], weatherData[i].vis_miles]);
+                if (currentHour === i) {
+                    newData.push([formattedTime, 'Current Time', weatherData[i].vis_miles]);
+                } else {
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].vis_miles]);
+                }
             }
             setData(newData);
         }
