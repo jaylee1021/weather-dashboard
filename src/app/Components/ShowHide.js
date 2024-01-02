@@ -80,7 +80,6 @@ export default function ShowHide({ userData, userId, fetchUser }) {
     };
 
     const handleChange = (e) => {
-        console.log(e.target.checked);
         setState({ ...state, [e.target.name]: e.target.checked });
     };
 
