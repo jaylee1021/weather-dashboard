@@ -24,71 +24,38 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const [newWindOpWindow, setNewWinOpWindow] = useState('');
-    const [newWindGustOpWindow, setNewWindGustOpWindow] = useState('');
-
+    const [state, setState] = useState('');
+    const { steadyWind, windGust, tempLow, tempHigh, visibility, cloudBaseHeight, densityAltitudeLow, densityAltitudeHigh } = state;
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (newWindOpWindow === '' || newWindGustOpWindow === '') {
-            alert('Please enter a value for both wind and wind gust');
-            return;
-        }
 
         const handleSuccess = () => {
             fetchUser();
             handleClose();
-            setNewWinOpWindow('');
-            setNewWindGustOpWindow('');
+            setState({
+                ...state, steadyWind: '', windGust: '', tempLow: '', tempHigh: '', visibility: '',
+                cloudBaseHeight: '', densityAltitudeLow: '', densityAltitudeHigh: ''
+            });
         };
 
-        // update wind and wind gust op operating window if both are entered
-        if (newWindOpWindow && newWindGustOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-                wind: newWindOpWindow, windGust: newWindGustOpWindow,
-                userWindUnit: windUnit, userWindGustUnit: windUnit
+        axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
+            wind: state.steadyWind, windGust: state.windGust,
+            userWindUnit: windUnit, userWindGustUnit: windUnit,
+            tempLow: state.tempLow, tempHigh: state.tempHigh, visibility: state.visibility,
+            cloudBaseHeight: state.cloudBaseHeight, densityAltitudeLow: state.densityAltitudeLow,
+            densityAltitudeHigh: state.densityAltitudeHigh
+        })
+            .then((res) => {
+                console.log(res);
+                handleSuccess();
             })
-                .then((res) => {
-                    console.log(res);
-                    handleSuccess();
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        } else if (newWindOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-                wind: newWindOpWindow, windGust: windGustOpWindow, userWindUnit: windUnit
-            })
-                .then((res) => {
-                    console.log(res);
-                    handleSuccess();
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        } else if (newWindGustOpWindow) {
-            axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-                windGust: newWindGustOpWindow, wind: windOpWindow,
-                userWindGustUnit: windUnit
-            })
-                .then((res) => {
-                    console.log(res);
-                    handleSuccess();
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
-    // update wind operating window
-    const handleNewWindOp = (e) => {
-        setNewWinOpWindow(e.target.value);
-    };
-
-    // update wind gust operating window
-    const handleNewWindGustOp = (e) => {
-        setNewWindGustOpWindow(e.target.value);
+    const handleChange = (e) => {
+        setState({ ...state, [e.target.name]: e.target.value });
     };
 
     return (
@@ -106,24 +73,18 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
                             <div style={{ padding: '10px' }}>
                                 <h3 style={{ color: 'black' }}>Update Operating Window</h3>
                                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-                                    {/* <Box
-                                        component="form"
-                                        sx={{
-                                            '& > :not(style)': { m: 1, width: '25ch' },
-                                        }}
-                                        noValidate
-                                        autoComplete="off"
-                                    > */}
-                                    <TextField id="standard-basic" label="Steady Wind" variant="standard" value={newWindOpWindow} onChange={handleNewWindOp} required />
-                                    <TextField id="standard-basic" label="Wind Gust" variant="standard" value={newWindGustOpWindow} onChange={handleNewWindGustOp} required />
-                                    {/* </Box> */}
-                                    <Button variant='outlined' type="submit" className="button_style">submit</Button>
+                                    <TextField id="standard-basic" label="Steady Wind" variant="standard" value={steadyWind} onChange={handleChange} name='steadyWind' required />
+                                    <TextField id="standard-basic" label="Wind Gust" variant="standard" value={windGust} onChange={handleChange} name='windGust' required />
+                                    <TextField id="standard-basic" label="Temp Low" variant="standard" value={tempLow} onChange={handleChange} name='tempLow' />
+                                    <TextField id="standard-basic" label="Temp High" variant="standard" value={tempHigh} onChange={handleChange} name='tempHigh' />
+                                    <TextField id="standard-basic" label="Visibility" variant="standard" value={visibility} onChange={handleChange} name='visibility' />
+                                    <TextField id="standard-basic" label="Cloud Base Height" variant="standard" value={cloudBaseHeight} onChange={handleChange} name='cloudBaseHeight' />
+                                    <TextField id="standard-basic" label="Density Alt Low" variant="standard" value={densityAltitudeLow} onChange={handleChange} name='densityAltitudeLow' />
+                                    <TextField id="standard-basic" label="Density Alt High" variant="standard" value={densityAltitudeHigh} onChange={handleChange} name='densityAltitudeHigh' />
+                                    <Button variant='outlined' type="submit" style={{ margin: '10px 0' }} className="button_style">submit</Button>
                                 </form>
                             </div>
                         </div>
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        {/* Duis mollis, est non commodo luctus, nisi erat porttitor ligula. */}
                     </Typography>
                 </Box>
             </Modal>
