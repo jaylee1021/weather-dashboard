@@ -130,6 +130,7 @@ export default function WeatherMain() {
 
             selectedSite = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_COORDINATES;
         }
+        console.log('fetching data');
         axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}`)
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
@@ -444,7 +445,7 @@ export default function WeatherMain() {
                     <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />
                 </div>
             </div>
-            <CustomCharts weatherData={forecast} />
+            <CustomCharts weatherData={forecast} fetchData={fetchData} />
         </div >
     );
 };
