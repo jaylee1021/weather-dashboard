@@ -109,6 +109,7 @@
   .logo {
     position: relative;
   }
+
   /* Enable hover only on non-touch devices */
   @media (hover: hover) and (pointer: fine) {
     .card:hover {
@@ -230,3 +231,45 @@
     }
   }
   
+/* login component */
+
+.login_button {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.text_width {
+  width: 100%;
+  /* text-indent: 10px; */
+}
+
+.login_main {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  background-color: white;
+  color: black;
+}
+
+.middle-content {
+  flex: 1; /* This will make it take the remaining vertical space */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login_subtitle {
+  padding-bottom: 10px;
+}
+
+.no_account {
+  display: flex;
+  flex-direction: column;
+  justify-content: column;
+  align-content: center;
+  flex-wrap: wrap;
+}

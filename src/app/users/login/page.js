@@ -3,7 +3,13 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import setAuthToken from '@/app/utils/setAuthToken';
-import jwtDecode from 'jwt-decode';
+import * as React from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import { Button } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import '../../css/page.css';
 
 export default function Login() {
     const router = useRouter();
@@ -39,39 +45,45 @@ export default function Login() {
     };
 
     return (
-        <div className="container">
+        <div className="login_main">
             <br />
             <br />
             <br />
             <br />
-            <div className="row justify-content-center">
-                <div className="col-md-8">
-                    <div className="card-group mb-0">
-                        <div className="card p-4">
-                            <form className="card-body" id='form' onSubmit={handleSubmit}>
-                                <h1>Admin Login</h1>
-                                <p className="text-muted">Sign In to admin account</p>
-                                <div className="input-group mb-3">
-                                    <span className="input-group-addon"><i className="fa fa-user"></i></span>
-                                    <input type="text" name='email' className="form-control" placeholder="Email" value={email} onChange={handleEmail} autoComplete='on' required />
-                                </div>
-                                <div className="input-group mb-4">
-                                    <span className="input-group-addon"><i className="fa fa-lock"></i></span>
-                                    <input type="password" name='password' className="form-control" placeholder="Password" alue={password} onChange={handlePassword} required />
-                                </div>
-                                <div className="row">
-                                    <div className="col-6">
-                                        <button type="submit" className="btn btn-primary px-4">Login</button>
-                                    </div>
-                                    <div className="col-6 text-right">
-                                        <button type="button" className="btn btn-link px-0">Forgot password?</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <div>
+                <h1>Flight Test Weather Dashboard</h1>
             </div>
+            <div className='middle-content'>
+                <React.Fragment>
+                    <CssBaseline />
+                    <Container maxWidth="sm">
+                        <form onSubmit={handleSubmit}>
+                            <h1>Account Login</h1>
+                            <div style={{ width: '400px' }}>
+                                <TextField className='text_width' variant='standard' label='Email' type="text" name='email' value={email} onChange={handleEmail} autoComplete='on' required />
+                            </div>
+                            <div >
+                                <TextField className='text_width' variant='standard' label='Password' type="password" name='password' alue={password} onChange={handlePassword} required />
+                            </div>
+                            <div className='login_button'>
+                                <div >
+                                    <Button variant='outlined' type="submit">Login</Button>
+                                </div>
+                                <div >
+                                    <Button variant='outlined' type="button">Forgot password?</Button>
+                                </div>
+                            </div>
+                        </form>
+                        <div className='no_account'>
+                            <p>Don&apos;t have an account?</p>
+                            <Button variant='outlined' href="/users/signup" type="button" className="btn btn-secondary active mt-3">Signup</Button>
+                        </div>
+                    </Container>
+                    <CssBaseline />
+                </React.Fragment>
+
+            </div>
+
             <br />
             <br />
             <br />
