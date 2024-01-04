@@ -24,10 +24,8 @@ export default function Login() {
         setPassword(e.target.value);
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); // prevents page from refreshing
-
-        axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/login`, { email, password })
+    const logIn = async (email, password) => {
+        await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/login`, { email, password })
             .then(response => {
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('jwtToken', response.data.token);
@@ -42,6 +40,18 @@ export default function Login() {
             .catch(error => {
                 alert('Either your email or password is incorrect');
             });
+    };
+
+    const handleDemoAccount = async (e) => {
+        e.preventDefault();
+        const email = process.env.NEXT_PUBLIC_DEMO_EMAIL;
+        const password = process.env.NEXT_PUBLIC_DEMO_PASSWORD;
+        logIn(email, password);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // prevents page from refreshing
+        logIn(email, password);
     };
 
     return (
@@ -69,9 +79,12 @@ export default function Login() {
                                 <div >
                                     <Button variant='outlined' type="submit">Login</Button>
                                 </div>
-                                <div >
-                                    <Button variant='outlined' type="button">Forgot password?</Button>
+                                <div>
+                                    <Button onClick={handleDemoAccount} variant='outlined' type="button">Demo Account</Button>
                                 </div>
+                                {/* <div >
+                                    <Button variant='outlined' type="button">Forgot password?</Button>
+                                </div> */}
                             </div>
                         </form>
                         <div className='no_account'>
