@@ -38,14 +38,19 @@ export default function CustomCharts({ weatherData, fetchData }) {
     const mphToKnots = 0.868976;
     const mphToMetersPerSec = 0.44704;
 
-    function handleDataUpdate(e) {
-        setDataLabel(e.target.value);
+    const dataUpdate = (e) => {
+        const weatherValue = e.target.value;
+        handleDataUpdate(weatherValue);
+    };
+
+    const handleDataUpdate = useCallback((weatherValue) => {
+        setDataLabel(weatherValue);
         const weatherDataLength = weatherData.length - currentHour < 7 ? weatherData.length - currentHour : 7;
         const currentTime = new Date();
         const hours = currentTime.getHours();
         const minutes = currentTime.getMinutes();
         const formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
-        if (e.target.value === 'winds_knots') {
+        if (weatherValue === 'winds_knots') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (knots)', 'Wind Gust (knots)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
@@ -55,7 +60,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
                 }
             }
             setData(newData);
-        } else if (e.target.value === 'winds_m/s') {
+        } else if (weatherValue === 'winds_m/s') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (m/s)', 'Wind Gust (m/s)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
@@ -65,7 +70,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
                 }
             }
             setData(newData);
-        } else if (e.target.value === 'temp_f') {
+        } else if (weatherValue === 'temp_f') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (f)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
@@ -75,7 +80,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
                 }
             }
             setData(newData);
-        } else if (e.target.value === 'precip_mm') {
+        } else if (weatherValue === 'precip_mm') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Precipitation (mm/hr)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
@@ -85,7 +90,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
                 }
             }
             setData(newData);
-        } else if (e.target.value === 'vis_miles') {
+        } else if (weatherValue === 'vis_miles') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Visibility (SM)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
@@ -96,10 +101,9 @@ export default function CustomCharts({ weatherData, fetchData }) {
             }
             setData(newData);
         }
-    }
+    }, [weatherData, currentHour]);
 
     const updateCurrentHour = useCallback(() => {
-        // const intervalId = setInterval(() => {
         const currentTime = new Date();
         const hours = currentTime.getHours(); // Retrieves the hour as an integer
         const date = currentTime.getDate();
@@ -107,14 +111,13 @@ export default function CustomCharts({ weatherData, fetchData }) {
         const year = currentTime.getFullYear();
         setCurrentDate(`${month + 1}/${date}/${year}`);
         setCurrentHour(hours);
+        handleDataUpdate(dataLabel);
         fetchData();
-        // }, 1000);
-        // return () => clearInterval(intervalId);
-    }, [fetchData]);
+    }, [fetchData, handleDataUpdate, dataLabel]);
 
     useEffect(() => {
         updateCurrentHour();
-    }, [updateCurrentHour]);
+    }, []);
 
     return (
         <div className='py-10 flex flex-col items-center justify-center'>
@@ -125,7 +128,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
                         labelId="select-standard-label"
                         id="select-standard"
                         value={dataLabel}
-                        onChange={handleDataUpdate}
+                        onChange={dataUpdate}
                         label="Weather Data"
                         name="weatherDataSelect"
                     >
