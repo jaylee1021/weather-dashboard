@@ -66,12 +66,11 @@ const Signup = () => {
 
 	if (error) {
 		return (
-			<div className='login_main'>
+			<div className='login_main' >
 				<div className='middle-content'>
-					<p>Email already exists!</p>
+					<p>User with Email already exists!</p>
 					<br />
-					<h2>Login</h2>
-					<p>Log In to your account</p>
+					<p style={{ margin: '10px' }}>Log In to your account</p>
 					<Button variant='outlined' href="/users/login" type="button" className="btn btn-primary active mt-3">Login</Button>
 				</div>
 			</div>
