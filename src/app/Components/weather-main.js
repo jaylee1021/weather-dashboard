@@ -130,7 +130,7 @@ export default function WeatherMain() {
 
             selectedSite = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_COORDINATES;
         }
-        axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}`)
+        axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}`)
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
                 setWeather(res.data.current);
