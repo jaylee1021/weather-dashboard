@@ -24,8 +24,16 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const [state, setState] = useState('');
-    const { steadyWind, windGust, tempLow, tempHigh, visibility, cloudBaseHeight, densityAltitudeLow, densityAltitudeHigh } = state;
+    const [state, setState] = useState({
+        steadyWind: '',
+        windGust: '',
+        tempLow: '',
+        tempHigh: '',
+        visibility: '',
+        cloudBaseHeight: '',
+        densityAltitudeLow: '',
+        densityAltitudeHigh: ''
+    });
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -46,7 +54,6 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
             densityAltitudeHigh: state.densityAltitudeHigh
         })
             .then((res) => {
-                console.log(res);
                 handleSuccess();
             })
             .catch((err) => {
@@ -73,14 +80,14 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
                             <div style={{ padding: '10px' }}>
                                 <h3 style={{ color: 'black' }}>Update Operating Window</h3>
                                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <TextField id="standard-basic" label="Steady Wind" variant="standard" value={steadyWind} onChange={handleChange} name='steadyWind' required />
-                                    <TextField id="standard-basic" label="Wind Gust" variant="standard" value={windGust} onChange={handleChange} name='windGust' required />
-                                    <TextField id="standard-basic" label="Temp Low" variant="standard" value={tempLow} onChange={handleChange} name='tempLow' />
-                                    <TextField id="standard-basic" label="Temp High" variant="standard" value={tempHigh} onChange={handleChange} name='tempHigh' />
-                                    <TextField id="standard-basic" label="Visibility" variant="standard" value={visibility} onChange={handleChange} name='visibility' />
-                                    <TextField id="standard-basic" label="Cloud Base Height" variant="standard" value={cloudBaseHeight} onChange={handleChange} name='cloudBaseHeight' />
-                                    <TextField id="standard-basic" label="Density Alt Low" variant="standard" value={densityAltitudeLow} onChange={handleChange} name='densityAltitudeLow' />
-                                    <TextField id="standard-basic" label="Density Alt High" variant="standard" value={densityAltitudeHigh} onChange={handleChange} name='densityAltitudeHigh' />
+                                    <TextField id="standard-basic" label="Steady Wind" variant="standard" value={state.steadyWind} onChange={handleChange} name='steadyWind' required />
+                                    <TextField id="standard-basic" label="Wind Gust" variant="standard" value={state.windGust} onChange={handleChange} name='windGust' required />
+                                    <TextField id="standard-basic" label="Temp Low" variant="standard" value={state.tempLow} onChange={handleChange} name='tempLow' />
+                                    <TextField id="standard-basic" label="Temp High" variant="standard" value={state.tempHigh} onChange={handleChange} name='tempHigh' />
+                                    <TextField id="standard-basic" label="Visibility" variant="standard" value={state.visibility} onChange={handleChange} name='visibility' />
+                                    <TextField id="standard-basic" label="Cloud Base Height" variant="standard" value={state.cloudBaseHeight} onChange={handleChange} name='cloudBaseHeight' />
+                                    <TextField id="standard-basic" label="Density Alt Low" variant="standard" value={state.densityAltitudeLow} onChange={handleChange} name='densityAltitudeLow' />
+                                    <TextField id="standard-basic" label="Density Alt High" variant="standard" value={state.densityAltitudeHigh} onChange={handleChange} name='densityAltitudeHigh' />
                                     <Button variant='outlined' type="submit" style={{ margin: '10px 0' }} className="button_style">submit</Button>
                                 </form>
                             </div>
