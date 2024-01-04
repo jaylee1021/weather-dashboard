@@ -173,7 +173,6 @@ export default function WeatherMain() {
         const pacificTimeOffset = -8;
 
         const currentPSTHour = currentTime.getUTCHours() + pacificTimeOffset;
-
         if (currentPSTHour === 0) {
             handleReturnToDefault();
         }
@@ -192,6 +191,8 @@ export default function WeatherMain() {
         updateTime();
         // Fetch data immediately on mount
         fetchData();
+        // Check if it's midnight PST immediately on mount
+        checkMidnightPST();
 
         // run fetchData() every minute
         const fetchDataIntervalId = setInterval(fetchData, 60000);
