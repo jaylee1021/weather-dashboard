@@ -146,21 +146,38 @@ export default function WeatherMain() {
         setMinCountdown(60);
     }, [toKnots, toMetersPerSec, windUnit, selectSite]);
 
-    useEffect(() => {
-        fetchData();
+    // return operating window to default values
+    const handleReturnToDefault = useCallback(async () => {
+        await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
+            wind: 14, windGust: 25, tempLow: 32, tempHigh: 91, precipitation: 0.0, visibility: 3,
+            cloudBaseHeight: 1000, densityAltitudeLow: -2000, densityAltitudeHigh: 4600, lighteningStrike: 30,
+            unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots'
+        })
+            .then((res) => {
+                // console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        localStorage.setItem('windUnit', 'knots');
+        localStorage.setItem('selectSite', 'hsiland');
+        setSelectSite('hsiland');
+        setWindUnit('knots');
+        fetchUser();
+    }, [userId, fetchUser]);
 
-        const intervalId = setInterval(fetchData, 60000);
-        const countdownInterval = setInterval(() => {
-            setMinCountdown(prevCountdown => prevCountdown > 0 ? prevCountdown - 1 : 0);
-        }, 1000);
+    // check if it's midnight PST and if it's midnight, run handleReturnToDefault()
+    const checkMidnightPST = useCallback(() => {
+        const currentTime = new Date();
+        const pacificTimeOffset = -8;
 
-        return () => {
-            clearInterval(intervalId); // This is the cleanup function
-            clearInterval(countdownInterval);
-        };
-    }, [fetchData]);
+        const currentPSTHour = currentTime.getUTCHours() + pacificTimeOffset;
 
-    // updating current date/time every second
+        if (currentPSTHour === 0) {
+            handleReturnToDefault();
+        }
+    }, [handleReturnToDefault]);
+
     useEffect(() => {
         // Function to update time
         const updateTime = () => {
@@ -172,13 +189,26 @@ export default function WeatherMain() {
 
         // Update time immediately on mount
         updateTime();
+        fetchData();
 
-        // Set interval to update time
-        const intervalId = setInterval(updateTime, 1000);
+        // run fetchData() every minute
+        const fetchDataIntervalId = setInterval(fetchData, 60000);
+        // run checkMidnightPST() every minute to check if it's midnight PST
+        const midnightIntervalId = setInterval(checkMidnightPST, 60000);
+        // run countdown every second
+        const countdownInterval = setInterval(() => {
+            setMinCountdown(prevCountdown => prevCountdown > 0 ? prevCountdown - 1 : 0);
+        }, 1000);
+        // Set interval to update time every sec
+        const updateTimeIntervalId = setInterval(updateTime, 1000);
 
-        // Cleanup interval on unmount
-        return () => clearInterval(intervalId);
-    }, []);
+        return () => {
+            clearInterval(fetchDataIntervalId);
+            clearInterval(countdownInterval);
+            clearInterval(midnightIntervalId);
+            clearInterval(updateTimeIntervalId);
+        };
+    }, [fetchData, checkMidnightPST]);
 
     // update user wind unit
     const setUserWindUnit = (unit) => {
@@ -263,25 +293,7 @@ export default function WeatherMain() {
         return limits;
     };
 
-    // return operating window to default values
-    const handleReturnToDefault = async () => {
-        await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
-            wind: 14, windGust: 25, tempLow: 32, tempHigh: 91, precipitation: 0.0, visibility: 3,
-            cloudBaseHeight: 1000, densityAltitudeLow: -2000, densityAltitudeHigh: 4600, lighteningStrike: 30,
-            unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots'
-        })
-            .then((res) => {
-                // console.log(res);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-        localStorage.setItem('windUnit', 'knots');
-        localStorage.setItem('selectSite', 'hsiland');
-        setSelectSite('hsiland');
-        setWindUnit('knots');
-        fetchUser();
-    };
+
 
     // loading screen
     if (loading) return (<LoadingSpinningBubble />);
