@@ -305,13 +305,13 @@ export default function WeatherMain() {
         <div>
             <div style={{ padding: '10px' }}>
                 <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="demo-simple-select-standard-label">Site</InputLabel>
+                    <InputLabel id="site_select_label">Site</InputLabel>
                     <Select
-                        labelId="demo-simple-select-standard-label"
-                        id="demo-simple-select-standard"
+                        labelId="site_select"
+                        id="site_select_menu"
                         value={localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland'}
                         onChange={handleSiteSelection}
-                        label="Select site"
+                        label="Select_site"
                         name='selectSite'
                     >
                         <MenuItem value={'hsiland'}>Hsiland</MenuItem>
@@ -324,13 +324,13 @@ export default function WeatherMain() {
                 <div className="buttons_wrapper">
                     <div>
                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                            <InputLabel id="demo-simple-select-standard-label">Wind Unit</InputLabel>
+                            <InputLabel id="wind_unit_select">Wind Unit</InputLabel>
                             <Select
-                                labelId="demo-simple-select-standard-label"
-                                id="demo-simple-select-standard"
+                                labelId="wind_unit_select"
+                                id="wind_unit_select_menu"
                                 value={windUnit}
                                 onChange={handleConversion}
-                                label="Wind Unit"
+                                label="Wind_Unit"
                                 name='windUnit'
                             >
                                 <MenuItem value={'knots'}>knots</MenuItem>
