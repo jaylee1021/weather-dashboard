@@ -26,7 +26,6 @@ import { LoadingSpinningBubble } from "./Loading";
 
 export default function WeatherMain() {
 
-    const [selectSite, setSelectSite] = useState('');
     const [userData, setUserData] = useState([]);
     const [weather, setWeather] = useState([]);
     const [forecast, setForecast] = useState([]);
@@ -49,7 +48,6 @@ export default function WeatherMain() {
 
     // set wind unit on page load
     useEffect(() => {
-        setSelectSite(localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland');
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
         if (typeof window !== undefined) {
             const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
@@ -114,13 +112,18 @@ export default function WeatherMain() {
 
     }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
-    const handleSiteSelection = (e) => {
-        setSelectSite(e.target.value);
+    const handleSiteSelection = async (e) => {
         localStorage.setItem('selectSite', e.target.value);
+        try {
+            await fetchData();
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     // fetch weather data on page load and every minute
-    const fetchData = useCallback(() => {
+    const fetchData = useCallback(async () => {
+        const selectSite = localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland';
         let selectedSite;
         if (selectSite === 'hsiland' || localStorage.getItem('selectSite') === 'hsiland') {
             selectedSite = process.env.NEXT_PUBLIC_HSILAND_COORDINATES;
@@ -144,7 +147,7 @@ export default function WeatherMain() {
                 console.log(err);
             });
         setMinCountdown(60);
-    }, [toKnots, toMetersPerSec, windUnit, selectSite]);
+    }, [toKnots, toMetersPerSec, windUnit]);
 
     // return operating window to default values
     const handleReturnToDefault = useCallback(async () => {
@@ -161,7 +164,6 @@ export default function WeatherMain() {
             });
         localStorage.setItem('windUnit', 'knots');
         localStorage.setItem('selectSite', 'hsiland');
-        setSelectSite('hsiland');
         setWindUnit('knots');
         fetchUser();
     }, [userId, fetchUser]);
@@ -189,6 +191,7 @@ export default function WeatherMain() {
 
         // Update time immediately on mount
         updateTime();
+        // Fetch data immediately on mount
         fetchData();
 
         // run fetchData() every minute
@@ -306,7 +309,7 @@ export default function WeatherMain() {
                     <Select
                         labelId="demo-simple-select-standard-label"
                         id="demo-simple-select-standard"
-                        value={selectSite}
+                        value={localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland'}
                         onChange={handleSiteSelection}
                         label="Select site"
                         name='selectSite'
