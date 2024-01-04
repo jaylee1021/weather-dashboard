@@ -113,10 +113,15 @@ export default function CustomCharts({ weatherData, fetchData }) {
         setCurrentHour(hours);
         handleDataUpdate(dataLabel);
         fetchData();
+
     }, [fetchData, handleDataUpdate, dataLabel]);
 
     useEffect(() => {
         updateCurrentHour();
+
+        return () => {
+            axios.CancelToken.source().cancel();
+        };
     }, []);
 
     return (
@@ -139,9 +144,11 @@ export default function CustomCharts({ weatherData, fetchData }) {
                         <MenuItem value={'vis_miles'}>Visibility (SM)</MenuItem>
                     </Select>
                 </FormControl>
-                <div>
-                    <Button variant='outlined' onClick={updateCurrentHour}>Refresh</Button>
+                {dataLabel ? <div className="chart_refresh_button">
+                    <Button variant='outlined' onClick={updateCurrentHour}>Refresh Chart</Button>
                 </div>
+                    : null}
+
             </div>
             <Chart
                 width={'100%'}
