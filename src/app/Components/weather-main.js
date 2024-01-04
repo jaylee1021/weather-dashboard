@@ -130,7 +130,6 @@ export default function WeatherMain() {
         } else if (selectSite === 'pdt10_hangar' || localStorage.getItem('selectSite') === 'pdt10_hangar') {
             selectedSite = process.env.NEXT_PUBLIC_PDT10_HANGAR_COORDINATES;
         } else if (selectSite === 'pdt10_northpad' || localStorage.getItem('selectSite') === 'pdt10_northpad') {
-
             selectedSite = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_COORDINATES;
         }
         axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}`)
@@ -241,6 +240,7 @@ export default function WeatherMain() {
 
     // refresh page on button click
     const handleManualRefresh = () => {
+        
         fetchData();
     };
 
@@ -296,6 +296,10 @@ export default function WeatherMain() {
         return limits;
     };
 
+    const logout = () => {
+        handleLogout();
+        router.push('/users/login');
+    };
 
 
     // loading screen
@@ -457,6 +461,7 @@ export default function WeatherMain() {
                         </div>
                     </div>
                     <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />
+                    <Button style={{ margin: '0 10px', width: '90%' }} variant="outlined" onClick={logout}>Log Out</Button>
                 </div>
             </div>
             <CustomCharts weatherData={forecast} fetchData={fetchData} />
