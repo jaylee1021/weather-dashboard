@@ -240,7 +240,6 @@ export default function WeatherMain() {
 
     // refresh page on button click
     const handleManualRefresh = () => {
-        
         fetchData();
     };
 
