@@ -27,7 +27,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
         height: 400,
         pointSize: 5,
         legend: { position: "top", maxLines: 3 },
-        chartArea: { right: 0, width: "98%", height: "70%" },
+        chartArea: { right: 0, width: "96%", height: "70%" },
         annotations: {
             stem: {
                 color: 'red',
