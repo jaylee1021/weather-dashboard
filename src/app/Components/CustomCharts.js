@@ -23,11 +23,11 @@ export default function CustomCharts({ weatherData, fetchData }) {
     const options = {
         title: 'Weather Forecast',
         hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
-        // vAxis: { minValue: 0 },
-        height: 300,
+        vAxis: { minValue: 0 },
+        height: 400,
         pointSize: 5,
         legend: { position: "top", maxLines: 3 },
-        chartArea: { width: "90%", height: "70%" },
+        chartArea: { right: 0, width: "98%", height: "70%" },
         annotations: {
             stem: {
                 color: 'red',
@@ -127,7 +127,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
     return (
         <div className='py-10 flex flex-col items-center justify-center'>
             <div style={{ display: 'flex' }}>
-                <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 130 }}>
+                <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 130 }} style={{ margin: '10px 10px 10px 0' }}>
                     <InputLabel id="select-standard-label" >Choose Option</InputLabel>
                     <Select
                         labelId="select-standard-label"
