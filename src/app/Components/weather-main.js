@@ -153,10 +153,10 @@ export default function WeatherMain() {
         await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
             wind: 14, windGust: 25, tempLow: 32, tempHigh: 91, precipitation: 0.0, visibility: 3,
             cloudBaseHeight: 1000, densityAltitudeLow: -2000, densityAltitudeHigh: 4600, lighteningStrike: 30,
-            unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots'
+            unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots', windDirectionLow: -1, windDirectionHigh: 361
         })
             .then((res) => {
-                // console.log(res);
+                // console.log(res.data.user);
             })
             .catch((err) => {
                 console.log(err);
@@ -250,7 +250,8 @@ export default function WeatherMain() {
             (weather.temp_f > userData.tempHigh && userData.showTemp) || (weather.precip_mm > userData.precipitation && userData.showPrecipitation) ||
             (weather.vis_miles < userData.visibility && userData.showVisibility) || weather.cloud < userData.cloudBaseHeight && userData.showCloudBaseHeight ||
             (weather.wind_mph < userData.densityAltitudeLow && userData.showDensityAltitude) || (weather.wind_mph > userData.densityAltitudeHigh && userData.showDensityAltitude) ||
-            (weather.wind_mph > userData.lighteningStrike && userData.showLighteningStrike)) {
+            (weather.wind_mph > userData.lighteningStrike && userData.showLighteningStrike) || (weather.wind_degree < userData.windDirectionLow && userData.showWindDirection) ||
+            (weather.wind_degree > userData.windDirectionHigh && userData.showWindDirection)) {
             return (<p style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>Out of Limits!</p>);
         } else {
             return (<p style={{ color: 'green', fontWeight: 'bold', padding: '10px' }}>Go!</p>);
@@ -289,6 +290,12 @@ export default function WeatherMain() {
         }
         if (weather.wind_mph > userData.lighteningStrike && userData.showLighteningStrike) {
             limits.push('Lightening Strike');
+        }
+        if (weather.wind_degree < userData.windDirectionLow && userData.showWindDirection) {
+            limits.push('Wind Direction Lower Limit');
+        }
+        if (weather.wind_degree > userData.windDirectionHigh && userData.showWindDirection) {
+            limits.push('Wind Direction Upper Limit');
         }
         if (limits.length === 0) {
             limits.push(<p style={{ color: 'green' }}>None</p>);
@@ -347,8 +354,7 @@ export default function WeatherMain() {
                         <Button variant='outlined' onClick={handleManualRefresh}>Manual Refresh</Button>
                     </div>
                     <div className="button_padding">
-                        <UpdateParams windOpWindow={windOpWindow} windGustOpWindow={windGustOpWindow} windUnit={windUnit}
-                            userId={userId} fetchUser={fetchUser} />
+                        <UpdateParams windUnit={windUnit} userId={userId} fetchUser={fetchUser} />
                     </div>
                     <div className="button_padding">
                         <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />
@@ -357,7 +363,7 @@ export default function WeatherMain() {
                         <Button variant='outlined' onClick={() => handleReturnToDefault()}>Return to default</Button>
                     </div>
                 </div>
-                <div className="time_style_top">
+                <div className="time_style_top" >
                     <div className="time_style">
                         <p>Current date/time: {currentDateTime}</p>
                     </div>
@@ -375,8 +381,8 @@ export default function WeatherMain() {
                                 <TableRow>
                                     <TableCell style={{ fontWeight: 'bold' }}>Indicator</TableCell>
                                     <TableCell align="right" style={{ fontWeight: 'bold' }}>Current</TableCell>
-                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Test Card Ops Window</TableCell>
-                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Standard Ops Window</TableCell>
+                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Test Card Op Window</TableCell>
+                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Standard Op Window</TableCell>
 
                                 </TableRow>
                             </TableHead>
@@ -452,8 +458,12 @@ export default function WeatherMain() {
                                 {userData.showWindDirection ?
                                     <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Wind direction (deg)</TableCell>
-                                        <TableCell align="right">{weather.wind_degree}</TableCell>
-                                        <TableCell align="right">N/A</TableCell>
+                                        {weather.wind_degree >= userData.windDirectionLow && weather.wind_degree <= userData.windDirectionHigh ? <TableCell align="right" style={{ color: 'green' }}>{weather.wind_degree}</TableCell> :
+                                            <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.wind_degree}</TableCell>}
+                                        {userData.windDirectionLow != -1 && userData.windDirectionHigh != 361 ?
+                                            <TableCell align="right">&gt; {userData.windDirectionLow}, &lt; {userData.windDirectionHigh}</TableCell>
+                                            : <TableCell align="right">N/A</TableCell>
+                                        }
                                         <TableCell align="right">N/A</TableCell>
                                     </TableRow>
                                     : null}
