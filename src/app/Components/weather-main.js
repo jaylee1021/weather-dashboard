@@ -306,28 +306,29 @@ export default function WeatherMain() {
     if (loading) return (<LoadingSpinningBubble />);
 
     return (
-        <div>
-            <div style={{ padding: '10px' }}>
-                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="site_select_label">Site</InputLabel>
-                    <Select
-                        labelId="site_select"
-                        id="site_select_menu"
-                        value={localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland'}
-                        onChange={handleSiteSelection}
-                        label="Select_site"
-                        name='selectSite'
-                    >
-                        <MenuItem value={'hsiland'}>Hsiland</MenuItem>
-                        <MenuItem value={'pdt10_hangar'}>PDT10 Hangar</MenuItem>
-                        <MenuItem value={'pdt10_northpad'}>PDT10 North Pad</MenuItem>
-                    </Select>
-                </FormControl>
-            </div>
+        <div className="top_wrapper">
+
             <div className="top">
                 <div className="buttons_wrapper">
+                    <div >
+                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px 10px 10px 0' }}>
+                            <InputLabel id="site_select_label">Site</InputLabel>
+                            <Select
+                                labelId="site_select"
+                                id="site_select_menu"
+                                value={localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland'}
+                                onChange={handleSiteSelection}
+                                label="Select_site"
+                                name='selectSite'
+                            >
+                                <MenuItem value={'hsiland'}>Hsiland</MenuItem>
+                                <MenuItem value={'pdt10_hangar'}>PDT10 Hangar</MenuItem>
+                                <MenuItem value={'pdt10_northpad'}>PDT10 North Pad</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
                     <div>
-                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px 0' }}>
                             <InputLabel id="wind_unit_select">Wind Unit</InputLabel>
                             <Select
                                 labelId="wind_unit_select"
@@ -342,36 +343,38 @@ export default function WeatherMain() {
                             </Select>
                         </FormControl>
                     </div>
-                    <div>
+                    <div className="button_padding">
                         <Button variant='outlined' onClick={handleManualRefresh}>Manual Refresh</Button>
                     </div>
-                    <div>
+                    <div className="button_padding">
                         <UpdateParams windOpWindow={windOpWindow} windGustOpWindow={windGustOpWindow} windUnit={windUnit}
                             userId={userId} fetchUser={fetchUser} />
                     </div>
-                    <div>
+                    <div className="button_padding">
                         <Button variant='outlined' onClick={() => handleReturnToDefault()}>Return to default</Button>
                     </div>
                 </div>
                 <div className="time_style_top">
                     <div className="time_style">
-                        <p className="board_col">Current date/time: {currentDateTime}</p>
+                        <p>Current date/time: {currentDateTime}</p>
                     </div>
                     <div className="time_style">
-                        <p className="board_col">Last updated: {weather.last_updated}</p>
-                        <p className="board_col">Refreshing in: {minCountdown}s</p>
+                        <p className="time_style">Last updated: {weather.last_updated}</p>
+                        <p>Refreshing in: {minCountdown}s</p>
                     </div>
                 </div>
             </div>
             <div style={{ display: 'flex' }}>
-                <div>
+                <div style={{ display: 'flex', flex: 'auto' }}>
                     <TableContainer component={Paper}>
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
                                     <TableCell style={{ fontWeight: 'bold' }}>Indicator</TableCell>
                                     <TableCell align="right" style={{ fontWeight: 'bold' }}>Current</TableCell>
-                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Operating Window</TableCell>
+                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Test Card Ops Window</TableCell>
+                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Standard Ops Window</TableCell>
+
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -382,6 +385,7 @@ export default function WeatherMain() {
                                         </TableCell>
                                         {wind > windOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{wind}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{wind}</TableCell>}
                                         <TableCell align="right">&lt; {parseFloat(windOpWindow).toFixed(1)}</TableCell>
+                                        <TableCell align="right">&lt; 14.0</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showWindGust ?
@@ -391,6 +395,7 @@ export default function WeatherMain() {
                                         </TableCell>
                                         {windGust > windGustOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{windGust}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{windGust}</TableCell>}
                                         <TableCell align="right">&lt; {parseFloat(windGustOpWindow).toFixed(1)}</TableCell>
+                                        <TableCell align="right">&lt; 25.0</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showTemp ?
@@ -398,6 +403,7 @@ export default function WeatherMain() {
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature (F)</TableCell>
                                         {weather.temp_f > userData.tempLow && weather.temp_f < userData.tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{weather.temp_f}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.temp_f}</TableCell>}
                                         <TableCell align="right">&gt; {userData.tempLow}, &lt; {userData.tempHigh}</TableCell>
+                                        <TableCell align="right">&gt; 32, &lt; 91</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showPrecipitation ?
@@ -405,6 +411,7 @@ export default function WeatherMain() {
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Precipitation (mm/hr)</TableCell>
                                         {weather.precip_mm > userData.precipitation ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.precip_mm}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{weather.precip_mm}</TableCell>}
                                         <TableCell align="right">{userData.precipitation}</TableCell>
+                                        <TableCell align="right">0</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showVisibility ?
@@ -412,6 +419,7 @@ export default function WeatherMain() {
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Visibility (SM)</TableCell>
                                         {weather.vis_miles >= userData.visibility ? <TableCell align="right" style={{ color: 'green' }}>{weather.vis_miles}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.vis_miles}</TableCell>}
                                         <TableCell align="right">&gt; {userData.visibility}</TableCell>
+                                        <TableCell align="right">&gt; 3</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showCloudBaseHeight ?
@@ -419,6 +427,7 @@ export default function WeatherMain() {
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Cloud base height (ft)</TableCell>
                                         <TableCell align="right">{weather.cloud}</TableCell>
                                         <TableCell align="right">&gt; {userData.cloudBaseHeight}</TableCell>
+                                        <TableCell align="right">&gt; 1000</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showDensityAltitude ?
@@ -426,6 +435,7 @@ export default function WeatherMain() {
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Density altitude (ft)</TableCell>
                                         <TableCell align="right">{weather.wind_mph}</TableCell>
                                         <TableCell align="right">&gt; {userData.densityAltitudeLow}, &lt; {userData.densityAltitudeHigh}</TableCell>
+                                        <TableCell align="right">&gt; -2000, &lt; 4600</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showLighteningStrike ?
@@ -433,12 +443,14 @@ export default function WeatherMain() {
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Last lightning strike(min)</TableCell>
                                         <TableCell align="right">{weather.wind_mph}</TableCell>
                                         <TableCell align="right">&gt; {userData.lighteningStrike}</TableCell>
+                                        <TableCell align="right">&gt; 30</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showWindDirection ?
                                     <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Wind direction (deg)</TableCell>
                                         <TableCell align="right">{weather.wind_degree}</TableCell>
+                                        <TableCell align="right">N/A</TableCell>
                                         <TableCell align="right">N/A</TableCell>
                                     </TableRow>
                                     : null}
