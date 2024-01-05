@@ -328,7 +328,7 @@ export default function WeatherMain() {
                         </FormControl>
                     </div>
                     <div>
-                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px 0' }}>
+                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px' }}>
                             <InputLabel id="wind_unit_select">Wind Unit</InputLabel>
                             <Select
                                 labelId="wind_unit_select"
@@ -349,6 +349,9 @@ export default function WeatherMain() {
                     <div className="button_padding">
                         <UpdateParams windOpWindow={windOpWindow} windGustOpWindow={windGustOpWindow} windUnit={windUnit}
                             userId={userId} fetchUser={fetchUser} />
+                    </div>
+                    <div className="button_padding">
+                        <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />
                     </div>
                     <div className="button_padding">
                         <Button variant='outlined' onClick={() => handleReturnToDefault()}>Return to default</Button>
@@ -472,8 +475,8 @@ export default function WeatherMain() {
                             </div>
                         </div>
                     </div>
-                    <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />
-                    <Button style={{ margin: '0 10px', width: '90%' }} variant="outlined" onClick={logout}>Log Out</Button>
+
+                    <Button style={{ margin: '10px' }} variant="outlined" onClick={logout}>Log Out</Button>
                 </div>
             </div>
             <CustomCharts weatherData={forecast} fetchData={fetchData} />
