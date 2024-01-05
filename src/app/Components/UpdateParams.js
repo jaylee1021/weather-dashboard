@@ -20,7 +20,7 @@ const style = {
     p: 4,
 };
 
-export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, windUnit, fetchUser }) {
+export default function UpdateParams({ userId, windUnit, fetchUser }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -32,7 +32,9 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
         visibility: '',
         cloudBaseHeight: '',
         densityAltitudeLow: '',
-        densityAltitudeHigh: ''
+        densityAltitudeHigh: '',
+        windDirectionLow: '',
+        windDirectionHigh: ''
     });
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -42,7 +44,7 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
             handleClose();
             setState({
                 ...state, steadyWind: '', windGust: '', tempLow: '', tempHigh: '', visibility: '',
-                cloudBaseHeight: '', densityAltitudeLow: '', densityAltitudeHigh: ''
+                cloudBaseHeight: '', densityAltitudeLow: '', densityAltitudeHigh: '', windDirectionLow: '', windDirectionHigh: ''
             });
         };
 
@@ -51,7 +53,8 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
             userWindUnit: windUnit, userWindGustUnit: windUnit,
             tempLow: state.tempLow, tempHigh: state.tempHigh, visibility: state.visibility,
             cloudBaseHeight: state.cloudBaseHeight, densityAltitudeLow: state.densityAltitudeLow,
-            densityAltitudeHigh: state.densityAltitudeHigh
+            densityAltitudeHigh: state.densityAltitudeHigh, windDirectionLow: state.windDirectionLow,
+            windDirectionHigh: state.windDirectionHigh
         })
             .then((res) => {
                 handleSuccess();
@@ -67,7 +70,7 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
 
     return (
         <div>
-            <Button variant='outlined' onClick={handleOpen}>Update Operating Window</Button>
+            <Button variant='outlined' onClick={handleOpen}>Update Test Card Op Window</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -80,14 +83,16 @@ export default function UpdateParams({ userId, windOpWindow, windGustOpWindow, w
                             <div style={{ padding: '10px' }}>
                                 <h3 style={{ color: 'black' }}>Update Operating Window</h3>
                                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <TextField id="standard-basic" label="Steady Wind" variant="standard" value={state.steadyWind} onChange={handleChange} name='steadyWind' required />
-                                    <TextField id="standard-basic" label="Wind Gust" variant="standard" value={state.windGust} onChange={handleChange} name='windGust' required />
-                                    <TextField id="standard-basic" label="Temp Low" variant="standard" value={state.tempLow} onChange={handleChange} name='tempLow' />
-                                    <TextField id="standard-basic" label="Temp High" variant="standard" value={state.tempHigh} onChange={handleChange} name='tempHigh' />
-                                    <TextField id="standard-basic" label="Visibility" variant="standard" value={state.visibility} onChange={handleChange} name='visibility' />
-                                    <TextField id="standard-basic" label="Cloud Base Height" variant="standard" value={state.cloudBaseHeight} onChange={handleChange} name='cloudBaseHeight' />
-                                    <TextField id="standard-basic" label="Density Alt Low" variant="standard" value={state.densityAltitudeLow} onChange={handleChange} name='densityAltitudeLow' />
-                                    <TextField id="standard-basic" label="Density Alt High" variant="standard" value={state.densityAltitudeHigh} onChange={handleChange} name='densityAltitudeHigh' />
+                                    <TextField id="steadyWind" label="Steady Wind" variant="standard" value={state.steadyWind} onChange={handleChange} name='steadyWind' required />
+                                    <TextField id="windGust" label="Wind Gust" variant="standard" value={state.windGust} onChange={handleChange} name='windGust' required />
+                                    <TextField id="tempLow" label="Temp Low" variant="standard" value={state.tempLow} onChange={handleChange} name='tempLow' />
+                                    <TextField id="tempHigh" label="Temp High" variant="standard" value={state.tempHigh} onChange={handleChange} name='tempHigh' />
+                                    <TextField id="visibility" label="Visibility" variant="standard" value={state.visibility} onChange={handleChange} name='visibility' />
+                                    <TextField id="cloudBaseHeight" label="Cloud Base Height" variant="standard" value={state.cloudBaseHeight} onChange={handleChange} name='cloudBaseHeight' />
+                                    <TextField id="densityAltitudeLow" label="Density Alt Low" variant="standard" value={state.densityAltitudeLow} onChange={handleChange} name='densityAltitudeLow' />
+                                    <TextField id="densityAltitudeHigh" label="Density Alt High" variant="standard" value={state.densityAltitudeHigh} onChange={handleChange} name='densityAltitudeHigh' />
+                                    <TextField id="windDirectionLow" label="Wind Direction Lower Limit" variant="standard" value={state.windDirectionLow} onChange={handleChange} name='windDirectionLow' />
+                                    <TextField id="windDirectionHigh" label="Wind Direction Upper Limit" variant="standard" value={state.windDirectionHigh} onChange={handleChange} name='windDirectionHigh' />
                                     <Button variant='outlined' type="submit" style={{ margin: '10px 0' }} className="button_style">submit</Button>
                                 </form>
                             </div>
