@@ -84,7 +84,7 @@ export default function ShowHide({ userData, userId, fetchUser }) {
 
     return (
         <div>
-            <Button style={{ margin: '10px', width: '90%' }} variant='outlined' onClick={handleOpen}>Show/Hide</Button>
+            <Button variant='outlined' onClick={handleOpen}>Show/Hide Ops Window</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
