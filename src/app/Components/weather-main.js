@@ -22,6 +22,7 @@ import handleLogout from "../utils/handleLogout"; // Logout function
 import CustomCharts from "./CustomCharts"; // Weather charts component
 import ShowHide from "./ShowHide"; // ShowHide component
 import UpdateParams from "./UpdateParams"; // Updating operating window component
+import AqiCheck from "./AqiCheck";
 import { LoadingSpinningBubble } from "./Loading";
 
 export default function WeatherMain() {
@@ -132,7 +133,7 @@ export default function WeatherMain() {
         } else if (selectSite === 'pdt10_northpad' || localStorage.getItem('selectSite') === 'pdt10_northpad') {
             selectedSite = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_COORDINATES;
         }
-        axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}`)
+        axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}&aqi=yes`)
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
                 setWeather(res.data.current);
@@ -485,8 +486,11 @@ export default function WeatherMain() {
                             </div>
                         </div>
                     </div>
+                    <div className="table_border" style={{ margin: '10px' }}>
+                        <AqiCheck weatherData={weather} />
+                    </div>
 
-                    <Button style={{ margin: '10px' }} variant="outlined" onClick={logout}>Log Out</Button>
+                    <Button style={{ margin: '0 10px' }} variant="outlined" onClick={logout}>Log Out</Button>
                 </div>
             </div>
             <CustomCharts weatherData={forecast} fetchData={fetchData} />
