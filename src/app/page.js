@@ -5,7 +5,7 @@ import WeatherMain from './Components/weather-main';
 export default function Home() {
   return (
     <main className='main'>
-      <h1 style={{ color: 'black' }}> Flight Test Weather Dashboard</h1>
+      <h1 className='page_title'> Flight Test Weather Dashboard</h1>
       <WeatherMain />
     </main>
   );
