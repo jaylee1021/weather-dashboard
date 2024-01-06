@@ -51,9 +51,15 @@ export default function CustomCharts({ weatherData, fetchData }) {
         const hours = currentTime.getHours();
         const minutes = currentTime.getMinutes();
         const formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+        let loopStart;
+        if (currentHour < 3) {
+            loopStart = 0;
+        } else {
+            loopStart = currentHour - 3;
+        }
         if (weatherValue === 'winds_knots') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (knots)', 'Wind Gust (knots)']];
-            for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
+            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 console.log('weather data', [i], weatherData[i]);
                 if (currentHour === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].wind_mph * mphToKnots, weatherData[i].gust_mph * mphToKnots]);
@@ -64,7 +70,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
             setData(newData);
         } else if (weatherValue === 'winds_m/s') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (m/s)', 'Wind Gust (m/s)']];
-            for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
+            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].wind_mph * mphToMetersPerSec, weatherData[i].gust_mph * mphToMetersPerSec]);
                 } else {
@@ -74,7 +80,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
             setData(newData);
         } else if (weatherValue === 'temp_f') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (F)']];
-            for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
+            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].temp_f]);
                 } else {
@@ -84,7 +90,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
             setData(newData);
         } else if (weatherValue === 'temp_c') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (C)']];
-            for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
+            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].temp_c]);
                 } else {
@@ -94,7 +100,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
             setData(newData);
         } else if (weatherValue === 'precip_mm') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Precipitation (mm/hr)']];
-            for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
+            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].precip_mm]);
                 } else {
@@ -104,7 +110,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
             setData(newData);
         } else if (weatherValue === 'vis_miles') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Visibility (SM)']];
-            for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
+            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].vis_miles]);
                 } else {
