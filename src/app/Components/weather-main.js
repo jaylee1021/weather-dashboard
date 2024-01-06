@@ -39,6 +39,10 @@ export default function WeatherMain() {
     const [minCountdown, setMinCountdown] = useState(60);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState(typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('userId') : null);
+    const [temp, setTemp] = useState('');
+    const [tempUnit, setTempUnit] = useState('');
+    const [tempLow, setTempLow] = useState('');
+    const [tempHigh, setTempHigh] = useState('');
     const router = useRouter();
 
     // conversion constants
@@ -62,10 +66,14 @@ export default function WeatherMain() {
         }
     }, [router]);
 
+
+
     const fetchUser = useCallback(async () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
         const fetchedUserData = res.data.user;
         setUserData(fetchedUserData);
+        localStorage.getItem('tempUnit') === 'f' ? (setTempLow(fetchedUserData.tempLow), setTempHigh(fetchedUserData.tempHigh)) :
+            (setTempLow(((fetchedUserData.tempLow - 32) * (5 / 9)).toFixed(2)), setTempHigh(((fetchedUserData.tempHigh - 32) * (5 / 9)).toFixed(2)));
         setLoading(false);
     }, [userId]);
 
@@ -137,6 +145,7 @@ export default function WeatherMain() {
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
                 setWeather(res.data.current);
+                localStorage.getItem('tempUnit') === 'f' ? (setTemp(res.data.current.temp_f), setTempUnit('F')) : (setTemp(res.data.current.temp_c), setTempUnit('C'));
                 if (windUnit === 'knots') {
                     toKnots();
                 } else if (windUnit === 'm/s') {
@@ -164,6 +173,7 @@ export default function WeatherMain() {
             });
         localStorage.setItem('windUnit', 'knots');
         localStorage.setItem('selectSite', 'hsiland');
+        localStorage.setItem('tempUnit', 'f');
         setWindUnit('knots');
         fetchUser();
     }, [userId, fetchUser]);
@@ -239,6 +249,22 @@ export default function WeatherMain() {
         setUserWindUnit(newUnit);
     };
 
+
+    const handleTempConversion = (e) => {
+        const newTempUnit = e.target.value;
+        localStorage.setItem('tempUnit', newTempUnit);
+        if (newTempUnit === 'f') {
+            setTemp(weather.temp_f);
+            setTempUnit('F');
+            setTempLow(userData.tempLow);
+            setTempHigh(userData.tempHigh);
+        } else if (newTempUnit === 'c') {
+            setTemp(weather.temp_c);
+            setTempUnit('C');
+            setTempLow(((userData.tempLow - 32) * (5 / 9)).toFixed(2));
+            setTempHigh(((userData.tempHigh - 32) * (5 / 9)).toFixed(2));
+        }
+    };
 
     // refresh page on button click
     const handleManualRefresh = () => {
@@ -351,6 +377,22 @@ export default function WeatherMain() {
                             </Select>
                         </FormControl>
                     </div>
+                    <div>
+                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px' }}>
+                            <InputLabel id="temp_unit_select">Wind Unit</InputLabel>
+                            <Select
+                                labelId="temp_unit_select"
+                                id="temp_unit_select_menu"
+                                value={localStorage.getItem('tempUnit') ? localStorage.getItem('tempUnit') : 'f'}
+                                onChange={handleTempConversion}
+                                label="Temp_Unit"
+                                name='tempUnit'
+                            >
+                                <MenuItem value={'f'}>Fahrenheit</MenuItem>
+                                <MenuItem value={'c'}>Celsius</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
                     <div className="button_padding">
                         <Button variant='outlined' onClick={handleManualRefresh}>Manual Refresh</Button>
                     </div>
@@ -410,9 +452,9 @@ export default function WeatherMain() {
                                     : null}
                                 {userData.showTemp ?
                                     <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature (F)</TableCell>
-                                        {weather.temp_f > userData.tempLow && weather.temp_f < userData.tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{weather.temp_f}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.temp_f}</TableCell>}
-                                        <TableCell align="right">&gt; {userData.tempLow}, &lt; {userData.tempHigh}</TableCell>
+                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature ({tempUnit})</TableCell>
+                                        {temp > tempLow && temp < tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{temp}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{temp}</TableCell>}
+                                        <TableCell align="right">&gt; {tempLow}, &lt; {tempHigh}</TableCell>
                                         <TableCell align="right">&gt; 32, &lt; 91</TableCell>
                                     </TableRow>
                                     : null}
