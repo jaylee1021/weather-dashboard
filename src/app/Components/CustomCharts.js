@@ -71,12 +71,22 @@ export default function CustomCharts({ weatherData, fetchData }) {
             }
             setData(newData);
         } else if (weatherValue === 'temp_f') {
-            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (f)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (F)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].temp_f]);
                 } else {
                     newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_f]);
+                }
+            }
+            setData(newData);
+        } else if (weatherValue === 'temp_c') {
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (C)']];
+            for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
+                if (currentHour === i) {
+                    newData.push([formattedTime, 'Current Time', weatherData[i].temp_c]);
+                } else {
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_c]);
                 }
             }
             setData(newData);
@@ -139,7 +149,8 @@ export default function CustomCharts({ weatherData, fetchData }) {
                     >
                         <MenuItem value={'winds_knots'}>Winds (knots)</MenuItem>
                         <MenuItem value={'winds_m/s'}>Winds (m/s)</MenuItem>
-                        <MenuItem value={'temp_f'}>Air Temp (f)</MenuItem>
+                        <MenuItem value={'temp_f'}>Air Temp (F)</MenuItem>
+                        <MenuItem value={'temp_c'}>Air Temp (C)</MenuItem>
                         <MenuItem value={'precip_mm'}>Precipitation (mm/hr)</MenuItem>
                         <MenuItem value={'vis_miles'}>Visibility (SM)</MenuItem>
                     </Select>
