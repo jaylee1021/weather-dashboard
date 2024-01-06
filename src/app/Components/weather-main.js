@@ -73,7 +73,7 @@ export default function WeatherMain() {
         const fetchedUserData = res.data.user;
         setUserData(fetchedUserData);
         localStorage.getItem('tempUnit') === 'f' ? (setTempLow(fetchedUserData.tempLow), setTempHigh(fetchedUserData.tempHigh)) :
-            (setTempLow(((fetchedUserData.tempLow - 32) * (5 / 9)).toFixed(2)), setTempHigh(((fetchedUserData.tempHigh - 32) * (5 / 9)).toFixed(2)));
+            (setTempLow(((fetchedUserData.tempLow - 32) * (5 / 9)).toFixed(1)), setTempHigh(((fetchedUserData.tempHigh - 32) * (5 / 9)).toFixed(1)));
         setLoading(false);
     }, [userId]);
 
@@ -261,8 +261,8 @@ export default function WeatherMain() {
         } else if (newTempUnit === 'c') {
             setTemp(weather.temp_c);
             setTempUnit('C');
-            setTempLow(((userData.tempLow - 32) * (5 / 9)).toFixed(2));
-            setTempHigh(((userData.tempHigh - 32) * (5 / 9)).toFixed(2));
+            setTempLow(((userData.tempLow - 32) * (5 / 9)).toFixed(1));
+            setTempHigh(((userData.tempHigh - 32) * (5 / 9)).toFixed(1));
         }
     };
 
