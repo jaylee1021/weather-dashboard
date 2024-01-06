@@ -23,58 +23,67 @@ export default function AqiCheck({ weatherData }) {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const pm2_5ToAqi = {
-        0: 0, 1: 4, 2: 8, 3: 13, 4: 17, 5: 21, 6: 25, 7: 29, 8: 33, 9: 38, 10: 42,
-        11: 46, 12: 50, 13: 52
-    };
+    function pm25ToAqi(pm25) {
+        const c = Math.floor(10 * pm25) / 10;
+        const a = c < 0 ? 0 // values below 0 are considered beyond AQI
+            : c < 12.1 ? pm25ToAqiCalc(0, 50, 0.0, 12.0, c)
+                : c < 35.5 ? pm25ToAqiCalc(51, 100, 12.1, 35.4, c)
+                    : c < 55.5 ? pm25ToAqiCalc(101, 150, 35.5, 55.4, c)
+                        : c < 150.5 ? pm25ToAqiCalc(151, 200, 55.5, 150.4, c)
+                            : c < 250.5 ? pm25ToAqiCalc(201, 300, 150.5, 250.4, c)
+                                : c < 350.5 ? pm25ToAqiCalc(301, 400, 250.5, 350.4, c)
+                                    : c < 500.5 ? pm25ToAqiCalc(401, 500, 350.5, 500.4, c)
+                                        : 500; // values above 500 are considered beyond AQI
+        return Math.round(a);
+    }
+
+    function pm25ToAqiCalc(ylo, yhi, xlo, xhi, x) {
+        return ((x - xlo) / (xhi - xlo)) * (yhi - ylo) + ylo;
+    }
+
     const aqiCheck = () => {
-        if (weatherData.air_quality.pm2_5 >= 0 && weatherData.air_quality.pm2_5 <= 12) {
-            return (
-                <div style={{ padding: '10px', backgroundColor: 'green', color: 'white', borderRadius: '9px' }}>
-                    <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Good!</h3>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: 0~50</p>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>PM2.5: {weatherData.air_quality.pm2_5} μg/m3</p>
-                </div>);
-        } else if (weatherData.air_quality.pm2_5 > 12 && weatherData.air_quality.pm2_5 <= 35.4) {
-            return (
-                <div style={{ padding: '10px', backgroundColor: 'yellow', color: 'black', borderRadius: '9px' }}>
-                    <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Moderate!</h3>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: 51~100</p>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>PM2.5: {weatherData.air_quality.pm2_5} μg/m3</p>
-                </div>
-            );
-        } else if (weatherData.air_quality.pm2_5 > 35.4 && weatherData.air_quality.pm2_5 <= 55.4) {
-            return (
-                <div style={{ padding: '10px', backgroundColor: 'orange', color: 'black', borderRadius: '9px' }}>
-                    <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Unhealthy for Sensitive Groups!</h3>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: 101~150</p>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>PM2.5: {weatherData.air_quality.pm2_5} μg/m3</p>
-                </div>
-            );
-        } else if (weatherData.air_quality.pm2_5 > 55.4 && weatherData.air_quality.pm2_5 <= 150.4) {
-            return (
-                <div style={{ padding: '10px', backgroundColor: 'red', color: 'white', borderRadius: '9px' }}>
-                    <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Unhealthy!</h3>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: 151-200</p>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>PM2.5: {weatherData.air_quality.pm2_5} μg/m3</p>
-                </div>
-            );
-        } else if (weatherData.air_quality.pm2_5 > 150.4 && weatherData.air_quality.pm2_5 <= 250.4) {
-            return (
-                <div style={{ padding: '10px', backgroundColor: 'purple', color: 'white', borderRadius: '9px' }}>
-                    <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Very Unhealthy!</h3>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: 201-300</p>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>PM2.5: {weatherData.air_quality.pm2_5} μg/m3</p>
-                </div>
-            );
-        } else if (weatherData.air_quality.pm2_5 > 250.4) {
-            return (
-                <div style={{ padding: '10px', backgroundColor: 'maroon', color: 'white', borderRadius: '9px' }}>
-                    <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Hazardous!</h3>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: &gt;300</p>
-                    <p style={{ fontWeight: 'bold', padding: '10px' }}>PM2.5: {weatherData.air_quality.pm2_5} μg/m3</p>
-                </div>
-            );
+        switch (true) {
+            case weatherData.air_quality.pm2_5 >= 0 && weatherData.air_quality.pm2_5 <= 12:
+                return (
+                    <div style={{ padding: '10px', backgroundColor: 'green', color: 'white', borderRadius: '9px' }}>
+                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Good!</h3>
+                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    </div>);
+            case weatherData.air_quality.pm2_5 > 12 && weatherData.air_quality.pm2_5 <= 35.4:
+                return (
+                    <div style={{ padding: '10px', backgroundColor: 'yellow', color: 'black', borderRadius: '9px' }}>
+                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Moderate!</h3>
+                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    </div>
+                );
+            case weatherData.air_quality.pm2_5 > 35.4 && weatherData.air_quality.pm2_5 <= 55.4:
+                return (
+                    <div style={{ padding: '10px', backgroundColor: 'orange', color: 'black', borderRadius: '9px' }}>
+                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Unhealthy for Sensitive Groups!</h3>
+                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    </div>
+                );
+            case weatherData.air_quality.pm2_5 > 55.4 && weatherData.air_quality.pm2_5 <= 150.4:
+                return (
+                    <div style={{ padding: '10px', backgroundColor: 'red', color: 'white', borderRadius: '9px' }}>
+                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Unhealthy!</h3>
+                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    </div>
+                );
+            case weatherData.air_quality.pm2_5 > 150.4 && weatherData.air_quality.pm2_5 <= 250.4:
+                return (
+                    <div style={{ padding: '10px', backgroundColor: 'purple', color: 'white', borderRadius: '9px' }}>
+                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Very Unhealthy!</h3>
+                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    </div>
+                );
+            case weatherData.air_quality.pm2_5 > 250.4:
+                return (
+                    <div style={{ padding: '10px', backgroundColor: 'maroon', color: 'white', borderRadius: '9px' }}>
+                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Hazardous!</h3>
+                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    </div>
+                );
         }
     };
 
