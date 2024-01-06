@@ -379,8 +379,8 @@ export default function WeatherMain() {
                                             Steady Wind ({windUnit})
                                         </TableCell>
                                         {wind > windOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{wind}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{wind}</TableCell>}
-                                        <TableCell align="right">&lt; {parseFloat(windOpWindow).toFixed(1)}</TableCell>
-                                        {windUnit === 'knots' ? <TableCell align="right">&lt; 14.0</TableCell> : <TableCell align="right">&lt; 7.2</TableCell>}
+                                        <TableCell align="right">&lt;= {parseFloat(windOpWindow).toFixed(1)}</TableCell>
+                                        {windUnit === 'knots' ? <TableCell align="right">&lt;= 14.0</TableCell> : <TableCell align="right">&lt;= 7.2</TableCell>}
                                     </TableRow>
                                     : null}
                                 {userData.showWindGust ?
@@ -389,16 +389,16 @@ export default function WeatherMain() {
                                             Wind gusts ({windUnit})
                                         </TableCell>
                                         {windGust > windGustOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{windGust}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{windGust}</TableCell>}
-                                        <TableCell align="right">&lt; {parseFloat(windGustOpWindow).toFixed(1)}</TableCell>
-                                        {windUnit === 'knots' ? <TableCell align="right">&lt; 25.0</TableCell> : <TableCell align="right">&lt; 12.9</TableCell>}
+                                        <TableCell align="right">&lt;= {parseFloat(windGustOpWindow).toFixed(1)}</TableCell>
+                                        {windUnit === 'knots' ? <TableCell align="right">&lt;= 25.0</TableCell> : <TableCell align="right">&lt;= 12.9</TableCell>}
                                     </TableRow>
                                     : null}
                                 {userData.showTemp ?
                                     <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature ({tempUnit})</TableCell>
                                         {temp > tempLow && temp < tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{temp}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{temp}</TableCell>}
-                                        <TableCell align="right">&gt; {tempLow}, &lt; {tempHigh}</TableCell>
-                                        {localStorage.getItem('tempUnit') === 'f' ? <TableCell align="right">&gt; 32, &lt; 91</TableCell> : <TableCell align="right">&gt; 0, &lt; 32.8</TableCell>}
+                                        <TableCell align="right">&gt;= {tempLow}, &lt;= {tempHigh}</TableCell>
+                                        {localStorage.getItem('tempUnit') === 'f' ? <TableCell align="right">&gt;= 32, &lt;= 91</TableCell> : <TableCell align="right">&gt;= 0, &lt;= 32.8</TableCell>}
                                     </TableRow>
                                     : null}
                                 {userData.showPrecipitation ?
@@ -413,8 +413,8 @@ export default function WeatherMain() {
                                     <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Visibility (SM)</TableCell>
                                         {weather.vis_miles >= userData.visibility ? <TableCell align="right" style={{ color: 'green' }}>{weather.vis_miles}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.vis_miles}</TableCell>}
-                                        <TableCell align="right">&gt; {userData.visibility}</TableCell>
-                                        <TableCell align="right">&gt; 3</TableCell>
+                                        <TableCell align="right">&gt;= {userData.visibility}</TableCell>
+                                        <TableCell align="right">&gt;= 3</TableCell>
                                     </TableRow>
                                     : null}
                                 {userData.showCloudBaseHeight ?
