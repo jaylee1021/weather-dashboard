@@ -23,6 +23,7 @@ import CustomCharts from "./CustomCharts"; // Weather charts component
 import ShowHide from "./ShowHide"; // ShowHide component
 import UpdateParams from "./UpdateParams"; // Updating operating window component
 import AqiCheck from "./AqiCheck";
+import WeatherSummary from "./WeatherSummary";
 import { LoadingSpinningBubble } from "./Loading";
 
 export default function WeatherMain() {
@@ -289,51 +290,6 @@ export default function WeatherMain() {
         }
     };
 
-    // display which limits are breaching
-    const checkBreachingLimit = () => {
-        let limits = [];
-        if (wind > windOpWindow && userData.showWind) {
-            limits.push('Steady Wind');
-        }
-        if (windGust > windGustOpWindow && userData.showWindGust) {
-            limits.push('Wind Gust');
-        }
-        if (temp < tempLow && userData.showTemp) {
-            limits.push('Temperature Low');
-        }
-        if (temp > tempHigh && userData.showTemp) {
-            limits.push('Temperature High');
-        }
-        if (weather.precip_mm > userData.precipitation && userData.showPrecipitation) {
-            limits.push('Precipitation');
-        }
-        if (weather.vis_miles < userData.visibility && userData.showVisibility) {
-            limits.push('Visibility');
-        }
-        if (weather.cloud < userData.cloudBaseHeight && userData.showCloudBaseHeight) {
-            limits.push('Cloud Base Height');
-        }
-        if (weather.wind_mph < userData.densityAltitudeLow && userData.showDensityAltitude) {
-            limits.push('Density Altitude Low');
-        }
-        if (weather.wind_mph > userData.densityAltitudeHigh && userData.showDensityAltitude) {
-            limits.push('Density Altitude High');
-        }
-        if (weather.wind_mph > userData.lighteningStrike && userData.showLighteningStrike) {
-            limits.push('Lightening Strike');
-        }
-        if (weather.wind_degree < userData.windDirectionLow && userData.showWindDirection) {
-            limits.push('Wind Direction Lower Limit');
-        }
-        if (weather.wind_degree > userData.windDirectionHigh && userData.showWindDirection) {
-            limits.push('Wind Direction Upper Limit');
-        }
-        if (limits.length === 0) {
-            limits.push(<p style={{ color: 'green' }}>None</p>);
-        }
-        return limits;
-    };
-
     const logout = () => {
         handleLogout();
         router.push('/users/login');
@@ -519,23 +475,10 @@ export default function WeatherMain() {
                     </TableContainer>
                 </div>
                 <div className="side_bar">
-                    <div className="table_border">
-                        <div style={{ padding: '10px' }}>
-                            <h3>Summary</h3>
-                            <h4>Status</h4>
-                            {checkGoNoGo()}
-                            <h4>Breaching Limit(s)</h4>
-                            <div style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>
-                                {checkBreachingLimit().map((limits, index) => {
-                                    return (<div key={index} >{limits}</div>);
-                                })}
-                            </div>
-                        </div>
-                    </div>
+                    <WeatherSummary props={{ wind, windOpWindow, userData, windGust, windGustOpWindow, temp, tempLow, tempHigh, weather }} />
                     <div className="table_border" style={{ margin: '10px' }}>
                         <AqiCheck weatherData={weather} />
                     </div>
-
                     <Button style={{ margin: '0 10px' }} variant="outlined" onClick={logout}>Log Out</Button>
                 </div>
             </div>
