@@ -276,20 +276,6 @@ export default function WeatherMain() {
         fetchData();
     };
 
-    // display go/no-go status
-    const checkGoNoGo = () => {
-        if ((wind > windOpWindow && userData.showWind) || (windGust > windGustOpWindow && userData.showWindGust) || (temp < tempLow && userData.showTemp) ||
-            (temp > tempHigh && userData.showTemp) || (weather.precip_mm > userData.precipitation && userData.showPrecipitation) ||
-            (weather.vis_miles < userData.visibility && userData.showVisibility) || weather.cloud < userData.cloudBaseHeight && userData.showCloudBaseHeight ||
-            (weather.wind_mph < userData.densityAltitudeLow && userData.showDensityAltitude) || (weather.wind_mph > userData.densityAltitudeHigh && userData.showDensityAltitude) ||
-            (weather.wind_mph > userData.lighteningStrike && userData.showLighteningStrike) || (weather.wind_degree < userData.windDirectionLow && userData.showWindDirection) ||
-            (weather.wind_degree > userData.windDirectionHigh && userData.showWindDirection)) {
-            return (<p style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>Out of Limits!</p>);
-        } else {
-            return (<p style={{ color: 'green', fontWeight: 'bold', padding: '10px' }}>Go!</p>);
-        }
-    };
-
     const logout = () => {
         handleLogout();
         router.push('/users/login');
