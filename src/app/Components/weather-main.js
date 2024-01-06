@@ -44,7 +44,7 @@ export default function WeatherMain() {
     const [tempUnit, setTempUnit] = useState('');
     const [tempLow, setTempLow] = useState('');
     const [tempHigh, setTempHigh] = useState('');
-    const fTemp = localStorage.getItem('tempUnit') === 'f';
+    const fTemp = typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('tempUnit') === 'f' : true;
     const router = useRouter();
 
     // conversion constants
