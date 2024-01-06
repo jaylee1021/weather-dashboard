@@ -144,10 +144,9 @@ export default function WeatherMain() {
         } else if (selectSite === 'pdt10_northpad' || localStorage.getItem('selectSite') === 'pdt10_northpad') {
             selectedSite = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_COORDINATES;
         }
-        axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}&aqi=yes`)
+        await axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}&aqi=yes`)
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
-                console.log('current', res.data.current);
                 setWeather(res.data.current);
                 localStorage.getItem('tempUnit') === 'f' ? (setTemp(res.data.current.temp_f), setTempUnit('F')) : (setTemp(res.data.current.temp_c), setTempUnit('C'));
                 if (windUnit === 'knots') {
@@ -179,9 +178,11 @@ export default function WeatherMain() {
         localStorage.setItem('windUnit', 'knots');
         localStorage.setItem('selectSite', 'hsiland');
         localStorage.setItem('tempUnit', 'f');
+        setTemp(weather.temp_f);
+        setTempUnit('F');
         setWindUnit('knots');
         fetchUser();
-    }, [userId, fetchUser]);
+    }, [userId, fetchUser, weather.temp_f]);
 
     // check if it's midnight PST and if it's midnight, run handleReturnToDefault()
     const checkMidnightPST = useCallback(() => {
