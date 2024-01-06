@@ -322,7 +322,7 @@ export default function WeatherMain() {
                     </div>
                     <div>
                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px' }}>
-                            <InputLabel id="temp_unit_select">Wind Unit</InputLabel>
+                            <InputLabel id="temp_unit_select">Temperature Unit</InputLabel>
                             <Select
                                 labelId="temp_unit_select"
                                 id="temp_unit_select_menu"
