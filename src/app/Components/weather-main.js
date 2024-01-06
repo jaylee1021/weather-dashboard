@@ -43,6 +43,7 @@ export default function WeatherMain() {
     const [tempUnit, setTempUnit] = useState('');
     const [tempLow, setTempLow] = useState('');
     const [tempHigh, setTempHigh] = useState('');
+    const fTemp = localStorage.getItem('tempUnit') === 'f';
     const router = useRouter();
 
     // conversion constants
@@ -50,6 +51,10 @@ export default function WeatherMain() {
     const mphToMetersPerSec = 0.44704;
     const knotsToMeterPerSec = 0.514444;
     const meterPerSecToKnots = 1.94384;
+
+    const toC = (f) => {
+        return (f - 32) * (5 / 9);
+    };
 
     // set wind unit on page load
     useEffect(() => {
@@ -72,10 +77,10 @@ export default function WeatherMain() {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
         const fetchedUserData = res.data.user;
         setUserData(fetchedUserData);
-        localStorage.getItem('tempUnit') === 'f' ? (setTempLow(fetchedUserData.tempLow), setTempHigh(fetchedUserData.tempHigh)) :
-            (setTempLow(((fetchedUserData.tempLow - 32) * (5 / 9)).toFixed(1)), setTempHigh(((fetchedUserData.tempHigh - 32) * (5 / 9)).toFixed(1)));
+        fTemp ? (setTempLow(fetchedUserData.tempLow), setTempHigh(fetchedUserData.tempHigh)) :
+            (setTempLow((toC(fetchedUserData.tempLow)).toFixed(1)), setTempHigh((toC(fetchedUserData.tempHigh)).toFixed(1)));
         setLoading(false);
-    }, [userId]);
+    }, [userId, fTemp]);
 
     useEffect(() => {
         setAuthToken(localStorage.getItem('jwtToken'));
@@ -145,7 +150,7 @@ export default function WeatherMain() {
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
                 setWeather(res.data.current);
-                localStorage.getItem('tempUnit') === 'f' ? (setTemp(res.data.current.temp_f), setTempUnit('F')) : (setTemp(res.data.current.temp_c), setTempUnit('C'));
+                fTemp ? (setTemp(res.data.current.temp_f), setTempUnit('F')) : (setTemp(res.data.current.temp_c), setTempUnit('C'));
                 if (windUnit === 'knots') {
                     toKnots();
                 } else if (windUnit === 'm/s') {
@@ -156,7 +161,7 @@ export default function WeatherMain() {
                 console.log(err);
             });
         setMinCountdown(60);
-    }, [toKnots, toMetersPerSec, windUnit]);
+    }, [toKnots, toMetersPerSec, windUnit, fTemp]);
 
     // return operating window to default values
     const handleReturnToDefault = useCallback(async () => {
@@ -244,7 +249,6 @@ export default function WeatherMain() {
         } else if (newUnit === 'm/s') {
             toMetersPerSec();
         }
-
         setWindUnit(newUnit);
         setUserWindUnit(newUnit);
     };
@@ -261,8 +265,8 @@ export default function WeatherMain() {
         } else if (newTempUnit === 'c') {
             setTemp(weather.temp_c);
             setTempUnit('C');
-            setTempLow(((userData.tempLow - 32) * (5 / 9)).toFixed(1));
-            setTempHigh(((userData.tempHigh - 32) * (5 / 9)).toFixed(1));
+            setTempLow((toC(userData.tempLow)).toFixed(1));
+            setTempHigh((toC(userData.tempHigh)).toFixed(1));
         }
     };
 
@@ -273,8 +277,8 @@ export default function WeatherMain() {
 
     // display go/no-go status
     const checkGoNoGo = () => {
-        if ((wind > windOpWindow && userData.showWind) || (windGust > windGustOpWindow && userData.showWindGust) || (weather.temp_f < userData.tempLow && userData.showTemp) ||
-            (weather.temp_f > userData.tempHigh && userData.showTemp) || (weather.precip_mm > userData.precipitation && userData.showPrecipitation) ||
+        if ((wind > windOpWindow && userData.showWind) || (windGust > windGustOpWindow && userData.showWindGust) || (temp < tempLow && userData.showTemp) ||
+            (temp > tempHigh && userData.showTemp) || (weather.precip_mm > userData.precipitation && userData.showPrecipitation) ||
             (weather.vis_miles < userData.visibility && userData.showVisibility) || weather.cloud < userData.cloudBaseHeight && userData.showCloudBaseHeight ||
             (weather.wind_mph < userData.densityAltitudeLow && userData.showDensityAltitude) || (weather.wind_mph > userData.densityAltitudeHigh && userData.showDensityAltitude) ||
             (weather.wind_mph > userData.lighteningStrike && userData.showLighteningStrike) || (weather.wind_degree < userData.windDirectionLow && userData.showWindDirection) ||
@@ -294,10 +298,10 @@ export default function WeatherMain() {
         if (windGust > windGustOpWindow && userData.showWindGust) {
             limits.push('Wind Gust');
         }
-        if (weather.temp_f < userData.tempLow && userData.showTemp) {
+        if (temp < tempLow && userData.showTemp) {
             limits.push('Temperature Low');
         }
-        if (weather.temp_f > userData.tempHigh && userData.showTemp) {
+        if (temp > tempHigh && userData.showTemp) {
             limits.push('Temperature High');
         }
         if (weather.precip_mm > userData.precipitation && userData.showPrecipitation) {
@@ -437,7 +441,7 @@ export default function WeatherMain() {
                                         </TableCell>
                                         {wind > windOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{wind}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{wind}</TableCell>}
                                         <TableCell align="right">&lt; {parseFloat(windOpWindow).toFixed(1)}</TableCell>
-                                        <TableCell align="right">&lt; 14.0</TableCell>
+                                        {windUnit === 'knots' ? <TableCell align="right">&lt; 14.0</TableCell> : <TableCell align="right">&lt; 7.2</TableCell>}
                                     </TableRow>
                                     : null}
                                 {userData.showWindGust ?
@@ -447,7 +451,7 @@ export default function WeatherMain() {
                                         </TableCell>
                                         {windGust > windGustOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{windGust}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{windGust}</TableCell>}
                                         <TableCell align="right">&lt; {parseFloat(windGustOpWindow).toFixed(1)}</TableCell>
-                                        <TableCell align="right">&lt; 25.0</TableCell>
+                                        {windUnit === 'knots' ? <TableCell align="right">&lt; 25.0</TableCell> : <TableCell align="right">&lt; 12.9</TableCell>}
                                     </TableRow>
                                     : null}
                                 {userData.showTemp ?
@@ -455,7 +459,7 @@ export default function WeatherMain() {
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature ({tempUnit})</TableCell>
                                         {temp > tempLow && temp < tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{temp}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{temp}</TableCell>}
                                         <TableCell align="right">&gt; {tempLow}, &lt; {tempHigh}</TableCell>
-                                        <TableCell align="right">&gt; 32, &lt; 91</TableCell>
+                                        {fTemp ? <TableCell align="right">&gt; 32, &lt; 91</TableCell> : <TableCell align="right">&gt; 0, &lt; 32.8</TableCell>}
                                     </TableRow>
                                     : null}
                                 {userData.showPrecipitation ?
