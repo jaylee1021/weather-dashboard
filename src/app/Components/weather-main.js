@@ -27,7 +27,7 @@ import WeatherSummary from "./WeatherSummary";
 import { LoadingSpinningBubble } from "./Loading";
 
 export default function WeatherMain() {
-
+    // console.log('something is wrong');
     const [userData, setUserData] = useState([]);
     const [weather, setWeather] = useState([]);
     const [forecast, setForecast] = useState([]);
@@ -44,7 +44,7 @@ export default function WeatherMain() {
     const [tempUnit, setTempUnit] = useState('');
     const [tempLow, setTempLow] = useState('');
     const [tempHigh, setTempHigh] = useState('');
-    const fTemp = typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('tempUnit') === 'f' : true;
+    // const fTemp = typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('tempUnit') === 'f' : true;
     const router = useRouter();
 
     // conversion constants
@@ -72,16 +72,14 @@ export default function WeatherMain() {
         }
     }, [router]);
 
-
-
     const fetchUser = useCallback(async () => {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`);
         const fetchedUserData = res.data.user;
         setUserData(fetchedUserData);
-        fTemp ? (setTempLow(fetchedUserData.tempLow), setTempHigh(fetchedUserData.tempHigh)) :
+        localStorage.getItem('tempUnit') === 'f' ? (setTempLow(fetchedUserData.tempLow), setTempHigh(fetchedUserData.tempHigh)) :
             (setTempLow((toC(fetchedUserData.tempLow)).toFixed(1)), setTempHigh((toC(fetchedUserData.tempHigh)).toFixed(1)));
         setLoading(false);
-    }, [userId, fTemp]);
+    }, [userId]);
 
     useEffect(() => {
         setAuthToken(localStorage.getItem('jwtToken'));
@@ -103,7 +101,6 @@ export default function WeatherMain() {
             router.push('/users/login');
         }
     }, [userId, fetchUser, router]);
-
 
     // convert wind speed to knots
     const toKnots = useCallback(() => {
@@ -150,19 +147,21 @@ export default function WeatherMain() {
         axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}&aqi=yes`)
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
+                console.log('current', res.data.current);
                 setWeather(res.data.current);
-                fTemp ? (setTemp(res.data.current.temp_f), setTempUnit('F')) : (setTemp(res.data.current.temp_c), setTempUnit('C'));
+                localStorage.getItem('tempUnit') === 'f' ? (setTemp(res.data.current.temp_f), setTempUnit('F')) : (setTemp(res.data.current.temp_c), setTempUnit('C'));
                 if (windUnit === 'knots') {
                     toKnots();
                 } else if (windUnit === 'm/s') {
                     toMetersPerSec();
                 }
+                // setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
             });
         setMinCountdown(60);
-    }, [toKnots, toMetersPerSec, windUnit, fTemp]);
+    }, [toKnots, toMetersPerSec, windUnit]);
 
     // return operating window to default values
     const handleReturnToDefault = useCallback(async () => {
@@ -254,7 +253,6 @@ export default function WeatherMain() {
         setUserWindUnit(newUnit);
     };
 
-
     const handleTempConversion = (e) => {
         const newTempUnit = e.target.value;
         localStorage.setItem('tempUnit', newTempUnit);
@@ -280,7 +278,6 @@ export default function WeatherMain() {
         handleLogout();
         router.push('/users/login');
     };
-
 
     // loading screen
     if (loading) return (<LoadingSpinningBubble />);
@@ -401,7 +398,7 @@ export default function WeatherMain() {
                                         <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature ({tempUnit})</TableCell>
                                         {temp > tempLow && temp < tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{temp}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{temp}</TableCell>}
                                         <TableCell align="right">&gt; {tempLow}, &lt; {tempHigh}</TableCell>
-                                        {fTemp ? <TableCell align="right">&gt; 32, &lt; 91</TableCell> : <TableCell align="right">&gt; 0, &lt; 32.8</TableCell>}
+                                        {localStorage.getItem('tempUnit') === 'f' ? <TableCell align="right">&gt; 32, &lt; 91</TableCell> : <TableCell align="right">&gt; 0, &lt; 32.8</TableCell>}
                                     </TableRow>
                                     : null}
                                 {userData.showPrecipitation ?

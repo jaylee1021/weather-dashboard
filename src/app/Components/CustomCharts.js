@@ -45,6 +45,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
 
     const handleDataUpdate = useCallback((weatherValue) => {
         setDataLabel(weatherValue);
+        // console.log('weather data', weatherData);
         const weatherDataLength = weatherData.length - currentHour < 7 ? weatherData.length - currentHour : 7;
         const currentTime = new Date();
         const hours = currentTime.getHours();
@@ -53,6 +54,7 @@ export default function CustomCharts({ weatherData, fetchData }) {
         if (weatherValue === 'winds_knots') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (knots)', 'Wind Gust (knots)']];
             for (let i = (currentHour - 3); i < currentHour + weatherDataLength; i++) {
+                console.log('weather data', [i], weatherData[i]);
                 if (currentHour === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].wind_mph * mphToKnots, weatherData[i].gust_mph * mphToKnots]);
                 } else {
@@ -129,9 +131,9 @@ export default function CustomCharts({ weatherData, fetchData }) {
     useEffect(() => {
         updateCurrentHour();
 
-        return () => {
-            axios.CancelToken.source().cancel();
-        };
+        // return () => {
+        //     axios.CancelToken.source().cancel();
+        // };
     }, []);
 
     return (
