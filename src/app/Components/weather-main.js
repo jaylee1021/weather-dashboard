@@ -79,6 +79,7 @@ export default function WeatherMain() {
         setUserData(fetchedUserData);
         localStorage.getItem('tempUnit') === 'f' ? (setTempLow(fetchedUserData.tempLow), setTempHigh(fetchedUserData.tempHigh)) :
             (setTempLow((toC(fetchedUserData.tempLow)).toFixed(1)), setTempHigh((toC(fetchedUserData.tempHigh)).toFixed(1)));
+        fetchData();
         setLoading(false);
     }, [userId]);
 
@@ -169,7 +170,6 @@ export default function WeatherMain() {
         await axios.get(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=us_aqi&hourly=us_aqi&timezone=America%2FLos_Angeles&forecast_days=1`)
             .then((res) => {
                 setAqiData(res.data);
-                setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
@@ -223,7 +223,7 @@ export default function WeatherMain() {
         // Update time immediately on mount
         updateTime();
         // Fetch data immediately on mount
-        fetchData();
+        // fetchData();
         // Check if it's midnight PST immediately on mount
         checkMidnightPST();
     }, []);
