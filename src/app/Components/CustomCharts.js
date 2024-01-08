@@ -9,13 +9,15 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
+import AqiCalculator from "./AqiCalculator";
 
-export default function CustomCharts({ weatherData, fetchData }) {
+export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
-    // const [weatherData, setWeatherData] = useState([]);
     const [dataLabel, setDataLabel] = useState('');
     const [currentHour, setCurrentHour] = useState('');
     const [currentDate, setCurrentDate] = useState('');
+    const [aqiForecast, setAqiForecast] = useState([]);
+    const [aqiForecastTime, setAqiForecastTime] = useState([]);
     const [data, setData] = useState([
         ['', ''],
         [0, 0]
@@ -50,6 +52,8 @@ export default function CustomCharts({ weatherData, fetchData }) {
         const hours = currentTime.getHours();
         const minutes = currentTime.getMinutes();
         const formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+        const aqiForecast = aqiData.hourly.us_aqi;
+        const aqiForecastTime = aqiData.hourly.time;
         let loopStart;
         if (currentHour < 3) {
             loopStart = 0;
@@ -116,8 +120,19 @@ export default function CustomCharts({ weatherData, fetchData }) {
                 }
             }
             setData(newData);
+        } else if (weatherValue === 'aqi') {
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Quality Index']];
+            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
+                if (currentHour === i) {
+                    newData.push([formattedTime, 'Current Time', aqiForecast[i]]);
+                } else {
+                    newData.push([aqiForecastTime[i].split('T')[1], null, aqiForecast[i]]);
+                }
+            }
+            setData(newData);
         }
-    }, [weatherData, currentHour]);
+
+    }, [weatherData, currentHour, aqiData]);
 
     const updateCurrentHour = useCallback(() => {
         const currentTime = new Date();
@@ -159,13 +174,13 @@ export default function CustomCharts({ weatherData, fetchData }) {
                         <MenuItem value={'temp_c'}>Air Temp (C)</MenuItem>
                         <MenuItem value={'precip_mm'}>Precipitation (mm/hr)</MenuItem>
                         <MenuItem value={'vis_miles'}>Visibility (SM)</MenuItem>
+                        <MenuItem value={'aqi'}>Air Quality</MenuItem>
                     </Select>
                 </FormControl>
                 {dataLabel ? <div className="chart_refresh_button">
                     <Button variant='outlined' onClick={updateCurrentHour}>Refresh Chart</Button>
                 </div>
                     : null}
-
             </div>
             <Chart
                 width={'100%'}
