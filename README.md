@@ -65,6 +65,7 @@ Welcome to the Aviation Weather Dashboard. This dashboard provides up-to-date we
 
 # Features in progress
 
+~~- Add current and forecasted air quality~~
 - Dark mode feature
 - Add or remove sites with lat and long coordinates
 - Add or remove weather indicators
