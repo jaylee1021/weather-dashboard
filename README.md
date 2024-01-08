@@ -77,3 +77,4 @@ Welcome to the Aviation Weather Dashboard. This dashboard provides up-to-date we
 # Sources
 
 - [Weather API](https://www.weatherapi.com/): Provides current weather and refreshes every 15 mins. Also, provides 48 hour weather forecast.
+- [Air Quality API (Open-Meteo)](https://open-meteo.com/): Provides current and forecasted air quality data.
