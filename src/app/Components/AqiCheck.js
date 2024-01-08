@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Image from 'next/image';
-import AqiCalculator from './AqiCalculator';
 import '../css/weather.css';
 
 const style = {
