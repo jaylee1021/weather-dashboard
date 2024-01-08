@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Image from 'next/image';
+import AqiCalculator from './AqiCalculator';
 import '../css/weather.css';
 
 const style = {
@@ -18,70 +19,53 @@ const style = {
     p: 4,
 };
 
-export default function AqiCheck({ weatherData }) {
+export default function AqiCheck({ aqiData }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    function pm25ToAqi(pm25) {
-        const c = Math.floor(10 * pm25) / 10;
-        const a = c < 0 ? 0 // values below 0 are considered beyond AQI
-            : c < 12.1 ? pm25ToAqiCalc(0, 50, 0.0, 12.0, c)
-                : c < 35.5 ? pm25ToAqiCalc(51, 100, 12.1, 35.4, c)
-                    : c < 55.5 ? pm25ToAqiCalc(101, 150, 35.5, 55.4, c)
-                        : c < 150.5 ? pm25ToAqiCalc(151, 200, 55.5, 150.4, c)
-                            : c < 250.5 ? pm25ToAqiCalc(201, 300, 150.5, 250.4, c)
-                                : c < 350.5 ? pm25ToAqiCalc(301, 400, 250.5, 350.4, c)
-                                    : c < 500.5 ? pm25ToAqiCalc(401, 500, 350.5, 500.4, c)
-                                        : 500; // values above 500 are considered beyond AQI
-        return Math.round(a);
-    }
-
-    function pm25ToAqiCalc(ylo, yhi, xlo, xhi, x) {
-        return ((x - xlo) / (xhi - xlo)) * (yhi - ylo) + ylo;
-    }
-
     const aqiCheck = () => {
+        const currentAqi = aqiData.current.us_aqi;
         switch (true) {
-            case weatherData.air_quality.pm2_5 >= 0 && weatherData.air_quality.pm2_5 <= 12:
+            case currentAqi >= 0 && currentAqi <= 50:
                 return (
-                    <div style={{ padding: '10px', backgroundColor: 'green', color: 'white', borderRadius: '9px' }}>
-                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Good!</h3>
-                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    <div className='aqi_box_style aqi_good'>
+                        <h3 className='aqi_style'>Air Quality Good!</h3>
+                        <p className='aqi_style'>AQI: {currentAqi}</p>
                     </div>);
-            case weatherData.air_quality.pm2_5 > 12 && weatherData.air_quality.pm2_5 <= 35.4:
+            case currentAqi > 50 && currentAqi <= 100:
                 return (
-                    <div style={{ padding: '10px', backgroundColor: 'yellow', color: 'black', borderRadius: '9px' }}>
-                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Moderate!</h3>
-                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    <div className='aqi_box_style aqi_moderate'>
+                        <h3 className='aqi_style'>Air Quality Moderate!</h3>
+                        <p className='aqi_style'>AQI: {currentAqi}</p>
                     </div>
                 );
-            case weatherData.air_quality.pm2_5 > 35.4 && weatherData.air_quality.pm2_5 <= 55.4:
+            case currentAqi > 100 && currentAqi <= 150:
                 return (
-                    <div style={{ padding: '10px', backgroundColor: 'orange', color: 'black', borderRadius: '9px' }}>
-                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Unhealthy for Sensitive Groups!</h3>
-                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    <div className='aqi_box_style aqi_unhealthy_sensitive'>
+                        <h3 className='aqi_style'>Air Quality Unhealthy <br />for Sensitive Groups!</h3>
+                        <p className='aqi_style'>AQI: {currentAqi}</p>
                     </div>
                 );
-            case weatherData.air_quality.pm2_5 > 55.4 && weatherData.air_quality.pm2_5 <= 150.4:
+            case currentAqi > 150 && currentAqi <= 200:
                 return (
-                    <div style={{ padding: '10px', backgroundColor: 'red', color: 'white', borderRadius: '9px' }}>
-                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Unhealthy!</h3>
-                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    <div className='aqi_box_style aqi_unhealthy'>
+                        <h3 className='aqi_style'>Air Quality Unhealthy!</h3>
+                        <p className='aqi_style'>AQI: {currentAqi}</p>
                     </div>
                 );
-            case weatherData.air_quality.pm2_5 > 150.4 && weatherData.air_quality.pm2_5 <= 250.4:
+            case currentAqi > 200 && currentAqi <= 300:
                 return (
-                    <div style={{ padding: '10px', backgroundColor: 'purple', color: 'white', borderRadius: '9px' }}>
-                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Very Unhealthy!</h3>
-                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    <div className='aqi_box_style aqi_very_unhealthy'>
+                        <h3 className='aqi_style'>Air Quality Very Unhealthy!</h3>
+                        <p className='aqi_style'>AQI: {currentAqi}</p>
                     </div>
                 );
-            case weatherData.air_quality.pm2_5 > 250.4:
+            case currentAqi > 300:
                 return (
-                    <div style={{ padding: '10px', backgroundColor: 'maroon', color: 'white', borderRadius: '9px' }}>
-                        <h3 style={{ fontWeight: 'bold', padding: '10px' }}>Air Quality Hazardous!</h3>
-                        <p style={{ fontWeight: 'bold', padding: '10px' }}>AQI: {pm25ToAqi(weatherData.air_quality.pm2_5)}</p>
+                    <div className='aqi_box_style aqi_hazardous'>
+                        <h3 className='aqi_style'>Air Quality Hazardous!</h3>
+                        <p className='aqi_style'>AQI: {currentAqi}</p>
                     </div>
                 );
         }
@@ -101,7 +85,6 @@ export default function AqiCheck({ weatherData }) {
                 <Fade in={open}>
                     <Box sx={style}>
                         <Typography id="transition-modal-title" variant="h6" component="h2" style={{ overflow: 'auto' }}>
-                            {/* <Image src={'/public/aqi_chart.png'} width={100} height={100} onClick={handleClose} className='image_size' alt="..." /> */}
                             <Image width={1000} height={500} src={'/aqi_chart.png'} onClick={handleClose} alt="..." />
                         </Typography>
                     </Box>
