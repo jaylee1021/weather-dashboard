@@ -160,7 +160,7 @@ export default function WeatherMain() {
                 } else if (windUnit === 'm/s') {
                     toMetersPerSec();
                 }
-                // setLoading(false);
+
             })
             .catch((err) => {
                 console.log(err);
@@ -169,6 +169,7 @@ export default function WeatherMain() {
         await axios.get(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=us_aqi&hourly=us_aqi&timezone=America%2FLos_Angeles&forecast_days=1`)
             .then((res) => {
                 setAqiData(res.data);
+                setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
@@ -210,22 +211,24 @@ export default function WeatherMain() {
         }
     }, [handleReturnToDefault]);
 
-    useEffect(() => {
-        // Function to update time
-        const updateTime = () => {
-            const currentTime = new Date();
-            const formattedDate = currentTime.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-            setCurrentDateTime(`${formattedDate}, ${formattedTime}`);
-        };
+    // Function to update time
+    const updateTime = () => {
+        const currentTime = new Date();
+        const formattedDate = currentTime.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        setCurrentDateTime(`${formattedDate}, ${formattedTime}`);
+    };
 
+    useEffect(() => {
         // Update time immediately on mount
         updateTime();
         // Fetch data immediately on mount
         fetchData();
         // Check if it's midnight PST immediately on mount
         checkMidnightPST();
+    }, []);
 
+    useEffect(() => {
         // run fetchData() every minute
         const fetchDataIntervalId = setInterval(fetchData, 60000);
         // run checkMidnightPST() every minute to check if it's midnight PST
@@ -243,7 +246,7 @@ export default function WeatherMain() {
             clearInterval(midnightIntervalId);
             clearInterval(updateTimeIntervalId);
         };
-    }, [fetchData, checkMidnightPST]);
+    }, []);
 
     // update user wind unit
     const setUserWindUnit = (unit) => {
