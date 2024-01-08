@@ -15,8 +15,6 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
     const [dataLabel, setDataLabel] = useState('');
     const [currentHour, setCurrentHour] = useState('');
     const [currentDate, setCurrentDate] = useState('');
-    const [aqiForecast, setAqiForecast] = useState([]);
-    const [aqiForecastTime, setAqiForecastTime] = useState([]);
     const [data, setData] = useState([
         ['', ''],
         [0, 0]
