@@ -79,7 +79,6 @@ export default function WeatherMain() {
         setUserData(fetchedUserData);
         localStorage.getItem('tempUnit') === 'f' ? (setTempLow(fetchedUserData.tempLow), setTempHigh(fetchedUserData.tempHigh)) :
             (setTempLow((toC(fetchedUserData.tempLow)).toFixed(1)), setTempHigh((toC(fetchedUserData.tempHigh)).toFixed(1)));
-        fetchData();
         setLoading(false);
     }, [userId]);
 
@@ -185,20 +184,19 @@ export default function WeatherMain() {
             unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots', windDirectionLow: -1, windDirectionHigh: 361
         })
             .then((res) => {
-                // console.log(res.data.user);
+                localStorage.setItem('windUnit', 'knots');
+                localStorage.setItem('selectSite', 'hsiland');
+                localStorage.setItem('tempUnit', 'f');
+                setTemp(weather.temp_f);
+                setTempUnit('F');
+                setWindUnit('knots');
+                fetchData();
+                fetchUser();
             })
             .catch((err) => {
                 console.log(err);
             });
-        localStorage.setItem('windUnit', 'knots');
-        localStorage.setItem('selectSite', 'hsiland');
-        localStorage.setItem('tempUnit', 'f');
-        setTemp(weather.temp_f);
-        setTempUnit('F');
-        setWindUnit('knots');
-        fetchData();
-        fetchUser();
-    }, [userId, fetchUser, weather.temp_f, fetchData]);
+    }, []);
 
     // check if it's midnight PST and if it's midnight, run handleReturnToDefault()
     const checkMidnightPST = useCallback(() => {
@@ -223,7 +221,7 @@ export default function WeatherMain() {
         // Update time immediately on mount
         updateTime();
         // Fetch data immediately on mount
-        // fetchData();
+        fetchData();
         // Check if it's midnight PST immediately on mount
         checkMidnightPST();
     }, []);
