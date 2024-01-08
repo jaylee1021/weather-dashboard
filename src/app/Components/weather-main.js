@@ -60,6 +60,7 @@ export default function WeatherMain() {
 
     // set wind unit on page load
     useEffect(() => {
+        console.log('1');
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
         if (typeof window !== undefined) {
             const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
@@ -83,6 +84,7 @@ export default function WeatherMain() {
     }, [userId]);
 
     useEffect(() => {
+        console.log('2');
         setAuthToken(localStorage.getItem('jwtToken'));
         if (localStorage.getItem('jwtToken')) {
             axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`)
@@ -105,6 +107,7 @@ export default function WeatherMain() {
 
     // convert wind speed to knots
     const toKnots = useCallback(() => {
+        console.log('5');
         // set wind speed and wind gust to knots
         setWind((weather.wind_mph * mphToKnots).toFixed(2));
         userData.userWindUnit === 'knots' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * meterPerSecToKnots);
@@ -116,6 +119,7 @@ export default function WeatherMain() {
 
     // convert wind speed to m/s
     const toMetersPerSec = useCallback(() => {
+        console.log('6');
         // set wind speed and wind gust to m/s
         setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
         userData.userWindUnit === 'm/s' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * knotsToMeterPerSec);
@@ -136,6 +140,7 @@ export default function WeatherMain() {
 
     // fetch weather data on page load and every minute
     const fetchData = useCallback(async () => {
+        console.log('7');
         const selectSite = localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland';
         let latitude;
         let longitude;
@@ -149,31 +154,31 @@ export default function WeatherMain() {
             latitude = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_LATITUDE;
             longitude = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_LONGITUDE;
         }
-        // axios get weather data
-        await axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${latitude},${longitude}`)
-            .then((res) => {
-                setForecast(res.data.forecast.forecastday[0].hour);
-                setWeather(res.data.current);
-                localStorage.getItem('tempUnit') === 'f' ? (setTemp(res.data.current.temp_f), setTempUnit('F')) : (setTemp(res.data.current.temp_c), setTempUnit('C'));
-                if (windUnit === 'knots') {
-                    toKnots();
-                } else if (windUnit === 'm/s') {
-                    toMetersPerSec();
-                }
 
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-        // axios get AQI data
-        await axios.get(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=us_aqi&hourly=us_aqi&timezone=America%2FLos_Angeles&forecast_days=1`)
-            .then((res) => {
-                setAqiData(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-        setMinCountdown(60);
+        try {
+            const [weatherResponse, aqiResponse] = await Promise.all([
+                axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${latitude},${longitude}`),
+                axios.get(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=us_aqi&hourly=us_aqi&timezone=America%2FLos_Angeles&forecast_days=1`)
+            ]);
+
+            const weatherData = weatherResponse.data;
+            setForecast(weatherData.forecast.forecastday[0].hour);
+            setWeather(weatherData.current);
+            localStorage.getItem('tempUnit') === 'f' ? (setTemp(weatherData.current.temp_f), setTempUnit('F')) : (setTemp(weatherData.current.temp_c), setTempUnit('C'));
+
+            const aqiData = aqiResponse.data;
+            setAqiData(aqiData);
+
+            if (windUnit === 'knots') {
+                toKnots();
+            } else if (windUnit === 'm/s') {
+                toMetersPerSec();
+            }
+
+            setMinCountdown(60);
+        } catch (error) {
+            console.log(error);
+        }
     }, [toKnots, toMetersPerSec, windUnit]);
 
     // return operating window to default values
@@ -218,6 +223,7 @@ export default function WeatherMain() {
     };
 
     useEffect(() => {
+        console.log('3');
         // Update time immediately on mount
         updateTime();
         // Fetch data immediately on mount
@@ -227,6 +233,7 @@ export default function WeatherMain() {
     }, []);
 
     useEffect(() => {
+        console.log('4');
         // run fetchData() every minute
         const fetchDataIntervalId = setInterval(fetchData, 60000);
         // run checkMidnightPST() every minute to check if it's midnight PST
