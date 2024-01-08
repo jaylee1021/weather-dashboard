@@ -3,12 +3,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
 import '../css/weather.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { Checkbox, FormControlLabel, Switch } from '@mui/material';
-import { Form, FormControl } from 'react-bootstrap';
 
 const style = {
     position: 'absolute',
