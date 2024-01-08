@@ -73,7 +73,7 @@ Welcome to the Aviation Weather Dashboard. This dashboard provides up-to-date we
 
 # Limitation
 
-- Due to limitation weather source from Weather API, not all applicable aviation weather data is available.
+- Due to limitation weather source from Weather API, not all applicable aviation weather data are available.
 
 # Sources
 
