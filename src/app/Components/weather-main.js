@@ -27,7 +27,7 @@ import WeatherSummary from "./WeatherSummary"; // Weather summary component
 import { LoadingSpinningBubble } from "./Loading";
 
 export default function WeatherMain() {
-    // console.log('something is wrong');
+
     const [userData, setUserData] = useState([]);
     const [weather, setWeather] = useState([]);
     const [forecast, setForecast] = useState([]);
