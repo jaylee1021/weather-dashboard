@@ -22,8 +22,8 @@ import handleLogout from "../utils/handleLogout"; // Logout function
 import CustomCharts from "./CustomCharts"; // Weather charts component
 import ShowHide from "./ShowHide"; // ShowHide component
 import UpdateParams from "./UpdateParams"; // Updating operating window component
-import AqiCheck from "./AqiCheck";
-import WeatherSummary from "./WeatherSummary";
+import AqiCheck from "./AqiCheck"; // Air quality component
+import WeatherSummary from "./WeatherSummary"; // Weather summary component
 import { LoadingSpinningBubble } from "./Loading";
 
 export default function WeatherMain() {
@@ -44,7 +44,7 @@ export default function WeatherMain() {
     const [tempUnit, setTempUnit] = useState('');
     const [tempLow, setTempLow] = useState('');
     const [tempHigh, setTempHigh] = useState('');
-    // const fTemp = typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('tempUnit') === 'f' : true;
+    const [aqiData, setAqiData] = useState();
     const router = useRouter();
 
     // conversion constants
@@ -53,6 +53,7 @@ export default function WeatherMain() {
     const knotsToMeterPerSec = 0.514444;
     const meterPerSecToKnots = 1.94384;
 
+    // convert fahrenheit to celsius
     const toC = (f) => {
         return (f - 32) * (5 / 9);
     };
@@ -136,15 +137,20 @@ export default function WeatherMain() {
     // fetch weather data on page load and every minute
     const fetchData = useCallback(async () => {
         const selectSite = localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland';
-        let selectedSite;
+        let latitude;
+        let longitude;
         if (selectSite === 'hsiland' || localStorage.getItem('selectSite') === 'hsiland') {
-            selectedSite = process.env.NEXT_PUBLIC_HSILAND_COORDINATES;
+            latitude = process.env.NEXT_PUBLIC_HSILAND_LATITUDE;
+            longitude = process.env.NEXT_PUBLIC_HSILAND_LONGITUDE;
         } else if (selectSite === 'pdt10_hangar' || localStorage.getItem('selectSite') === 'pdt10_hangar') {
-            selectedSite = process.env.NEXT_PUBLIC_PDT10_HANGAR_COORDINATES;
+            latitude = process.env.NEXT_PUBLIC_PDT10_HANGAR_LATITUDE;
+            longitude = process.env.NEXT_PUBLIC_PDT10_HANGAR_LONGITUDE;
         } else if (selectSite === 'pdt10_northpad' || localStorage.getItem('selectSite') === 'pdt10_northpad') {
-            selectedSite = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_COORDINATES;
+            latitude = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_LATITUDE;
+            longitude = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_LONGITUDE;
         }
-        await axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${selectedSite}&aqi=yes`)
+        // axios get weather data
+        await axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${latitude},${longitude}`)
             .then((res) => {
                 setForecast(res.data.forecast.forecastday[0].hour);
                 setWeather(res.data.current);
@@ -155,6 +161,14 @@ export default function WeatherMain() {
                     toMetersPerSec();
                 }
                 // setLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        // axios get AQI data
+        await axios.get(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=us_aqi&hourly=us_aqi&timezone=America%2FLos_Angeles&forecast_days=1`)
+            .then((res) => {
+                setAqiData(res.data);
             })
             .catch((err) => {
                 console.log(err);
@@ -181,8 +195,9 @@ export default function WeatherMain() {
         setTemp(weather.temp_f);
         setTempUnit('F');
         setWindUnit('knots');
+        fetchData();
         fetchUser();
-    }, [userId, fetchUser, weather.temp_f]);
+    }, [userId, fetchUser, weather.temp_f, fetchData]);
 
     // check if it's midnight PST and if it's midnight, run handleReturnToDefault()
     const checkMidnightPST = useCallback(() => {
@@ -370,7 +385,6 @@ export default function WeatherMain() {
                                     <TableCell align="right" style={{ fontWeight: 'bold' }}>Current</TableCell>
                                     <TableCell align="right" style={{ fontWeight: 'bold' }}>Test Card Op Window</TableCell>
                                     <TableCell align="right" style={{ fontWeight: 'bold' }}>Standard Op Window</TableCell>
-
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -461,12 +475,12 @@ export default function WeatherMain() {
                 <div className="side_bar">
                     <WeatherSummary props={{ wind, windOpWindow, userData, windGust, windGustOpWindow, temp, tempLow, tempHigh, weather }} />
                     <div className="table_border" style={{ margin: '10px' }}>
-                        <AqiCheck weatherData={weather} />
+                        <AqiCheck aqiData={aqiData} />
                     </div>
                     <Button style={{ margin: '0 10px' }} variant="outlined" onClick={logout}>Log Out</Button>
                 </div>
             </div>
-            <CustomCharts weatherData={forecast} fetchData={fetchData} />
+            <CustomCharts weatherData={forecast} fetchData={fetchData} aqiData={aqiData} />
         </div >
     );
 };
