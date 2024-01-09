@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
+import { LoadingLine } from './Loading';
 
 export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
@@ -151,6 +152,14 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
             axios.CancelToken.source().cancel();
         };
     }, []);
+
+    if (!aqiData) {
+        return (
+            <div>
+                <LoadingLine />
+            </div>
+        );
+    }
 
     return (
         <div className='py-10 flex flex-col items-center justify-center'>

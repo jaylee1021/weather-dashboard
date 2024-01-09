@@ -482,7 +482,7 @@ export default function WeatherMain() {
                     <Button style={{ margin: '0 10px' }} variant="outlined" onClick={logout}>Log Out</Button>
                 </div>
             </div>
-            <CustomCharts weatherData={forecast} fetchData={fetchData} aqiData={aqiData} />
+            {aqiData && <CustomCharts weatherData={forecast} fetchData={fetchData} aqiData={aqiData} />}
         </div >
     );
 };
