@@ -36,19 +36,10 @@ export default function UpdateParams({ userId, windUnit, fetchUser }) {
         windDirectionLow: '',
         windDirectionHigh: ''
     });
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const handleSuccess = () => {
-            fetchUser();
-            handleClose();
-            setState({
-                ...state, steadyWind: '', windGust: '', tempLow: '', tempHigh: '', visibility: '',
-                cloudBaseHeight: '', densityAltitudeLow: '', densityAltitudeHigh: '', windDirectionLow: '', windDirectionHigh: ''
-            });
-        };
-
-        axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
+        await axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, {
             wind: state.steadyWind, windGust: state.windGust,
             userWindUnit: windUnit, userWindGustUnit: windUnit,
             tempLow: state.tempLow, tempHigh: state.tempHigh, visibility: state.visibility,
@@ -57,7 +48,12 @@ export default function UpdateParams({ userId, windUnit, fetchUser }) {
             windDirectionHigh: state.windDirectionHigh
         })
             .then((res) => {
-                handleSuccess();
+                fetchUser();
+                handleClose();
+                setState({
+                    ...state, steadyWind: '', windGust: '', tempLow: '', tempHigh: '', visibility: '',
+                    cloudBaseHeight: '', densityAltitudeLow: '', densityAltitudeHigh: '', windDirectionLow: '', windDirectionHigh: ''
+                });
             })
             .catch((err) => {
                 console.log(err);

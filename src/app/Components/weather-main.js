@@ -104,26 +104,26 @@ export default function WeatherMain() {
     }, [userId, fetchUser, router]);
 
     // convert wind speed to knots
-    const toKnots = useCallback((weatherData) => {
+    const toKnots = useCallback(() => {
         // set wind speed and wind gust to knots
-        setWind((weatherData.wind_mph * mphToKnots).toFixed(2));
+        setWind((weather.wind_mph * mphToKnots).toFixed(2));
         userData.userWindUnit === 'knots' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * meterPerSecToKnots);
 
-        setWindGust((weatherData.gust_mph * mphToKnots).toFixed(2));
+        setWindGust((weather.gust_mph * mphToKnots).toFixed(2));
         userData.userWindGustUnit === 'knots' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * meterPerSecToKnots);
 
-    }, [mphToKnots, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
+    }, [mphToKnots, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit, weather.wind_mph, weather.gust_mph]);
 
     // convert wind speed to m/s
-    const toMetersPerSec = useCallback((weatherData) => {
+    const toMetersPerSec = useCallback(() => {
         // set wind speed and wind gust to m/s
-        setWind((weatherData.wind_mph * mphToMetersPerSec).toFixed(2));
+        setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
         userData.userWindUnit === 'm/s' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * knotsToMeterPerSec);
 
-        setWindGust((weatherData.gust_mph * mphToMetersPerSec).toFixed(2));
+        setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(2));
         userData.userWindGustUnit === 'm/s' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
 
-    }, [mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
+    }, [mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit, weather.wind_mph, weather.gust_mph]);
 
     const handleSiteSelection = async (e) => {
         localStorage.setItem('selectSite', e.target.value);
@@ -165,9 +165,9 @@ export default function WeatherMain() {
             setAqiData(aqiData);
 
             if (windUnit === 'knots') {
-                toKnots(weatherData.current);
+                toKnots();
             } else if (windUnit === 'm/s') {
-                toMetersPerSec(weatherData.current);
+                toMetersPerSec();
             }
 
             setMinCountdown(60);
@@ -184,19 +184,20 @@ export default function WeatherMain() {
             unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots', windDirectionLow: -1, windDirectionHigh: 361
         })
             .then((res) => {
-                localStorage.setItem('windUnit', 'knots');
-                localStorage.setItem('selectSite', 'hsiland');
-                localStorage.setItem('tempUnit', 'f');
-                setTemp(weather.temp_f);
-                setTempUnit('F');
-                setWindUnit('knots');
-                fetchData();
-                fetchUser();
+
             })
             .catch((err) => {
                 console.log(err);
             });
-    }, []);
+        localStorage.setItem('windUnit', 'knots');
+        localStorage.setItem('selectSite', 'hsiland');
+        localStorage.setItem('tempUnit', 'f');
+        setTemp(weather.temp_f);
+        setTempUnit('F');
+        setWindUnit('knots');
+        await fetchData();
+        await fetchUser();
+    }, [userId, fetchData, fetchUser, weather.temp_f]);
 
     // check if it's midnight PST and if it's midnight, run handleReturnToDefault()
     const checkMidnightPST = useCallback(() => {
@@ -224,7 +225,7 @@ export default function WeatherMain() {
         fetchData();
         // Check if it's midnight PST immediately on mount
         checkMidnightPST();
-    }, []);
+    }, [fetchData, checkMidnightPST]);
 
     useEffect(() => {
         // run fetchData() every minute
@@ -244,7 +245,7 @@ export default function WeatherMain() {
             clearInterval(midnightIntervalId);
             clearInterval(updateTimeIntervalId);
         };
-    }, []);
+    }, [fetchUser, fetchData, checkMidnightPST]);
 
     // update user wind unit
     const storeUserWindUnit = (unit) => {
@@ -262,9 +263,9 @@ export default function WeatherMain() {
         const newUnit = e.target.value;
         localStorage.setItem('windUnit', newUnit);
         if (newUnit === 'knots') {
-            toKnots(weather);
+            toKnots();
         } else if (newUnit === 'm/s') {
-            toMetersPerSec(weather);
+            toMetersPerSec();
         }
         setWindUnit(newUnit);
         storeUserWindUnit(newUnit);
