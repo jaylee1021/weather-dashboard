@@ -184,19 +184,19 @@ export default function WeatherMain() {
             unit: 'knots', userWindUnit: 'knots', userWindGustUnit: 'knots', windDirectionLow: -1, windDirectionHigh: 361
         })
             .then((res) => {
-
+                localStorage.setItem('windUnit', 'knots');
+                localStorage.setItem('selectSite', 'hsiland');
+                localStorage.setItem('tempUnit', 'f');
+                setTemp(weather.temp_f);
+                setTempUnit('F');
+                setWindUnit('knots');
+                fetchData();
+                fetchUser();
             })
             .catch((err) => {
                 console.log(err);
             });
-        localStorage.setItem('windUnit', 'knots');
-        localStorage.setItem('selectSite', 'hsiland');
-        localStorage.setItem('tempUnit', 'f');
-        setTemp(weather.temp_f);
-        setTempUnit('F');
-        setWindUnit('knots');
-        await fetchData();
-        await fetchUser();
+
     }, [userId, fetchData, fetchUser, weather.temp_f]);
 
     // check if it's midnight PST and if it's midnight, run handleReturnToDefault()
