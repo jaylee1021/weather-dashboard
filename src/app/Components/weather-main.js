@@ -476,7 +476,7 @@ export default function WeatherMain() {
                 <div className="side_bar">
                     <WeatherSummary props={{ wind, windOpWindow, userData, windGust, windGustOpWindow, temp, tempLow, tempHigh, weather }} />
                     <div className="table_border" style={{ margin: '10px' }}>
-                        <AqiCheck aqiData={aqiData} />
+                        {aqiData && <AqiCheck aqiData={aqiData} />}
                     </div>
                     <Button style={{ margin: '0 10px' }} variant="outlined" onClick={logout}>Log Out</Button>
                 </div>
