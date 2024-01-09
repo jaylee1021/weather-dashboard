@@ -262,9 +262,9 @@ export default function WeatherMain() {
         const newUnit = e.target.value;
         localStorage.setItem('windUnit', newUnit);
         if (newUnit === 'knots') {
-            toKnots();
+            toKnots(weather);
         } else if (newUnit === 'm/s') {
-            toMetersPerSec();
+            toMetersPerSec(weather);
         }
         setWindUnit(newUnit);
         storeUserWindUnit(newUnit);
