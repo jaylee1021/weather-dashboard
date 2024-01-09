@@ -127,8 +127,6 @@ export default function WeatherMain() {
 
     const handleSiteSelection = async (e) => {
         localStorage.setItem('selectSite', e.target.value);
-        console.log('selectesite', localStorage.getItem('selectSite'));
-
         try {
             await fetchData();
         } catch (error) {
