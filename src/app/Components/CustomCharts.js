@@ -44,7 +44,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
     const handleDataUpdate = useCallback((weatherValue) => {
         setDataLabel(weatherValue);
-        const weatherDataLength = weatherData.length - currentHour < 7 ? weatherData.length - currentHour : 7;
+        const weatherDataLength = weatherData.length - currentHour < 10 ? weatherData.length - currentHour : 10;
         const currentTime = new Date();
         const hours = currentTime.getHours();
         const minutes = currentTime.getMinutes();
