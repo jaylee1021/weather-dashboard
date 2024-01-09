@@ -104,29 +104,31 @@ export default function WeatherMain() {
     }, [userId, fetchUser, router]);
 
     // convert wind speed to knots
-    const toKnots = useCallback(() => {
+    const toKnots = useCallback((weatherData) => {
         // set wind speed and wind gust to knots
-        setWind((weather.wind_mph * mphToKnots).toFixed(2));
+        setWind((weatherData.wind_mph * mphToKnots).toFixed(2));
         userData.userWindUnit === 'knots' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * meterPerSecToKnots);
 
-        setWindGust((weather.gust_mph * mphToKnots).toFixed(2));
+        setWindGust((weatherData.gust_mph * mphToKnots).toFixed(2));
         userData.userWindGustUnit === 'knots' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * meterPerSecToKnots);
 
-    }, [weather.wind_mph, weather.gust_mph, mphToKnots, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
+    }, [mphToKnots, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
     // convert wind speed to m/s
-    const toMetersPerSec = useCallback(() => {
+    const toMetersPerSec = useCallback((weatherData) => {
         // set wind speed and wind gust to m/s
-        setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
+        setWind((weatherData.wind_mph * mphToMetersPerSec).toFixed(2));
         userData.userWindUnit === 'm/s' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * knotsToMeterPerSec);
 
-        setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(2));
+        setWindGust((weatherData.gust_mph * mphToMetersPerSec).toFixed(2));
         userData.userWindGustUnit === 'm/s' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
 
-    }, [weather.wind_mph, weather.gust_mph, mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
+    }, [mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit]);
 
     const handleSiteSelection = async (e) => {
         localStorage.setItem('selectSite', e.target.value);
+        console.log('selectesite', localStorage.getItem('selectSite'));
+
         try {
             await fetchData();
         } catch (error) {
@@ -165,9 +167,9 @@ export default function WeatherMain() {
             setAqiData(aqiData);
 
             if (windUnit === 'knots') {
-                toKnots();
+                toKnots(weatherData.current);
             } else if (windUnit === 'm/s') {
-                toMetersPerSec();
+                toMetersPerSec(weatherData.current);
             }
 
             setMinCountdown(60);
