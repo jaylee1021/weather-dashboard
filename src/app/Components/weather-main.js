@@ -3,18 +3,7 @@ import axios from "axios";
 import { useState, useEffect, useCallback, use } from "react";
 import '../css/weather.css';
 import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import setAuthToken from "../utils/setAuthToken"; // Set token for authorization
@@ -25,6 +14,10 @@ import UpdateParams from "./UpdateParams"; // Updating operating window componen
 import AqiCheck from "./AqiCheck"; // Air quality component
 import WeatherSummary from "./WeatherSummary"; // Weather summary component
 import { LoadingSpinningBubble } from "./Loading";
+import SiteSelection from "./SiteSelection";
+import WindUnitConvert from "./WindUnitConvert";
+import TempUnitConvert from "./TempUnitConvert";
+import WeatherTable from "./WeatherTable";
 
 export default function WeatherMain() {
 
@@ -124,15 +117,6 @@ export default function WeatherMain() {
         userData.userWindGustUnit === 'm/s' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
 
     }, [mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit, weather.wind_mph, weather.gust_mph]);
-
-    const handleSiteSelection = async (e) => {
-        localStorage.setItem('selectSite', e.target.value);
-        try {
-            await fetchData();
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     // fetch weather data on page load and every minute
     const fetchData = useCallback(async () => {
@@ -247,46 +231,6 @@ export default function WeatherMain() {
         };
     }, [fetchUser, fetchData, checkMidnightPST]);
 
-    // update user wind unit
-    const storeUserWindUnit = (unit) => {
-        axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, { unit })
-            .then((res) => {
-                // console.log(res.data.user.unit);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-
-    // convert wind speed to knots or m/s
-    const handleConversion = (e) => {
-        const newUnit = e.target.value;
-        localStorage.setItem('windUnit', newUnit);
-        if (newUnit === 'knots') {
-            toKnots();
-        } else if (newUnit === 'm/s') {
-            toMetersPerSec();
-        }
-        setWindUnit(newUnit);
-        storeUserWindUnit(newUnit);
-    };
-
-    const handleTempConversion = (e) => {
-        const newTempUnit = e.target.value;
-        localStorage.setItem('tempUnit', newTempUnit);
-        if (newTempUnit === 'f') {
-            setTemp(weather.temp_f);
-            setTempUnit('F');
-            setTempLow(userData.tempLow);
-            setTempHigh(userData.tempHigh);
-        } else if (newTempUnit === 'c') {
-            setTemp(weather.temp_c);
-            setTempUnit('C');
-            setTempLow((toC(userData.tempLow)).toFixed(1));
-            setTempHigh((toC(userData.tempHigh)).toFixed(1));
-        }
-    };
-
     // refresh page on button click
     const handleManualRefresh = () => {
         fetchData();
@@ -302,57 +246,19 @@ export default function WeatherMain() {
 
     return (
         <div className="top_wrapper">
-
+            <h1 className='page_title'> Flight Test Weather Dashboard, Welcome {userData.firstName} {userData.lastName}!</h1>
             <div className="top">
                 <div className="buttons_wrapper">
                     <div >
-                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px 10px 10px 0' }}>
-                            <InputLabel id="site_select_label">Site</InputLabel>
-                            <Select
-                                labelId="site_select"
-                                id="site_select_menu"
-                                value={localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland'}
-                                onChange={handleSiteSelection}
-                                label="Select_site"
-                                name='selectSite'
-                            >
-                                <MenuItem value={'hsiland'}>Hsiland</MenuItem>
-                                <MenuItem value={'pdt10_hangar'}>PDT10 Hangar</MenuItem>
-                                <MenuItem value={'pdt10_northpad'}>PDT10 North Pad</MenuItem>
-                            </Select>
-                        </FormControl>
+                        <SiteSelection fetchData={fetchData} />
                     </div>
                     <div>
-                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px' }}>
-                            <InputLabel id="wind_unit_select">Wind Unit</InputLabel>
-                            <Select
-                                labelId="wind_unit_select"
-                                id="wind_unit_select_menu"
-                                value={windUnit}
-                                onChange={handleConversion}
-                                label="Wind_Unit"
-                                name='windUnit'
-                            >
-                                <MenuItem value={'knots'}>knots</MenuItem>
-                                <MenuItem value={'m/s'}>m/s</MenuItem>
-                            </Select>
-                        </FormControl>
+                        <WindUnitConvert userId={userId} setWindUnit={setWindUnit} windUnit={windUnit}
+                            toKnots={toKnots} toMetersPerSec={toMetersPerSec} />
                     </div>
                     <div>
-                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px' }}>
-                            <InputLabel id="temp_unit_select">Temperature Unit</InputLabel>
-                            <Select
-                                labelId="temp_unit_select"
-                                id="temp_unit_select_menu"
-                                value={localStorage.getItem('tempUnit') ? localStorage.getItem('tempUnit') : 'f'}
-                                onChange={handleTempConversion}
-                                label="Temp_Unit"
-                                name='tempUnit'
-                            >
-                                <MenuItem value={'f'}>Fahrenheit</MenuItem>
-                                <MenuItem value={'c'}>Celsius</MenuItem>
-                            </Select>
-                        </FormControl>
+                        <TempUnitConvert setTemp={setTemp} setTempUnit={setTempUnit} setTempLow={setTempLow}
+                            setTempHigh={setTempHigh} weather={weather} userData={userData} toC={toC} />
                     </div>
                     <div className="button_padding">
                         <Button variant='outlined' onClick={handleManualRefresh}>Manual Refresh</Button>
@@ -379,100 +285,9 @@ export default function WeatherMain() {
             </div>
             <div style={{ display: 'flex' }}>
                 <div style={{ display: 'flex', flex: 'auto' }}>
-                    <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell style={{ fontWeight: 'bold' }}>Indicator</TableCell>
-                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Current</TableCell>
-                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Test Card Op Window</TableCell>
-                                    <TableCell align="right" style={{ fontWeight: 'bold' }}>Standard Op Window</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {userData.showWind ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
-                                            Steady Wind ({windUnit})
-                                        </TableCell>
-                                        {wind > windOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{wind}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{wind}</TableCell>}
-                                        <TableCell align="right">&lt;= {parseFloat(windOpWindow).toFixed(1)}</TableCell>
-                                        {windUnit === 'knots' ? <TableCell align="right">&lt;= 14.0</TableCell> : <TableCell align="right">&lt;= 7.2</TableCell>}
-                                    </TableRow>
-                                    : null}
-                                {userData.showWindGust ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
-                                            Wind gusts ({windUnit})
-                                        </TableCell>
-                                        {windGust > windGustOpWindow ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{windGust}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{windGust}</TableCell>}
-                                        <TableCell align="right">&lt;= {parseFloat(windGustOpWindow).toFixed(1)}</TableCell>
-                                        {windUnit === 'knots' ? <TableCell align="right">&lt;= 25.0</TableCell> : <TableCell align="right">&lt;= 12.9</TableCell>}
-                                    </TableRow>
-                                    : null}
-                                {userData.showTemp ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature ({tempUnit})</TableCell>
-                                        {temp > tempLow && temp < tempHigh ? <TableCell align="right" style={{ color: 'green' }}>{temp}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{temp}</TableCell>}
-                                        <TableCell align="right">&gt;= {tempLow}, &lt;= {tempHigh}</TableCell>
-                                        {localStorage.getItem('tempUnit') === 'f' ? <TableCell align="right">&gt;= 32, &lt;= 91</TableCell> : <TableCell align="right">&gt;= 0, &lt;= 32.8</TableCell>}
-                                    </TableRow>
-                                    : null}
-                                {userData.showPrecipitation ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Precipitation (mm/hr)</TableCell>
-                                        {weather.precip_mm > userData.precipitation ? <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.precip_mm}</TableCell> : <TableCell align="right" style={{ color: 'green' }}>{weather.precip_mm}</TableCell>}
-                                        <TableCell align="right">{userData.precipitation}</TableCell>
-                                        <TableCell align="right">0</TableCell>
-                                    </TableRow>
-                                    : null}
-                                {userData.showVisibility ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Visibility (SM)</TableCell>
-                                        {weather.vis_miles >= userData.visibility ? <TableCell align="right" style={{ color: 'green' }}>{weather.vis_miles}</TableCell> : <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.vis_miles}</TableCell>}
-                                        <TableCell align="right">&gt;= {userData.visibility}</TableCell>
-                                        <TableCell align="right">&gt;= 3</TableCell>
-                                    </TableRow>
-                                    : null}
-                                {userData.showCloudBaseHeight ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Cloud base height (ft)</TableCell>
-                                        <TableCell align="right">{weather.cloud}</TableCell>
-                                        <TableCell align="right">&gt; {userData.cloudBaseHeight}</TableCell>
-                                        <TableCell align="right">&gt; 1000</TableCell>
-                                    </TableRow>
-                                    : null}
-                                {userData.showDensityAltitude ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Density altitude (ft)</TableCell>
-                                        <TableCell align="right">{weather.wind_mph}</TableCell>
-                                        <TableCell align="right">&gt; {userData.densityAltitudeLow}, &lt; {userData.densityAltitudeHigh}</TableCell>
-                                        <TableCell align="right">&gt; -2000, &lt; 4600</TableCell>
-                                    </TableRow>
-                                    : null}
-                                {userData.showLighteningStrike ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Last lightning strike(min)</TableCell>
-                                        <TableCell align="right">{weather.wind_mph}</TableCell>
-                                        <TableCell align="right">&gt; {userData.lighteningStrike}</TableCell>
-                                        <TableCell align="right">&gt; 30</TableCell>
-                                    </TableRow>
-                                    : null}
-                                {userData.showWindDirection ?
-                                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                        <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Wind direction (deg)</TableCell>
-                                        {weather.wind_degree >= userData.windDirectionLow && weather.wind_degree <= userData.windDirectionHigh ? <TableCell align="right" style={{ color: 'green' }}>{weather.wind_degree}</TableCell> :
-                                            <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.wind_degree}</TableCell>}
-                                        {userData.windDirectionLow != -1 && userData.windDirectionHigh != 361 ?
-                                            <TableCell align="right">&gt; {userData.windDirectionLow}, &lt; {userData.windDirectionHigh}</TableCell>
-                                            : <TableCell align="right">N/A</TableCell>
-                                        }
-                                        <TableCell align="right">N/A</TableCell>
-                                    </TableRow>
-                                    : null}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                    <WeatherTable userData={userData} weather={weather} wind={wind} windGust={windGust}
+                        windUnit={windUnit} temp={temp} tempUnit={tempUnit} windOpWindow={windOpWindow}
+                        windGustOpWindow={windGustOpWindow} tempLow={tempLow} tempHigh={tempHigh} />
                 </div>
                 <div className="side_bar">
                     <WeatherSummary props={{ wind, windOpWindow, userData, windGust, windGustOpWindow, temp, tempLow, tempHigh, weather }} />
