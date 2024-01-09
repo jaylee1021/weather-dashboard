@@ -247,7 +247,7 @@ export default function WeatherMain() {
     }, []);
 
     // update user wind unit
-    const setUserWindUnit = (unit) => {
+    const storeUserWindUnit = (unit) => {
         axios.put(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/${userId}`, { unit })
             .then((res) => {
                 // console.log(res.data.user.unit);
@@ -267,7 +267,7 @@ export default function WeatherMain() {
             toMetersPerSec();
         }
         setWindUnit(newUnit);
-        setUserWindUnit(newUnit);
+        storeUserWindUnit(newUnit);
     };
 
     const handleTempConversion = (e) => {
