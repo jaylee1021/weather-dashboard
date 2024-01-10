@@ -11,16 +11,31 @@ import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import { LoadingLine } from './Loading';
 
-export default function CustomCharts({ weatherData, fetchData, aqiData }) {
+export default function CustomCharts({ weatherData, fetchData, aqiData, userData, windOpWindow, windGustOpWindow, tempLow, tempHigh }) {
 
     const [dataLabel, setDataLabel] = useState('');
     const [currentHour, setCurrentHour] = useState('');
     const [currentDate, setCurrentDate] = useState('');
-    const [data, setData] = useState([
-        ['', ''],
-        [0, 0]
-    ]);
-    const options = {
+    // const [options, setOptions] = useState({
+    //     title: 'Weather Forecast',
+    //     hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
+    //     vAxis: { minValue: 0 },
+    //     height: 400,
+    //     pointSize: 5,
+    //     legend: { position: "top", maxLines: 3 },
+    //     chartArea: { right: 0, width: "96%", height: "70%" },
+    //     curveType: 'function',
+    //     annotations: {
+    //         textStyle: {
+    //             color: 'black'
+    //         },
+    //         stem: {
+    //             length: 10
+    //         },
+    //     }
+    // });
+
+    let options = {
         title: 'Weather Forecast',
         hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
         vAxis: { minValue: 0 },
@@ -31,13 +46,18 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
         curveType: 'function',
         annotations: {
             textStyle: {
-                fontSize: 15,
-                auraColor: 'none',
                 color: 'black'
             },
-
-        },
+            stem: {
+                length: 10
+                // color: 'red',
+            },
+        }
     };
+    const [data, setData] = useState([
+        ['', ''],
+        [0, 0]
+    ]);
 
     const mphToKnots = 0.868976;
     const mphToMetersPerSec = 0.44704;
