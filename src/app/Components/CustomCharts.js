@@ -28,13 +28,17 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
         pointSize: 5,
         legend: { position: "top", maxLines: 3 },
         chartArea: { right: 0, width: "96%", height: "70%" },
+        curveType: 'function',
         annotations: {
-            stem: {
-                color: 'red',
+            textStyle: {
+                fontSize: 15,
+                auraColor: 'none',
+                color: 'black'
             },
-            style: 'line'
-        }
+
+        },
     };
+
     const mphToKnots = 0.868976;
     const mphToMetersPerSec = 0.44704;
 
@@ -59,72 +63,76 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
             loopStart = currentHour - 3;
         }
         if (weatherValue === 'winds_knots') {
-            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (knots)', 'Wind Gust (knots)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (knots)', { role: 'annotation', type: 'string' }, 'Wind Gust (knots)', { role: 'annotation', type: 'string' }]];
             for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
+                let wind = Math.round(weatherData[i].wind_mph * mphToKnots * 10) / 10;
+                let windGust = Math.round(weatherData[i].gust_mph * mphToKnots * 10) / 10;
                 if (currentHour === i) {
-                    newData.push([formattedTime, 'Current Time', weatherData[i].wind_mph * mphToKnots, weatherData[i].gust_mph * mphToKnots]);
+                    newData.push([formattedTime, 'Current Time', wind, wind, windGust, windGust]);
                 } else {
-                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].wind_mph * mphToKnots, weatherData[i].gust_mph * mphToKnots]);
+                    newData.push([weatherData[i].time.split(' ')[1], null, wind, wind, windGust, windGust]);
                 }
             }
             setData(newData);
         } else if (weatherValue === 'winds_m/s') {
-            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (m/s)', 'Wind Gust (m/s)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (m/s)', { role: 'annotation', type: 'string' }, 'Wind Gust (m/s)', { role: 'annotation', type: 'string' }]];
             for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
+                let wind = Math.round(weatherData[i].wind_mph * mphToMetersPerSec * 10) / 10;
+                let windGust = Math.round(weatherData[i].gust_mph * mphToMetersPerSec * 10) / 10;
                 if (currentHour === i) {
-                    newData.push([formattedTime, 'Current Time', weatherData[i].wind_mph * mphToMetersPerSec, weatherData[i].gust_mph * mphToMetersPerSec]);
+                    newData.push([formattedTime, 'Current Time', wind, wind, windGust, windGust]);
                 } else {
-                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].wind_mph * mphToMetersPerSec, weatherData[i].gust_mph * mphToMetersPerSec]);
+                    newData.push([weatherData[i].time.split(' ')[1], null, wind, wind, windGust, windGust]);
                 }
             }
             setData(newData);
         } else if (weatherValue === 'temp_f') {
-            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (F)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (F)', { role: 'annotation', type: 'string' }]];
             for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
-                    newData.push([formattedTime, 'Current Time', weatherData[i].temp_f]);
+                    newData.push([formattedTime, 'Current Time', weatherData[i].temp_f, weatherData[i].temp_f]);
                 } else {
-                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_f]);
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_f, weatherData[i].temp_f]);
                 }
             }
             setData(newData);
         } else if (weatherValue === 'temp_c') {
-            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (C)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (C)', { role: 'annotation', type: 'string' }]];
             for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
-                    newData.push([formattedTime, 'Current Time', weatherData[i].temp_c]);
+                    newData.push([formattedTime, 'Current Time', weatherData[i].temp_c, weatherData[i].temp_c]);
                 } else {
-                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_c]);
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_c, weatherData[i].temp_c]);
                 }
             }
             setData(newData);
         } else if (weatherValue === 'precip_mm') {
-            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Precipitation (mm/hr)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Precipitation (mm/hr)', { role: 'annotation', type: 'string' }]];
             for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
-                    newData.push([formattedTime, 'Current Time', weatherData[i].precip_mm]);
+                    newData.push([formattedTime, 'Current Time', weatherData[i].precip_mm, weatherData[i].precip_mm]);
                 } else {
-                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].precip_mm]);
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].precip_mm, weatherData[i].precip_mm]);
                 }
             }
             setData(newData);
         } else if (weatherValue === 'vis_miles') {
-            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Visibility (SM)']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Visibility (SM)', { role: 'annotation', type: 'string' }]];
             for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
-                    newData.push([formattedTime, 'Current Time', weatherData[i].vis_miles]);
+                    newData.push([formattedTime, 'Current Time', weatherData[i].vis_miles, weatherData[i].vis_miles]);
                 } else {
-                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].vis_miles]);
+                    newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].vis_miles, weatherData[i].vis_miles]);
                 }
             }
             setData(newData);
         } else if (weatherValue === 'aqi') {
-            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Quality Index']];
+            const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Quality Index', { role: 'annotation', type: 'string' }]];
             for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
                 if (currentHour === i) {
-                    newData.push([formattedTime, 'Current Time', aqiForecast[i]]);
+                    newData.push([formattedTime, 'Current Time', aqiForecast[i], aqiForecast[i]]);
                 } else {
-                    newData.push([aqiForecastTime[i].split('T')[1], null, aqiForecast[i]]);
+                    newData.push([aqiForecastTime[i].split('T')[1], null, aqiForecast[i], aqiForecast[i]]);
                 }
             }
             setData(newData);
