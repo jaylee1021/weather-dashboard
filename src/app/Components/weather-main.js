@@ -99,10 +99,10 @@ export default function WeatherMain() {
     // convert wind speed to knots
     const toKnots = useCallback(() => {
         // set wind speed and wind gust to knots
-        setWind((weather.wind_mph * mphToKnots).toFixed(2));
+        setWind((weather.wind_mph * mphToKnots).toFixed(1));
         userData.userWindUnit === 'knots' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * meterPerSecToKnots);
 
-        setWindGust((weather.gust_mph * mphToKnots).toFixed(2));
+        setWindGust((weather.gust_mph * mphToKnots).toFixed(1));
         userData.userWindGustUnit === 'knots' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * meterPerSecToKnots);
 
     }, [mphToKnots, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit, weather.wind_mph, weather.gust_mph]);
@@ -110,10 +110,10 @@ export default function WeatherMain() {
     // convert wind speed to m/s
     const toMetersPerSec = useCallback(() => {
         // set wind speed and wind gust to m/s
-        setWind((weather.wind_mph * mphToMetersPerSec).toFixed(2));
+        setWind((weather.wind_mph * mphToMetersPerSec).toFixed(1));
         userData.userWindUnit === 'm/s' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * knotsToMeterPerSec);
 
-        setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(2));
+        setWindGust((weather.gust_mph * mphToMetersPerSec).toFixed(1));
         userData.userWindGustUnit === 'm/s' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
 
     }, [mphToMetersPerSec, userData.wind, userData.windGust, userData.userWindUnit, userData.userWindGustUnit, weather.wind_mph, weather.gust_mph]);
@@ -246,7 +246,16 @@ export default function WeatherMain() {
 
     return (
         <div className="top_wrapper">
-            <h1 className='page_title'> Flight Test Weather Dashboard, Welcome {userData.firstName} {userData.lastName}!</h1>
+            <div style={{ display: 'flex' }}>
+                <h1 className='page_title'>Flight Test Weather Dashboard, Welcome {userData.firstName} {userData.lastName}!</h1>
+                {userData.firstName === 'John' && userData.lastName === 'Doe' &&
+                    <div className="tooltip demo_tooltip"> (Note)
+                        <span className="tooltiptext">Attention: You are currently logged in using a demo account.
+                            Please exercise caution and responsibility while using it.</span>
+                    </div>
+                }
+            </div>
+
             <div className="top">
                 <div className="buttons_wrapper">
                     <div >
@@ -281,7 +290,13 @@ export default function WeatherMain() {
                         <p className="time_style">Last updated: {weather.last_updated}</p>
                         <p>Refreshing in: {minCountdown}s</p>
                     </div>
+                    <div className="tooltip">(Note)
+                        <span className="tooltiptext">Please be aware that, due to constraints associated with the use of a free weather API,
+                            we are unable to provide some of the essential aviation weather data. (ex: Cloud base height, DA, lightening strike) </span>
+                    </div>
                 </div>
+
+
             </div>
             <div style={{ display: 'flex' }}>
                 <div style={{ display: 'flex', flex: 'auto' }}>
