@@ -35,7 +35,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
     //     }
     // });
 
-    let options = {
+    const options = {
         title: 'Weather Forecast',
         hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
         vAxis: { minValue: 0 },
