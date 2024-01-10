@@ -3,9 +3,6 @@ import { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import '../../css/page.css';
@@ -19,6 +16,7 @@ const Signup = () => {
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [errorMessage, setErrorMessage] = useState("");
 	const [error, setError] = useState(false);
 
 	const handleFirstName = (e) => {
@@ -34,7 +32,28 @@ const Signup = () => {
 	};
 
 	const handlePassword = (e) => {
-		setPassword(e.target.value);
+		let new_pass = event.target.value;
+		setPassword(new_pass);
+
+		// regular expressions to validate password
+		const lowerCase = /[a-z]/g;
+		const upperCase = /[A-Z]/g;
+		const numbers = /[0-9]/g;
+		const characters = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g;
+
+		if (!new_pass.match(lowerCase)) {
+			setErrorMessage("Password should contains lowercase letters!");
+		} else if (!new_pass.match(upperCase)) {
+			setErrorMessage("Password should contain uppercase letters!");
+		} else if (!new_pass.match(numbers)) {
+			setErrorMessage("Password should contains numbers also!");
+		} else if (!new_pass.match(characters)) {
+			setErrorMessage("Password should contain special characters!");
+		} else if (new_pass.length < 10) {
+			setErrorMessage("Password length should be more than 10.");
+		} else {
+			setErrorMessage(<p style={{ color: 'green' }}>Password is strong!</p>);
+		}
 	};
 
 	const handleSubmit = (e) => {
@@ -99,6 +118,7 @@ const Signup = () => {
 					<div>
 						<TextField variant='standard' type="password" className="text_width" label="Password" value={password} onChange={handlePassword} required />
 					</div>
+					<div style={{ color: "red" }}> {errorMessage} </div>
 					<div className='login_button'>
 						<div>
 							<Button variant='outlined' type="submit" className="btn btn-primary px-4">Sign Up</Button>
