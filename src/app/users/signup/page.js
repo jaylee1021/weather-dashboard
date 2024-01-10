@@ -102,7 +102,7 @@ const Signup = () => {
 			<br />
 			<br />
 			<br />
-			<div className='middle-content'>
+			<div className='middle-content signup_middle'>
 				<form onSubmit={handleSubmit}>
 					<h1 className='login_subtitle'>Sign Up</h1>
 					<p className="text-muted">Create an account below to get started</p>
@@ -127,12 +127,9 @@ const Signup = () => {
 							<Button variant='outlined' type="button" className="btn btn-link px-0">Forgot password?</Button>
 						</div>
 					</div>
-				</form>
-				{/* <div>
-					<h2>Login</h2>
-					<p>Sign In to your account</p>
+					<p style={{ padding: '10px 0' }}>If you already have an account, please log in</p>
 					<Button variant='outlined' href="/users/login" type="button" className="btn btn-primary active mt-3">Login</Button>
-				</div> */}
+				</form>
 			</div>
 
 		</div>
