@@ -41,6 +41,18 @@ export default function WeatherTable({ userData, weather, wind, windGust, windUn
                             {windUnit === 'knots' ? <TableCell align="right">&lt;= 25.0</TableCell> : <TableCell align="right">&lt;= 12.9</TableCell>}
                         </TableRow>
                         : null}
+                    {userData.showWindDirection ?
+                        <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                            <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Wind direction (deg)</TableCell>
+                            {weather.wind_degree >= userData.windDirectionLow && weather.wind_degree <= userData.windDirectionHigh ? <TableCell align="right" style={{ color: 'green' }}>{weather.wind_degree}</TableCell> :
+                                <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.wind_degree}</TableCell>}
+                            {userData.windDirectionLow != -1 && userData.windDirectionHigh != 361 ?
+                                <TableCell align="right">&gt; {userData.windDirectionLow}, &lt; {userData.windDirectionHigh}</TableCell>
+                                : <TableCell align="right">N/A</TableCell>
+                            }
+                            <TableCell align="right">N/A</TableCell>
+                        </TableRow>
+                        : null}
                     {userData.showTemp ?
                         <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                             <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Air temperature ({tempUnit})</TableCell>
@@ -89,18 +101,7 @@ export default function WeatherTable({ userData, weather, wind, windGust, windUn
                             <TableCell align="right">&gt; 30</TableCell>
                         </TableRow>
                         : null}
-                    {userData.showWindDirection ?
-                        <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                            <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>Wind direction (deg)</TableCell>
-                            {weather.wind_degree >= userData.windDirectionLow && weather.wind_degree <= userData.windDirectionHigh ? <TableCell align="right" style={{ color: 'green' }}>{weather.wind_degree}</TableCell> :
-                                <TableCell align="right" style={{ color: 'red', fontWeight: 'bold' }}>{weather.wind_degree}</TableCell>}
-                            {userData.windDirectionLow != -1 && userData.windDirectionHigh != 361 ?
-                                <TableCell align="right">&gt; {userData.windDirectionLow}, &lt; {userData.windDirectionHigh}</TableCell>
-                                : <TableCell align="right">N/A</TableCell>
-                            }
-                            <TableCell align="right">N/A</TableCell>
-                        </TableRow>
-                        : null}
+
                 </TableBody>
             </Table>
         </TableContainer>
