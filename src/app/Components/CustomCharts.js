@@ -50,7 +50,6 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
             },
             stem: {
                 length: 10
-                // color: 'red',
             },
         }
     };
@@ -221,6 +220,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
                 chartType='LineChart'
                 data={data}
                 options={options}
+                legendToggle
             />
         </div>
     );
