@@ -54,16 +54,7 @@ export default function WeatherMain() {
     // set wind unit on page load
     useEffect(() => {
         setWindUnit(localStorage.getItem('windUnit') ? localStorage.getItem('windUnit') : 'knots');
-        if (typeof window !== undefined) {
-            const expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
-            let currentTime = Date.now();
-
-            setAuthToken(localStorage.getItem('jwtToken'));
-            if (currentTime >= expirationTime) {
-                handleLogout();
-                router.push('/users/login');
-            }
-        }
+        setAuthToken(localStorage.getItem('jwtToken'));
     }, [router]);
 
     const fetchUser = useCallback(async () => {
@@ -153,8 +144,8 @@ export default function WeatherMain() {
             } else if (windUnit === 'm/s') {
                 toMetersPerSec();
             }
-
             setMinCountdown(60);
+
         } catch (error) {
             console.log(error);
         }
@@ -189,8 +180,11 @@ export default function WeatherMain() {
         const pacificTimeOffset = -8;
 
         const currentPSTHour = currentTime.getUTCHours() + pacificTimeOffset;
-        if (currentPSTHour === 0) {
+        const currentPSTMinutes = currentTime.getUTCMinutes();
+
+        if (currentPSTHour === 0 && currentPSTMinutes === 0) {
             handleReturnToDefault();
+            handleLogout();
         }
     }, [handleReturnToDefault]);
 
@@ -241,15 +235,8 @@ export default function WeatherMain() {
         router.push('/users/login');
     };
 
-    // loading screen
-    if (loading) return (
-        <div className="loading">
-            <p >Loading...</p>
-        </div>
-    );
-
-    return (
-        <div className="top_wrapper">
+    const topMenu = (
+        <div>
             <div style={{ display: 'flex' }}>
                 <h1 className='page_title'>Flight Test Weather Dashboard, Welcome {userData.firstName} {userData.lastName}!</h1>
                 {userData.firstName === 'John' && userData.lastName === 'Doe' &&
@@ -259,10 +246,20 @@ export default function WeatherMain() {
                     </div>
                 }
             </div>
+        </div>
+    );
 
+    // loading screen
+    if (loading) return (
+        topMenu
+    );
+
+    return (
+        <div className="top_wrapper">
+            {topMenu}
             <div className="top">
                 <div className="buttons_wrapper">
-                    <div >
+                    <div>
                         <SiteSelection fetchData={fetchData} />
                     </div>
                     <div>
@@ -286,21 +283,19 @@ export default function WeatherMain() {
                         <Button variant='outlined' onClick={() => handleReturnToDefault()}>Return to default</Button>
                     </div>
                 </div>
-                <div className="time_style_top" >
-                    <div className="time_style">
-                        <p>Current date/time: {currentDateTime}</p>
-                    </div>
-                    <div className="time_style">
-                        <p className="time_style">Last updated: {weather.last_updated}</p>
-                        <p>Refreshing in: {minCountdown}s</p>
-                    </div>
-                    <div className="tooltip">(Note)
-                        <span className="tooltiptext">Please be aware that, due to constraints associated with the use of a free weather API,
-                            we are unable to provide some of the essential aviation weather data. (ex: Cloud base height, DA, lightening strike) </span>
-                    </div>
+            </div>
+            <div className="time_style_top" >
+                <div className="time_style">
+                    <p>Current date/time: {currentDateTime}</p>
                 </div>
-
-
+                <div className="time_style">
+                    <p className="time_style">Last updated: {weather.last_updated}</p>
+                    <p>Refreshing in: {minCountdown}s</p>
+                </div>
+                <div className="tooltip">(Note)
+                    <span className="tooltiptext">Please be aware that, due to constraints associated with the use of a free weather API,
+                        we are unable to provide some of the essential aviation weather data. (ex: Cloud base height, DA, lightening strike) </span>
+                </div>
             </div>
             <div style={{ display: 'flex' }}>
                 <div style={{ display: 'flex', flex: 'auto' }}>
