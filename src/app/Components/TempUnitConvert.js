@@ -6,6 +6,8 @@ import Select from '@mui/material/Select';
 
 export default function TempUnitConvert({ setTemp, setTempUnit, setTempLow, setTempHigh, weather, userData, toC }) {
 
+    const tempUnit = typeof window !== 'undefined' && localStorage.getItem('tempUnit') ? localStorage.getItem('tempUnit') : 'f';
+
     const handleTempConversion = (e) => {
         const newTempUnit = e.target.value;
         localStorage.setItem('tempUnit', newTempUnit);
@@ -28,7 +30,7 @@ export default function TempUnitConvert({ setTemp, setTempUnit, setTempLow, setT
             <Select
                 labelId="temp_unit_select"
                 id="temp_unit_select_menu"
-                value={localStorage.getItem('tempUnit') ? localStorage.getItem('tempUnit') : 'f'}
+                value={tempUnit}
                 onChange={handleTempConversion}
                 label="Temp_Unit"
                 name='tempUnit'
