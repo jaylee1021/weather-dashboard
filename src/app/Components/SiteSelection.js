@@ -6,10 +6,13 @@ import Select from '@mui/material/Select';
 
 export default function SiteSelection({ fetchData, }) {
 
+    const site = typeof window !== 'undefined' && localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland';
+
     const handleSiteSelection = async (e) => {
         if (typeof window !== 'undefined') {
             localStorage.setItem('selectSite', e.target.value);
         }
+
         try {
             await fetchData();
         } catch (error) {
@@ -23,7 +26,7 @@ export default function SiteSelection({ fetchData, }) {
             <Select
                 labelId="site_select"
                 id="site_select_menu"
-                value={typeof window !== 'undefined' && localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland'}
+                value={site}
                 onChange={handleSiteSelection}
                 label="Select_site"
                 name='selectSite'
