@@ -112,43 +112,70 @@ export default function WeatherMain() {
     const fetchData = useCallback(async () => {
 
         const selectSite = localStorage.getItem('selectSite') ? localStorage.getItem('selectSite') : 'hsiland';
-        let latitude;
-        let longitude;
-        if (selectSite === 'hsiland' || localStorage.getItem('selectSite') === 'hsiland') {
-            latitude = process.env.NEXT_PUBLIC_HSILAND_LATITUDE;
-            longitude = process.env.NEXT_PUBLIC_HSILAND_LONGITUDE;
-        } else if (selectSite === 'pdt10_hangar' || localStorage.getItem('selectSite') === 'pdt10_hangar') {
-            latitude = process.env.NEXT_PUBLIC_PDT10_HANGAR_LATITUDE;
-            longitude = process.env.NEXT_PUBLIC_PDT10_HANGAR_LONGITUDE;
-        } else if (selectSite === 'pdt10_northpad' || localStorage.getItem('selectSite') === 'pdt10_northpad') {
-            latitude = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_LATITUDE;
-            longitude = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_LONGITUDE;
-        }
 
+        // Axios call to server
         try {
-            const [weatherResponse, aqiResponse] = await Promise.all([
-                axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${latitude},${longitude}`),
-                axios.get(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=us_aqi&hourly=us_aqi&timezone=America%2FLos_Angeles&forecast_days=1`)
-            ]);
-            const weatherData = weatherResponse.data;
-            setForecast(weatherData.forecast.forecastday[0].hour);
-            setWeather(weatherData.current);
-            localStorage.getItem('tempUnit') === 'f' ? (setTemp(weatherData.current.temp_f), setTempUnit('F')) : (setTemp(weatherData.current.temp_c), setTempUnit('C'));
-
-            const aqiData = aqiResponse.data;
-            setAqiData(aqiData);
+            const weatherResponse = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/weather/${selectSite}`);
+            setForecast(weatherResponse.data.forecast);
+            setWeather(weatherResponse.data.weather);
+            setAqiData(weatherResponse.data.aqiData);
+            localStorage.getItem('tempUnit') === 'f' ? (setTemp(weatherResponse.data.weather.temp_f), setTempUnit('F')) : (setTemp(weatherResponse.data.weather.temp_c), setTempUnit('C'));
 
             if (windUnit === 'knots') {
-                toKnots();
+                setWind(weatherResponse.data.windKnots.toFixed(1));
+                setWindGust(weatherResponse.data.windGustKnots.toFixed(1));
+                userData.userWindUnit === 'knots' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * meterPerSecToKnots);
+                userData.userWindGustUnit === 'knots' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * meterPerSecToKnots);
             } else if (windUnit === 'm/s') {
-                toMetersPerSec();
+                setWind(weatherResponse.data.windMS.toFixed(1));
+                setWindGust(weatherResponse.data.windGustMS.toFixed(1));
+                userData.userWindUnit === 'm/s' ? setWindOpWindow(userData.wind) : setWindOpWindow(userData.wind * knotsToMeterPerSec);
+                userData.userWindGustUnit === 'm/s' ? setWindGustOpWindow(userData.windGust) : setWindGustOpWindow(userData.windGust * knotsToMeterPerSec);
             }
             setMinCountdown(60);
-
         } catch (error) {
             console.log(error);
         }
-    }, [toKnots, toMetersPerSec, windUnit]);
+
+        // Axios call directly to weather API and air quality API
+        // let latitude;
+        // let longitude;
+        // if (selectSite === 'hsiland' || localStorage.getItem('selectSite') === 'hsiland') {
+        //     latitude = process.env.NEXT_PUBLIC_HSILAND_LATITUDE;
+        //     longitude = process.env.NEXT_PUBLIC_HSILAND_LONGITUDE;
+        // } else if (selectSite === 'pdt10_hangar' || localStorage.getItem('selectSite') === 'pdt10_hangar') {
+        //     latitude = process.env.NEXT_PUBLIC_PDT10_HANGAR_LATITUDE;
+        //     longitude = process.env.NEXT_PUBLIC_PDT10_HANGAR_LONGITUDE;
+        // } else if (selectSite === 'pdt10_northpad' || localStorage.getItem('selectSite') === 'pdt10_northpad') {
+        //     latitude = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_LATITUDE;
+        //     longitude = process.env.NEXT_PUBLIC_PDT10_NORTH_PAD_LONGITUDE;
+        // }
+        // try {
+        //     const [weatherResponse, aqiResponse] = await Promise.all([
+        //         axios.get(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${latitude},${longitude}`),
+        //         axios.get(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=us_aqi&hourly=us_aqi&timezone=America%2FLos_Angeles&forecast_days=1`)
+        //     ]);
+        //     const weatherData = weatherResponse.data;
+        //     setForecast(weatherData.forecast.forecastday[0].hour);
+        //     setWeather(weatherData.current);
+        //     localStorage.getItem('tempUnit') === 'f' ? (setTemp(weatherData.current.temp_f), setTempUnit('F')) : (setTemp(weatherData.current.temp_c), setTempUnit('C'));
+
+        //     const aqiData = aqiResponse.data;
+        //     setAqiData(aqiData);
+
+        //     if (windUnit === 'knots') {
+        //         toKnots();
+        //     } else if (windUnit === 'm/s') {
+        //         toMetersPerSec();
+        //     }
+        //     setMinCountdown(60);
+
+        // } catch (error) {
+        //     console.log(error);
+        // }
+
+
+    }, [userData.userWindGustUnit, userData.windGust, userData.wind, userData.userWindUnit, windUnit]);
 
     // return operating window to default values
     const handleReturnToDefault = useCallback(async () => {
