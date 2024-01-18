@@ -21,7 +21,7 @@ export default function SiteSelection({ fetchData, }) {
     };
 
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px 10px 10px 0' }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 155 }} style={{ margin: '10px 10px 10px 0' }}>
             <InputLabel id="site_select_label">Site</InputLabel>
             <Select
                 labelId="site_select"

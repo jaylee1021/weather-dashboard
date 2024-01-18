@@ -32,7 +32,7 @@ export default function WindUnitConvert({ userId, setWindUnit, windUnit, toKnots
     };
 
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }} style={{ margin: '10px' }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 70 }} style={{ margin: '10px' }}>
             <InputLabel id="wind_unit_select">Wind Unit</InputLabel>
             <Select
                 labelId="wind_unit_select"
