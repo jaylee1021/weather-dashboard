@@ -10,11 +10,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 
-export default function CustomCharts({ weatherData, fetchData, aqiData, userData, windOpWindow, windGustOpWindow, tempLow, tempHigh }) {
+export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
     const [dataLabel, setDataLabel] = useState('');
-    const [currentHour, setCurrentHour] = useState('');
     const [currentDate, setCurrentDate] = useState('');
+
+    // testing different options for the chart.
     // const [options, setOptions] = useState({
     //     title: 'Weather Forecast',
     //     hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
@@ -67,25 +68,27 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
 
     const handleDataUpdate = useCallback((weatherValue) => {
         setDataLabel(weatherValue);
-        const weatherDataLength = weatherData.length - currentHour < 10 ? weatherData.length - currentHour : 10;
         const currentTime = new Date();
         const hours = currentTime.getHours();
         const minutes = currentTime.getMinutes();
         const formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+        const weatherDataLength = weatherData.length - hours < 10 ? weatherData.length - hours : 10;
         const aqiForecast = aqiData.hourly.us_aqi;
         const aqiForecastTime = aqiData.hourly.time;
         let loopStart;
-        if (currentHour < 3) {
+        if (hours < 3) {
             loopStart = 0;
         } else {
-            loopStart = currentHour - 3;
+            loopStart = hours - 3;
         }
+        // This code adds the current time to the chart
         if (weatherValue === 'winds_knots') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (knots)', { role: 'annotation', type: 'string' }, 'Wind Gust (knots)', { role: 'annotation', type: 'string' }]];
-            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
+            for (let i = loopStart; i < hours + weatherDataLength; i++) {
                 let wind = Math.round(weatherData[i].wind_mph * mphToKnots * 10) / 10;
                 let windGust = Math.round(weatherData[i].gust_mph * mphToKnots * 10) / 10;
-                if (currentHour === i) {
+                console.log('test', hours, i, 'weatherData', weatherData[i].time.split(' ')[1], 'formattedTime', formattedTime);
+                if (hours === i) {
                     newData.push([formattedTime, 'Current Time', wind, wind, windGust, windGust]);
                 } else {
                     newData.push([weatherData[i].time.split(' ')[1], null, wind, wind, windGust, windGust]);
@@ -94,10 +97,10 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
             setData(newData);
         } else if (weatherValue === 'winds_m/s') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Steady Winds (m/s)', { role: 'annotation', type: 'string' }, 'Wind Gust (m/s)', { role: 'annotation', type: 'string' }]];
-            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
+            for (let i = loopStart; i < hours + weatherDataLength; i++) {
                 let wind = Math.round(weatherData[i].wind_mph * mphToMetersPerSec * 10) / 10;
                 let windGust = Math.round(weatherData[i].gust_mph * mphToMetersPerSec * 10) / 10;
-                if (currentHour === i) {
+                if (hours === i) {
                     newData.push([formattedTime, 'Current Time', wind, wind, windGust, windGust]);
                 } else {
                     newData.push([weatherData[i].time.split(' ')[1], null, wind, wind, windGust, windGust]);
@@ -106,8 +109,8 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
             setData(newData);
         } else if (weatherValue === 'temp_f') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (F)', { role: 'annotation', type: 'string' }]];
-            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
-                if (currentHour === i) {
+            for (let i = loopStart; i < hours + weatherDataLength; i++) {
+                if (hours === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].temp_f, weatherData[i].temp_f]);
                 } else {
                     newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_f, weatherData[i].temp_f]);
@@ -116,8 +119,8 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
             setData(newData);
         } else if (weatherValue === 'temp_c') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Temp (C)', { role: 'annotation', type: 'string' }]];
-            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
-                if (currentHour === i) {
+            for (let i = loopStart; i < hours + weatherDataLength; i++) {
+                if (hours === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].temp_c, weatherData[i].temp_c]);
                 } else {
                     newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].temp_c, weatherData[i].temp_c]);
@@ -126,8 +129,8 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
             setData(newData);
         } else if (weatherValue === 'precip_mm') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Precipitation (mm/hr)', { role: 'annotation', type: 'string' }]];
-            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
-                if (currentHour === i) {
+            for (let i = loopStart; i < hours + weatherDataLength; i++) {
+                if (hours === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].precip_mm, weatherData[i].precip_mm]);
                 } else {
                     newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].precip_mm, weatherData[i].precip_mm]);
@@ -136,8 +139,8 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
             setData(newData);
         } else if (weatherValue === 'vis_miles') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Visibility (SM)', { role: 'annotation', type: 'string' }]];
-            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
-                if (currentHour === i) {
+            for (let i = loopStart; i < hours + weatherDataLength; i++) {
+                if (hours === i) {
                     newData.push([formattedTime, 'Current Time', weatherData[i].vis_miles, weatherData[i].vis_miles]);
                 } else {
                     newData.push([weatherData[i].time.split(' ')[1], null, weatherData[i].vis_miles, weatherData[i].vis_miles]);
@@ -146,8 +149,8 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
             setData(newData);
         } else if (weatherValue === 'aqi') {
             const newData = [['Time', { role: 'annotation', type: 'string' }, 'Air Quality Index', { role: 'annotation', type: 'string' }]];
-            for (let i = loopStart; i < currentHour + weatherDataLength; i++) {
-                if (currentHour === i) {
+            for (let i = loopStart; i < hours + weatherDataLength; i++) {
+                if (hours === i) {
                     newData.push([formattedTime, 'Current Time', aqiForecast[i], aqiForecast[i]]);
                 } else {
                     newData.push([aqiForecastTime[i].split('T')[1], null, aqiForecast[i], aqiForecast[i]]);
@@ -155,24 +158,21 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
             }
             setData(newData);
         }
+    }, [weatherData, aqiData]);
 
-    }, [weatherData, currentHour, aqiData]);
-
-    const updateCurrentHour = useCallback(() => {
+    const updateChart = useCallback(() => {
         const currentTime = new Date();
         const hours = currentTime.getHours(); // Retrieves the hour as an integer
         const date = currentTime.getDate();
         const month = currentTime.getMonth();
         const year = currentTime.getFullYear();
         setCurrentDate(`${month + 1}/${date}/${year}`);
-        setCurrentHour(hours);
-        handleDataUpdate(dataLabel);
         fetchData();
-
+        handleDataUpdate(dataLabel);
     }, [fetchData, handleDataUpdate, dataLabel]);
 
     useEffect(() => {
-        updateCurrentHour();
+        updateChart();
 
         return () => {
             axios.CancelToken.source().cancel();
@@ -210,7 +210,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData, userData
                     </Select>
                 </FormControl>
                 {dataLabel ? <div className="chart_refresh_button">
-                    <Button variant='outlined' onClick={updateCurrentHour}>Refresh Chart</Button>
+                    <Button variant='outlined' onClick={updateChart}>Refresh Chart</Button>
                 </div>
                     : null}
             </div>
