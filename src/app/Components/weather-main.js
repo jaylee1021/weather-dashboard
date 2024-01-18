@@ -173,8 +173,6 @@ export default function WeatherMain() {
         // } catch (error) {
         //     console.log(error);
         // }
-
-
     }, [userData.userWindGustUnit, userData.windGust, userData.wind, userData.userWindUnit, windUnit]);
 
     // return operating window to default values
@@ -337,8 +335,7 @@ export default function WeatherMain() {
                     <Button style={{ margin: '0 10px' }} variant="outlined" onClick={logout}>Log Out</Button>
                 </div>
             </div>
-            {aqiData && <CustomCharts weatherData={forecast} fetchData={fetchData} aqiData={aqiData} userData={userData}
-                windOpWindow={windOpWindow} windGustOpWindow={windGustOpWindow} />}
+            {aqiData && <CustomCharts weatherData={forecast} fetchData={fetchData} aqiData={aqiData} />}
         </div >
     );
 };
