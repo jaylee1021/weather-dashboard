@@ -1,3 +1,25 @@
+body {
+    color: black;
+    background-color: white;
+}
+  
+[data-theme="dark"] body {
+    color: white;
+    background-color: black;
+}
+
+[data-theme="dark"] .table_border {
+    border: 1px solid white;
+}
+
+[data-theme="dark"] .Button {
+    background-color: blue;
+    color: white;
+}
+
+[data-theme="dark"] .Select {
+    color: white;
+}
 
 .top_wrapper {
     display: flex;
