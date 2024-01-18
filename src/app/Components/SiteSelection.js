@@ -3,6 +3,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import '../css/weather.css';
 
 export default function SiteSelection({ fetchData, }) {
 
@@ -21,9 +22,10 @@ export default function SiteSelection({ fetchData, }) {
     };
 
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 155 }} style={{ margin: '10px 10px 10px 0' }}>
-            <InputLabel id="site_select_label">Site</InputLabel>
+        <FormControl className='Select' variant="standard" sx={{ m: 1, minWidth: 155 }} style={{ margin: '10px 10px 10px 0' }}>
+            <InputLabel className='Select' id="site_select_label">Site</InputLabel>
             <Select
+                className='Select'
                 labelId="site_select"
                 id="site_select_menu"
                 value={site}

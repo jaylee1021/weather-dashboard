@@ -17,6 +17,7 @@ import SiteSelection from "./SiteSelection";
 import WindUnitConvert from "./WindUnitConvert";
 import TempUnitConvert from "./TempUnitConvert";
 import WeatherTable from "./WeatherTable";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 export default function WeatherMain() {
 
@@ -280,6 +281,7 @@ export default function WeatherMain() {
 
     return (
         <div className="top_wrapper">
+            <ThemeSwitcher />
             {topMenu}
             <div className="top">
                 <div className="buttons_wrapper">
@@ -295,7 +297,7 @@ export default function WeatherMain() {
                             setTempHigh={setTempHigh} weather={weather} userData={userData} toC={toC} />
                     </div>
                     <div className="button_padding">
-                        <Button variant='outlined' onClick={handleManualRefresh}>Manual Refresh</Button>
+                        <Button variant='outlined' className='Button' onClick={handleManualRefresh}>Manual Refresh</Button>
                     </div>
                     <div className="button_padding">
                         <UpdateParams windUnit={windUnit} userId={userId} fetchUser={fetchUser} />
@@ -304,7 +306,7 @@ export default function WeatherMain() {
                         <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />
                     </div>
                     <div className="button_padding">
-                        <Button variant='outlined' onClick={() => handleReturnToDefault()}>Return to default</Button>
+                        <Button variant='outlined' className='Button' onClick={() => handleReturnToDefault()}>Return to default</Button>
                     </div>
                 </div>
             </div>
