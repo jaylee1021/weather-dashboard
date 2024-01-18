@@ -323,7 +323,7 @@ to {
 .demo_tooltip {
   display:flex;
   flex-wrap: wrap;
-  align-content: end;
+  align-content: flex-end;
   padding: 10px;
 }
 
