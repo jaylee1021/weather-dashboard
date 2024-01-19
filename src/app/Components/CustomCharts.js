@@ -9,50 +9,66 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
+import { useTheme } from "next-themes";
 
 export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
     const [dataLabel, setDataLabel] = useState('');
     const [currentDate, setCurrentDate] = useState('');
-
-    // testing different options for the chart.
-    // const [options, setOptions] = useState({
-    //     title: 'Weather Forecast',
-    //     hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
-    //     vAxis: { minValue: 0 },
-    //     height: 400,
-    //     pointSize: 5,
-    //     legend: { position: "top", maxLines: 3 },
-    //     chartArea: { right: 0, width: "96%", height: "70%" },
-    //     curveType: 'function',
-    //     annotations: {
-    //         textStyle: {
-    //             color: 'black'
-    //         },
-    //         stem: {
-    //             length: 10
-    //         },
-    //     }
-    // });
-
-    const options = {
-        title: 'Weather Forecast',
-        hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
-        vAxis: { minValue: 0 },
-        height: 400,
-        pointSize: 5,
-        legend: { position: "top", maxLines: 3 },
-        chartArea: { right: 0, width: "96%", height: "70%" },
-        curveType: 'function',
-        annotations: {
-            textStyle: {
-                color: 'black'
-            },
-            stem: {
-                length: 10
-            },
+    const [options, setOptions] = useState({});
+    const { theme } = useTheme();
+    useEffect(() => {
+        if (theme === 'dark') {
+            setOptions({
+                title: 'Weather Forecast',
+                titleTextStyle: { color: 'white' },
+                hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: 'white' }, textStyle: { color: 'white' } },
+                vAxis: { minValue: 0, textStyle: { color: 'white' }, gridlines: { color: 'gray' } },
+                height: 400,
+                pointSize: 5,
+                legend: { position: "top", maxLines: 3, textStyle: { color: 'white' } },
+                chartArea: { right: 0, width: "96%", height: "70%" },
+                curveType: 'function',
+                backgroundColor: {
+                    stroke: '#ccc',
+                    strokeWidth: 5,
+                    fill: 'black'
+                },
+                annotations: {
+                    textStyle: {
+                        color: 'white'
+                    },
+                    stem: {
+                        length: 10
+                    },
+                }
+            });
+        } else {
+            setOptions({
+                title: 'Weather Forecast',
+                hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
+                vAxis: { minValue: 0 },
+                height: 400,
+                pointSize: 5,
+                legend: { position: "top", maxLines: 3 },
+                chartArea: { right: 0, width: "96%", height: "70%" },
+                curveType: 'function',
+                backgroundColor: {
+                    stroke: '#ccc',
+                    strokeWidth: 5,
+                },
+                annotations: {
+                    textStyle: {
+                        color: 'black'
+                    },
+                    stem: {
+                        length: 10
+                    },
+                }
+            });
         }
-    };
+    }, [theme, currentDate]);
+
     const [data, setData] = useState([
         ['', ''],
         [0, 0]
@@ -87,7 +103,6 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
             for (let i = loopStart; i < hours + weatherDataLength; i++) {
                 let wind = Math.round(weatherData[i].wind_mph * mphToKnots * 10) / 10;
                 let windGust = Math.round(weatherData[i].gust_mph * mphToKnots * 10) / 10;
-                console.log('test', hours, i, 'weatherData', weatherData[i].time.split(' ')[1], 'formattedTime', formattedTime);
                 if (hours === i) {
                     newData.push([formattedTime, 'Current Time', wind, wind, windGust, windGust]);
                 } else {
@@ -191,8 +206,9 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
         <div className='py-10 flex flex-col items-center justify-center'>
             <div style={{ display: 'flex' }}>
                 <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 130 }} style={{ margin: '10px 10px 10px 0' }}>
-                    <InputLabel id="select-standard-label" >Choose Option</InputLabel>
+                    <InputLabel className="Dark_mode" id="select-standard-label" >Choose Option</InputLabel>
                     <Select
+                        className="Dark_mode"
                         labelId="select-standard-label"
                         id="select-standard"
                         value={dataLabel}
@@ -210,7 +226,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
                     </Select>
                 </FormControl>
                 {dataLabel ? <div className="chart_refresh_button">
-                    <Button variant='outlined' onClick={updateChart}>Refresh Chart</Button>
+                    <Button variant='outlined' className="Dark_Mode_Button" onClick={updateChart}>Refresh Chart</Button>
                 </div>
                     : null}
             </div>
