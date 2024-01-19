@@ -1,7 +1,7 @@
 import React from 'react';
 import '../css/weather.css';
 
-export default function WeatherSummary({ props }) {
+export default function WeatherSummary({ props, setGoNoGo }) {
 
     const checkGoNoGo = () => {
         if ((props.wind > props.windOpWindow && props.userData.showWind) || (props.windGust > props.windGustOpWindow && props.userData.showWindGust) || (props.temp < props.tempLow && props.userData.showTemp) ||
@@ -10,9 +10,13 @@ export default function WeatherSummary({ props }) {
             (props.weather.wind_mph < props.userData.densityAltitudeLow && props.userData.showDensityAltitude) || (props.weather.wind_mph > props.userData.densityAltitudeHigh && props.userData.showDensityAltitude) ||
             (props.weather.wind_mph > props.userData.lighteningStrike && props.userData.showLighteningStrike) || (props.weather.wind_degree < props.userData.windDirectionLow && props.userData.showWindDirection) ||
             (props.weather.wind_degree > props.userData.windDirectionHigh && props.userData.showWindDirection)) {
-            return (<p style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>Out of Limits!</p>);
+            // return (<p style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>Out of Limits!</p>);
+            setGoNoGo(false);
+            return false;
         } else {
-            return (<p style={{ color: 'green', fontWeight: 'bold', padding: '10px' }}>Go!</p>);
+            // return (<p style={{ color: 'green', fontWeight: 'bold', padding: '10px' }}>Go!</p>);
+            setGoNoGo(true);
+            return true;
         }
     };
 
@@ -54,25 +58,36 @@ export default function WeatherSummary({ props }) {
         if (props.weather.wind_degree > props.userData.windDirectionHigh && props.userData.showWindDirection) {
             limits.push('Wind Direction Upper Limit');
         }
-        if (limits.length === 0) {
-            limits.push(<p style={{ color: 'green' }}>None</p>);
-        }
+        // if (limits.length === 0) {
+        //     limits.push(<p style={{ color: 'white' }}>None</p>);
+        // }
         return limits;
     };
 
     return (
         <div className="table_border">
-            <div style={{ padding: '10px' }}>
-                <h3>Summary</h3>
-                <h4>Status</h4>
-                {checkGoNoGo()}
-                <h4>Breaching Limit(s)</h4>
-                <div style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>
-                    {checkBreachingLimit().map((limits, index) => {
-                        return (<div key={index} >{limits}</div>);
-                    })}
+            {checkGoNoGo() ?
+                <div className='go_style'>
+                    <h3>Summary</h3>
+                    <h4>Status</h4>
+                    <p className='go_no_go'>Go!</p>
+                    <h4>Breaching Limit(s)</h4>
+                    <div className='breaching'>
+                        <p> None </p>
+                    </div>
                 </div>
-            </div>
+                : <div className='no_go_style'>
+                    <h3>Summary</h3>
+                    <h4>Status</h4>
+                    <p className='go_no_go'>Out of Limits!</p>
+                    <h4>Breaching Limit(s)</h4>
+                    <div className='breaching'>
+                        {checkBreachingLimit().map((limits, index) => {
+                            return (<div key={index} >{limits}</div>);
+                        })}
+                    </div>
+                </div>
+            }
         </div>
     );
 }
