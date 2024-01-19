@@ -1,15 +1,9 @@
 .main {
-  /* display: flex;
-  flex-direction: column;
-  align-items: center; */
   padding: 3rem;
   min-height: 100vh;
-  /* background-color: white;
-  color: black; */
 }
 
 .page_title {
-  /* color: black; */
   padding: 10px 0;
 }
 
@@ -293,7 +287,6 @@ to {
 /* Tooltip container */
 .tooltip {
   position: relative;
-  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
 
 /* Tooltip text */
@@ -323,7 +316,7 @@ to {
 .demo_tooltip {
   display:flex;
   flex-wrap: wrap;
-  align-content: flex-end;
+  align-content: center;
   padding: 10px;
 }
 
@@ -331,7 +324,6 @@ to {
   display: flex;
   justify-content: center;
   align-items: center;
-  
   height: 80vh;
   width: 100%;
 }

@@ -1,24 +1,39 @@
-body {
-    color: black;
-    background-color: white;
-}
-  
+
 [data-theme="dark"] body {
     color: white;
     background-color: black;
 }
 
-[data-theme="dark"] .table_border {
-    border: 1px solid white;
+[data-theme="dark"] .Chart_body {
+    color: white;
+    background-color: black;
 }
 
-[data-theme="dark"] .Button {
+[data-theme="dark"] .table_border {
+    border: 1px solid gray;
+}
+
+[data-theme="dark"] .Dark_Mode_Button {
     background-color: blue;
     color: white;
 }
 
-[data-theme="dark"] .Select {
+[data-theme="light"] .Dark_mode_green {
+    color: green;
+    font-weight: bold;
+
+}
+
+[data-theme="dark"] .Dark_mode_green {
+    color: rgb(0, 255, 0);
+    border-color: gray;
+    font-weight: bolder;
+}
+
+[data-theme="dark"] .Dark_mode {
     color: white;
+    border-color: gray;
+    font-weight: bold;
 }
 
 .top_wrapper {
@@ -62,7 +77,6 @@ body {
 
 .board_col {
     padding: 10px;
-    /* width: 100%; */
 }
 
 .input_box_style {
@@ -146,6 +160,31 @@ body {
 }
 
 .aqi_style {
+    font-weight: bold;
+    padding: 10px;
+}
+
+.go_style {
+    padding: 10px;
+    background-color: green;
+    color: white;
+    border-radius: 8px;
+}
+
+.no_go_style {
+    padding: 10px;
+    background-color: red;
+    color: white;
+    border-radius: 8px;
+}
+
+.go_no_go {
+    font-weight: bold;
+    padding: 10px;
+}
+
+.breaching {
+    color: white;
     font-weight: bold;
     padding: 10px;
 }
