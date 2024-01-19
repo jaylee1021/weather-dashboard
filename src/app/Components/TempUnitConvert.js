@@ -3,6 +3,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import '../css/weather.css';
 
 export default function TempUnitConvert({ setTemp, setTempUnit, setTempLow, setTempHigh, weather, userData, toC }) {
 
@@ -26,8 +27,9 @@ export default function TempUnitConvert({ setTemp, setTempUnit, setTempLow, setT
 
     return (
         <FormControl variant="standard" sx={{ m: 1, minWidth: 110 }} style={{ margin: '10px' }}>
-            <InputLabel id="temp_unit_select">Temperature Unit</InputLabel>
+            <InputLabel className='Dark_mode' id="temp_unit_select">Temperature Unit</InputLabel>
             <Select
+                className='Dark_mode'
                 labelId="temp_unit_select"
                 id="temp_unit_select_menu"
                 value={tempUnit}

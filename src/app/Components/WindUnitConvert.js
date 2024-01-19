@@ -4,6 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import axios from 'axios';
+import '../css/weather.css';
 
 export default function WindUnitConvert({ userId, setWindUnit, windUnit, toKnots, toMetersPerSec }) {
 
@@ -33,8 +34,9 @@ export default function WindUnitConvert({ userId, setWindUnit, windUnit, toKnots
 
     return (
         <FormControl variant="standard" sx={{ m: 1, minWidth: 70 }} style={{ margin: '10px' }}>
-            <InputLabel id="wind_unit_select">Wind Unit</InputLabel>
+            <InputLabel className='Dark_mode' id="wind_unit_select">Wind Unit</InputLabel>
             <Select
+                className='Dark_mode'
                 labelId="wind_unit_select"
                 id="wind_unit_select_menu"
                 value={windUnit}

@@ -82,7 +82,7 @@ export default function ShowHide({ userData, userId, fetchUser }) {
 
     return (
         <div>
-            <Button variant='outlined' onClick={handleOpen} className='Button'>Show/Hide Op Window</Button>
+            <Button variant='outlined' onClick={handleOpen} className='Dark_Mode_Button'>Show/Hide Op Window</Button>
             <Modal
                 open={open}
                 onClose={handleClose}

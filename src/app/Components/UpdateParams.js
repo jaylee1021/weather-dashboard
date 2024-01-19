@@ -66,7 +66,7 @@ export default function UpdateParams({ userId, windUnit, fetchUser }) {
 
     return (
         <div>
-            <Button variant='outlined' className='Button' onClick={handleOpen}>Update Test Card Op Window</Button>
+            <Button variant='outlined' className='Dark_Mode_Button' onClick={handleOpen}>Update Test Card Op Window</Button>
             <Modal
                 open={open}
                 onClose={handleClose}
