@@ -38,6 +38,7 @@ export default function WeatherMain() {
     const [tempLow, setTempLow] = useState('');
     const [tempHigh, setTempHigh] = useState('');
     const [aqiData, setAqiData] = useState();
+    const [goNoGo, setGoNoGo] = useState(true);
     const router = useRouter();
 
     // conversion constants
@@ -270,7 +271,11 @@ export default function WeatherMain() {
                             Please exercise caution and responsibility while using it.</span>
                     </div>
                 }
+                <div className="demo_tooltip">
+                    <ThemeSwitcher />
+                </div>
             </div>
+
         </div>
     );
 
@@ -281,7 +286,6 @@ export default function WeatherMain() {
 
     return (
         <div className="top_wrapper">
-            <ThemeSwitcher />
             {topMenu}
             <div className="top">
                 <div className="buttons_wrapper">
@@ -297,7 +301,7 @@ export default function WeatherMain() {
                             setTempHigh={setTempHigh} weather={weather} userData={userData} toC={toC} />
                     </div>
                     <div className="button_padding">
-                        <Button variant='outlined' className='Button' onClick={handleManualRefresh}>Manual Refresh</Button>
+                        <Button variant='outlined' className='Dark_Mode_Button' onClick={handleManualRefresh}>Manual Refresh</Button>
                     </div>
                     <div className="button_padding">
                         <UpdateParams windUnit={windUnit} userId={userId} fetchUser={fetchUser} />
@@ -306,7 +310,7 @@ export default function WeatherMain() {
                         <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />
                     </div>
                     <div className="button_padding">
-                        <Button variant='outlined' className='Button' onClick={() => handleReturnToDefault()}>Return to default</Button>
+                        <Button variant='outlined' className='Dark_Mode_Button' onClick={() => handleReturnToDefault()}>Return to default</Button>
                     </div>
                 </div>
             </div>
@@ -327,14 +331,14 @@ export default function WeatherMain() {
                 <div style={{ display: 'flex', flex: 'auto' }}>
                     <WeatherTable userData={userData} weather={weather} wind={wind} windGust={windGust}
                         windUnit={windUnit} temp={temp} tempUnit={tempUnit} windOpWindow={windOpWindow}
-                        windGustOpWindow={windGustOpWindow} tempLow={tempLow} tempHigh={tempHigh} />
+                        windGustOpWindow={windGustOpWindow} tempLow={tempLow} tempHigh={tempHigh} goNoGo={goNoGo} />
                 </div>
                 <div className="side_bar">
-                    <WeatherSummary props={{ wind, windOpWindow, userData, windGust, windGustOpWindow, temp, tempLow, tempHigh, weather }} />
+                    <WeatherSummary props={{ wind, windOpWindow, userData, windGust, windGustOpWindow, temp, tempLow, tempHigh, weather }} setGoNoGo={setGoNoGo} />
                     <div className="table_border" style={{ margin: '10px' }}>
                         {aqiData && <AqiCheck aqiData={aqiData} />}
                     </div>
-                    <Button style={{ margin: '0 10px' }} variant="outlined" onClick={logout}>Log Out</Button>
+                    <Button style={{ margin: '0 10px' }} variant="outlined" className="Dark_Mode_Button" onClick={logout}>Log Out</Button>
                 </div>
             </div>
             {aqiData && <CustomCharts weatherData={forecast} fetchData={fetchData} aqiData={aqiData} />}
