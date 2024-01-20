@@ -36,6 +36,14 @@
     font-weight: bold;
 }
 
+[data-theme="dark"] .Select_input {
+    
+    color: black;
+    background-color: white;
+    border-color: gray;
+    font-weight: bold;
+}
+
 .top_wrapper {
     display: flex;
     flex-direction: column;
@@ -47,14 +55,20 @@
     flex-direction: column;
 }
 
+.page_title {
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+  }
+  
 .buttons_wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     width: 100%;
 }
 
 .button_padding {
-    padding: 0 10px;
+    padding: 8px 10px;
 }
 
 .table_border {

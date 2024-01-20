@@ -3,10 +3,6 @@
   min-height: 100vh;
 }
 
-.page_title {
-  padding: 10px 0;
-}
-
 .description {
   display: inherit;
   justify-content: inherit;
