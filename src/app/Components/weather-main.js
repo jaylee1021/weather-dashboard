@@ -13,11 +13,11 @@ import ShowHide from "./ShowHide"; // ShowHide component
 import UpdateParams from "./UpdateParams"; // Updating operating window component
 import AqiCheck from "./AqiCheck"; // Air quality component
 import WeatherSummary from "./WeatherSummary"; // Weather summary component
-import SiteSelection from "./SiteSelection";
-import WindUnitConvert from "./WindUnitConvert";
-import TempUnitConvert from "./TempUnitConvert";
-import WeatherTable from "./WeatherTable";
-import ThemeSwitcher from "./ThemeSwitcher";
+import SiteSelection from "./SiteSelection"; // Site selection component
+import WindUnitConvert from "./WindUnitConvert"; // Wind unit conversion component
+import TempUnitConvert from "./TempUnitConvert"; // Temperature unit conversion component
+import WeatherTable from "./WeatherTable"; // Weather table component
+import ThemeSwitcher from "./ThemeSwitcher"; // Theme switcher component
 
 export default function WeatherMain() {
 
