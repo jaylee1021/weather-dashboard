@@ -14,18 +14,18 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
-    const [dataLabel, setDataLabel] = useState('');
+    const [dataLabel, setDataLabel] = useState('Choose Option');
     const [currentDate, setCurrentDate] = useState('');
     const [options, setOptions] = useState({});
     const [dark, setDark] = useState(false);
     const { theme } = useTheme();
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-    
+
     useEffect(() => {
         if (theme === 'dark' || prefersDarkMode) {
             setOptions({
-                title: 'Weather Forecast',
-                titleTextStyle: { color: 'white' },
+
+
                 hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: 'white' }, textStyle: { color: 'white' } },
                 vAxis: { minValue: 0, textStyle: { color: 'white' }, gridlines: { color: 'gray' } },
                 height: 400,
@@ -49,8 +49,8 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
             });
         } else {
             setOptions({
-                title: 'Weather Forecast',
-                hAxis: { title: `Time (${currentDate})`, titleTextStyle: { color: '#333' } },
+
+
                 vAxis: { minValue: 0 },
                 height: 400,
                 pointSize: 5,
@@ -71,7 +71,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
                 }
             });
         }
-    }, [theme, currentDate]);
+    }, [theme, currentDate, prefersDarkMode]);
 
     const [data, setData] = useState([
         ['', ''],
@@ -208,7 +208,8 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
     return (
         <div className='py-10 flex flex-col items-center justify-center'>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', marginTop: '10px' }}>
+                <h1 style={{ display: 'flex', alignContent: 'center', flexWrap: 'wrap', marginRight: '10px' }}>Weather Forecast</h1>
                 <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 130 }} style={{ margin: '10px 10px 10px 0' }}>
                     <InputLabel className="Dark_mode" id="select-standard-label" >Choose Option</InputLabel>
                     <Select
@@ -229,7 +230,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
                         <MenuItem value={'aqi'}>Air Quality</MenuItem>
                     </Select>
                 </FormControl>
-                {dataLabel ? <div className="chart_refresh_button">
+                {dataLabel && dataLabel != 'Choose Option' ? <div className="chart_refresh_button">
                     <Button variant='outlined' className="Dark_Mode_Button" onClick={updateChart}>Refresh Chart</Button>
                 </div>
                     : null}
