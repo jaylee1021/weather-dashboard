@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google';
 import './css/globals.css';
 import Providers from './Components/providers';
+// import ToggleColorMode from './Components/providers';
 
 const inter = Inter({ subsets: ['latin'] });
 

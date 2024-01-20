@@ -6,7 +6,7 @@
 
 [data-theme="dark"] .Chart_body {
     color: white;
-    background-color: black;
+    background-color: #121212;
 }
 
 [data-theme="dark"] .table_border {
@@ -21,7 +21,7 @@
 [data-theme="light"] .Dark_mode_green {
     color: green;
     font-weight: bold;
-
+    /* border-color: gray; */
 }
 
 [data-theme="dark"] .Dark_mode_green {
@@ -42,6 +42,35 @@
     background-color: white;
     border-color: gray;
     font-weight: bold;
+}
+
+@media (prefers-color-scheme: dark) {
+    [data-theme="light"] .Select_input {
+        color: black;
+        background-color: white;
+        border-color: gray;
+        font-weight: bold;
+    }
+    [data-theme="light"] .Dark_mode {
+        color: white;
+        border-color: gray;
+        font-weight: bold;
+    }
+    [data-theme="light"] .Chart_body {
+        color: white;
+        background-color: #121212;
+    }
+    [data-theme="light"] .Dark_mode {
+        color: white;
+        /* font-style: italic; */
+        border-color: gray;
+        font-weight: bold;
+    }
+    [data-theme="light"] .Dark_mode_green {
+        color: rgb(0, 255, 0);
+        border-color: gray;
+        font-weight: bolder;
+    }
 }
 
 .top_wrapper {

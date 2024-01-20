@@ -10,15 +10,19 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import { useTheme } from "next-themes";
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
     const [dataLabel, setDataLabel] = useState('');
     const [currentDate, setCurrentDate] = useState('');
     const [options, setOptions] = useState({});
+    const [dark, setDark] = useState(false);
     const { theme } = useTheme();
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+    
     useEffect(() => {
-        if (theme === 'dark') {
+        if (theme === 'dark' || prefersDarkMode) {
             setOptions({
                 title: 'Weather Forecast',
                 titleTextStyle: { color: 'white' },
@@ -32,7 +36,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
                 backgroundColor: {
                     stroke: '#ccc',
                     strokeWidth: 5,
-                    fill: 'black'
+                    fill: '#121212'
                 },
                 annotations: {
                     textStyle: {
