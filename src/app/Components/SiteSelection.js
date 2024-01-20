@@ -22,10 +22,10 @@ export default function SiteSelection({ fetchData, }) {
     };
 
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 155 }} style={{ margin: '10px 10px 10px 0', color: 'yellow' }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 155 }} style={{ margin: '10px 10px 10px 0' }}>
             <InputLabel className='Dark_mode' id="site_select_label">Site</InputLabel>
             <Select
-                className='Dark_mode'
+                className='Select_input'
                 labelId="site_select"
                 id="site_select_menu"
                 value={site}

@@ -208,7 +208,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
                 <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 130 }} style={{ margin: '10px 10px 10px 0' }}>
                     <InputLabel className="Dark_mode" id="select-standard-label" >Choose Option</InputLabel>
                     <Select
-                        className="Dark_mode"
+                        className='Select_input'
                         labelId="select-standard-label"
                         id="select-standard"
                         value={dataLabel}

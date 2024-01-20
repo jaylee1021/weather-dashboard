@@ -36,7 +36,7 @@ export default function WindUnitConvert({ userId, setWindUnit, windUnit, toKnots
         <FormControl variant="standard" sx={{ m: 1, minWidth: 70 }} style={{ margin: '10px' }}>
             <InputLabel className='Dark_mode' id="wind_unit_select">Wind Unit</InputLabel>
             <Select
-                className='Dark_mode'
+                className='Select_input'
                 labelId="wind_unit_select"
                 id="wind_unit_select_menu"
                 value={windUnit}
