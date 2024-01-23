@@ -22,7 +22,7 @@ export default function SiteSelection({ fetchData, }) {
     };
 
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 155 }} style={{ margin: '10px 10px 10px 0' }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 165 }} style={{ margin: '10px 10px 10px 0' }}>
             <InputLabel className='Dark_mode' id="site_select_label">Site</InputLabel>
             <Select
                 className='Select_input'
@@ -32,6 +32,7 @@ export default function SiteSelection({ fetchData, }) {
                 onChange={handleSiteSelection}
                 label="Select_site"
                 name='selectSite'
+                style={{ textIndent: '5px' }}
             >
                 <MenuItem value={'hsiland'}>Hsiland</MenuItem>
                 <MenuItem value={'pdt10_hangar'}>PDT10 Hangar</MenuItem>

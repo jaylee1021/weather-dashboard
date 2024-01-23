@@ -62,7 +62,6 @@
     }
     [data-theme="light"] .Dark_mode {
         color: white;
-        /* font-style: italic; */
         border-color: gray;
         font-weight: bold;
     }

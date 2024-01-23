@@ -118,14 +118,22 @@
   /* text-indent: 10px; */
 }
 
+@media (prefers-color-scheme: dark) {
+  [data-theme="light"] .text_width {
+      color: white;
+      
+  }
+  
+}
+
 .login_main {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   min-height: 100vh;
-  background-color: white;
-  color: black;
+  /* background-color: white; */
+  /* color: black; */
 }
 
 .middle-content {

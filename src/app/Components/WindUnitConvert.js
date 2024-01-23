@@ -33,7 +33,7 @@ export default function WindUnitConvert({ userId, setWindUnit, windUnit, toKnots
     };
 
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 70 }} style={{ margin: '10px' }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 75 }} style={{ margin: '10px' }}>
             <InputLabel className='Dark_mode' id="wind_unit_select">Wind Unit</InputLabel>
             <Select
                 className='Select_input'
@@ -43,6 +43,7 @@ export default function WindUnitConvert({ userId, setWindUnit, windUnit, toKnots
                 onChange={handleConversion}
                 label="Wind_Unit"
                 name='windUnit'
+                style={{ textIndent: '5px' }}
             >
                 <MenuItem value={'knots'}>knots</MenuItem>
                 <MenuItem value={'m/s'}>m/s</MenuItem>

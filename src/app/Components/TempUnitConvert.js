@@ -26,7 +26,7 @@ export default function TempUnitConvert({ setTemp, setTempUnit, setTempLow, setT
     };
 
     return (
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 110 }} style={{ margin: '10px' }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 115 }} style={{ margin: '10px' }}>
             <InputLabel className='Dark_mode' id="temp_unit_select">Temperature Unit</InputLabel>
             <Select
                 className='Select_input'
@@ -36,6 +36,7 @@ export default function TempUnitConvert({ setTemp, setTempUnit, setTempLow, setT
                 onChange={handleTempConversion}
                 label="Temp_Unit"
                 name='tempUnit'
+                style={{ textIndent: '5px' }}
             >
                 <MenuItem value={'f'}>Fahrenheit</MenuItem>
                 <MenuItem value={'c'}>Celsius</MenuItem>

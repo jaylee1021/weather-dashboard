@@ -210,7 +210,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
         <div className='py-10 flex flex-col items-center justify-center'>
             <div style={{ display: 'flex', marginTop: '10px' }}>
                 <h1 style={{ display: 'flex', alignContent: 'center', flexWrap: 'wrap', marginRight: '10px' }}>Weather Forecast</h1>
-                <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 130 }} style={{ margin: '10px 10px 10px 0' }}>
+                <FormControl name='chartForm' variant="standard" sx={{ m: 1, minWidth: 140 }} style={{ margin: '10px 10px 10px 0' }}>
                     <InputLabel className="Dark_mode" id="select-standard-label" >Choose Option</InputLabel>
                     <Select
                         className='Select_input'
@@ -220,6 +220,7 @@ export default function CustomCharts({ weatherData, fetchData, aqiData }) {
                         onChange={dataUpdate}
                         label="Weather Data"
                         name="weatherDataSelect"
+                        style={{ textIndent: '5px' }}
                     >
                         <MenuItem value={'winds_knots'}>Winds (knots)</MenuItem>
                         <MenuItem value={'winds_m/s'}>Winds (m/s)</MenuItem>
