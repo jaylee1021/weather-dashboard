@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import jwtDecode from 'jwt-decode';
@@ -25,7 +25,7 @@ export default function EditUser() {
 
 	let currentTime;
 	let expirationTime;
-	useEffect(() => {
+	useRef(() => {
 		if (typeof window !== 'undefined') {
 			expirationTime = new Date(parseInt(localStorage.getItem('expiration')) * 1000);
 			currentTime = Date.now();
