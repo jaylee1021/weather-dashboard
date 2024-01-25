@@ -26,11 +26,11 @@ export default function SiteSelection({ fetchData, }) {
             <InputLabel className='Dark_mode' id="site_select_label">Site</InputLabel>
             <Select
                 className='Select_input'
-                labelId="site_select"
+                labelId="site_select_label"
                 id="site_select_menu"
                 value={site}
                 onChange={handleSiteSelection}
-                label="Select_site"
+                label="Site"
                 name='selectSite'
                 style={{ textIndent: '5px' }}
             >
