@@ -14,10 +14,9 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function CustomCharts({ weatherData, fetchData, aqiData }) {
 
-    const [dataLabel, setDataLabel] = useState('Choose Option');
+    const [dataLabel, setDataLabel] = useState('winds_knots');
     const [currentDate, setCurrentDate] = useState('');
     const [options, setOptions] = useState({});
-    const [dark, setDark] = useState(false);
     const { theme } = useTheme();
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
