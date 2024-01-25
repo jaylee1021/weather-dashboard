@@ -1,24 +1,25 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import '../css/weather.css';
 
 export default function WeatherSummary({ props, setGoNoGo }) {
 
-    const checkGoNoGo = () => {
+    const checkGoNoGo = useCallback(() => {
         if ((props.wind > props.windOpWindow && props.userData.showWind) || (props.windGust > props.windGustOpWindow && props.userData.showWindGust) || (props.temp < props.tempLow && props.userData.showTemp) ||
             (props.temp > props.tempHigh && props.userData.showTemp) || (props.weather.precip_mm > props.userData.precipitation && props.userData.showPrecipitation) ||
             (props.weather.vis_miles < props.userData.visibility && props.userData.showVisibility) || props.weather.cloud < props.userData.cloudBaseHeight && props.userData.showCloudBaseHeight ||
             (props.weather.wind_mph < props.userData.densityAltitudeLow && props.userData.showDensityAltitude) || (props.weather.wind_mph > props.userData.densityAltitudeHigh && props.userData.showDensityAltitude) ||
             (props.weather.wind_mph > props.userData.lighteningStrike && props.userData.showLighteningStrike) || (props.weather.wind_degree < props.userData.windDirectionLow && props.userData.showWindDirection) ||
             (props.weather.wind_degree > props.userData.windDirectionHigh && props.userData.showWindDirection)) {
-            // return (<p style={{ color: 'red', fontWeight: 'bold', padding: '10px' }}>Out of Limits!</p>);
-            setGoNoGo(false);
             return false;
         } else {
-            // return (<p style={{ color: 'green', fontWeight: 'bold', padding: '10px' }}>Go!</p>);
-            setGoNoGo(true);
             return true;
         }
-    };
+    }, [props]);
+
+    useEffect(() => {
+        const result = checkGoNoGo();
+        setGoNoGo(result);
+    }, [props, setGoNoGo, checkGoNoGo]);
 
     const checkBreachingLimit = () => {
         let limits = [];
@@ -58,9 +59,6 @@ export default function WeatherSummary({ props, setGoNoGo }) {
         if (props.weather.wind_degree > props.userData.windDirectionHigh && props.userData.showWindDirection) {
             limits.push('Wind Direction Upper Limit');
         }
-        // if (limits.length === 0) {
-        //     limits.push(<p style={{ color: 'white' }}>None</p>);
-        // }
         return limits;
     };
 
