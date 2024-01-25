@@ -103,20 +103,21 @@ const Signup = () => {
 			<br />
 			<br />
 			<div className='middle-content signup_middle'>
+				<h1 className='login_subtitle'>Sign Up</h1>
+				<p className="text-muted">Create an account below to get started</p>
 				<form onSubmit={handleSubmit}>
-					<h1 className='login_subtitle'>Sign Up</h1>
-					<p className="text-muted">Create an account below to get started</p>
+
 					<div>
-						<TextField variant='standard' type="text" className="text_width" label="First Name" value={firstName} onChange={handleFirstName} required />
+						<TextField name='firstName' variant='standard' type="text" className="text_width" label="First Name" value={firstName} onChange={handleFirstName} autoComplete='true' required />
 					</div>
 					<div>
-						<TextField variant='standard' type="text" className="text_width" label="Last Name" value={lastName} onChange={handleLastName} required />
+						<TextField name='lastName' variant='standard' type="text" className="text_width" label="Last Name" value={lastName} onChange={handleLastName} autoComplete='true' required />
 					</div>
 					<div>
-						<TextField variant='standard' type="email" className="text_width" label="Email" value={email} onChange={handleEmail} required />
+						<TextField name='email' variant='standard' type="email" className="text_width" label="Email" value={email} onChange={handleEmail} autoComplete='true' required />
 					</div>
 					<div>
-						<TextField variant='standard' type="password" className="text_width" label="Password" value={password} onChange={handlePassword} required />
+						<TextField name='password' variant='standard' type="password" className="text_width" label="Password" value={password} onChange={handlePassword} required />
 					</div>
 					<div style={{ color: "red" }}> {errorMessage} </div>
 					<div className='login_button'>
