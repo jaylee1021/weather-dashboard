@@ -304,7 +304,7 @@ export default function WeatherMain() {
                         <Button variant='outlined' className='Dark_Mode_Button' onClick={handleManualRefresh}>Manual Refresh</Button>
                     </div>
                     <div className="button_padding">
-                        <UpdateParams windUnit={windUnit} userId={userId} fetchUser={fetchUser} />
+                        <UpdateParams windUnit={windUnit} userId={userId} fetchUser={fetchUser} userData={userData} />
                     </div>
                     <div className="button_padding">
                         <ShowHide userData={userData} userId={userId} fetchUser={fetchUser} />

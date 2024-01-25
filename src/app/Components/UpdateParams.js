@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import '../css/weather.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const style = {
@@ -20,7 +20,7 @@ const style = {
     p: 4,
 };
 
-export default function UpdateParams({ userId, windUnit, fetchUser }) {
+export default function UpdateParams({ userId, windUnit, fetchUser, userData }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -59,6 +59,21 @@ export default function UpdateParams({ userId, windUnit, fetchUser }) {
                 console.log(err);
             });
     };
+
+    useEffect(() => {
+        setState({
+            steadyWind: userData.wind || '',
+            windGust: userData.windGust || '',
+            tempLow: userData.tempLow || '',
+            tempHigh: userData.tempHigh || '',
+            visibility: userData.visibility || '',
+            cloudBaseHeight: userData.cloudBaseHeight || '',
+            densityAltitudeLow: userData.densityAltitudeLow || '',
+            densityAltitudeHigh: userData.densityAltitudeHigh || '',
+            windDirectionLow: userData.windDirectionLow || '',
+            windDirectionHigh: userData.windDirectionHigh || ''
+        });
+    }, [userData]);
 
     const handleChange = (e) => {
         setState({ ...state, [e.target.name]: e.target.value });
