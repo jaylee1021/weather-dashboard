@@ -61,7 +61,7 @@ const ThemeSwitcher = () => {
 
     return (
         <FormGroup>
-            <FormControlLabel control={<MaterialUISwitch sx={{ m: 1 }} checked={theme === 'dark'}
+            <FormControlLabel id="themeId" control={<MaterialUISwitch sx={{ m: 1 }} checked={theme === 'dark'}
                 onChange={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />}
             />
         </FormGroup>
